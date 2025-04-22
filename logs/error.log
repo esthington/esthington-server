@@ -1,0 +1,43 @@
+2025-04-12 22:51:46:5146 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-04-13 21:29:20:2920 [31merror[39m: [31mError connecting to MongoDB: Connection to ac-aozmc2l-shard-00-01.evqiglv.mongodb.net:27017 interrupted due to server monitor timeout[39m
+2025-04-16 13:27:38:2738 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-16 13:41:01:411 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-16 13:41:57:4157 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-16 18:39:07:397 [31merror[39m: [31mError connecting to MongoDB: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-04-18 11:45:04:454 [31merror[39m: [31mJWT verification error: invalid signature[39m
+2025-04-18 14:51:10:5110 [31merror[39m: [31mEmail sending error: queryAaaa ETIMEOUT smtp.example.com[39m
+2025-04-18 14:51:10:5110 [31merror[39m: [31mFailed to send verification email: queryAaaa ETIMEOUT smtp.example.com[39m
+2025-04-18 15:56:14:5614 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-18 15:57:05:575 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-18 15:59:59:5959 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-19 07:11:32:1132 [31merror[39m: [31mEmail sending error: queryAaaa ETIMEOUT smtp.example.com[39m
+2025-04-19 07:11:32:1132 [31merror[39m: [31mFailed to send verification email: queryAaaa ETIMEOUT smtp.example.com[39m
+2025-04-19 07:31:24:3124 [31merror[39m: [31mJWT verification error: invalid signature[39m
+2025-04-19 21:01:33:133 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-19 21:01:44:144 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-19 22:19:07:197 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-19 22:48:01:481 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-19 23:36:48:3648 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-19 23:42:34:4234 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-04-19 23:46:02:462 [31merror[39m: [31mError connecting to MongoDB: querySrv ESERVFAIL _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-20 05:27:09:279 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-20 05:43:43:4343 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-20 15:55:38:5538 [31merror[39m: [31mError connecting to MongoDB: querySrv ETIMEOUT _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-20 16:04:01:41 [31merror[39m: [31mJWT generation error: "expiresIn" should be a number of seconds or string representing a timespan[39m
+2025-04-20 16:11:50:1150 [31merror[39m: [31mJWT generation error: "expiresIn" should be a number of seconds or string representing a timespan[39m
+2025-04-20 16:40:57:4057 [31merror[39m: [31mError connecting to MongoDB: querySrv ESERVFAIL _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-20 16:48:00:480 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-20 17:01:32:132 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-20 17:10:02:102 [31merror[39m: [31mEmail sending error: Client network socket disconnected before secure TLS connection was established[39m
+2025-04-20 17:10:02:102 [31merror[39m: [31mEmail error: Client network socket disconnected before secure TLS connection was established[39m
+2025-04-20 17:18:18:1818 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-20 17:40:33:4033 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-20 17:42:53:4253 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-20 17:49:28:4928 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-20 17:49:45:4945 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-20 17:49:59:4959 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-04-20 18:22:46:2246 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-04-21 16:32:15:3215 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-04-21 16:32:46:3246 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-04-21 17:51:19:5119 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-04-22 08:06:49:649 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m

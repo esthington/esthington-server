@@ -1,2 +1,0 @@
-# esthington-server
-new data
