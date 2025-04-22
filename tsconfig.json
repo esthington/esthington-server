@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
+    "target": "ES6",
+    "module": "commonjs",
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "strict": true,

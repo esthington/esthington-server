@@ -443,3 +443,11 @@
 2025-04-22 14:45:53:4553 [32minfo[39m: [32mServer running on port 8000[39m
 2025-04-22 14:46:00:460 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
 2025-04-22 16:42:05:425 [32minfo[39m: [32mServer running on port 8000[39m
+2025-04-22 16:42:40:4240 [31merror[39m: [31mError connecting to MongoDB: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-04-22 17:03:57:357 [32minfo[39m: [32mServer running on port 8000[39m
+2025-04-22 17:04:05:45 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-04-22 17:04:41:441 [32minfo[39m: [32mServer running on port 8000[39m
+2025-04-22 17:04:57:457 [32minfo[39m: [32mServer running on port 8000[39m
+2025-04-22 17:05:04:54 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-04-22 17:05:15:515 [32minfo[39m: [32mServer running on port 8000[39m
+2025-04-22 17:05:32:532 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
