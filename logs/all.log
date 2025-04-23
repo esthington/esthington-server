@@ -465,3 +465,8 @@
 2025-04-23 15:48:07:487 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
 2025-04-23 15:48:59:4859 [32minfo[39m: [32mServer running on port 8000[39m
 2025-04-23 15:49:17:4917 [32minfo[39m: [32mServer running on port 8000[39m
+2025-04-23 15:49:26:4926 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-04-23 16:06:00:60 [32minfo[39m: [32mServer running on port 8000[39m
+2025-04-23 16:06:14:614 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-04-23 16:27:33:2733 [32minfo[39m: [32mServer running on port 8000[39m
+2025-04-23 16:27:41:2741 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
