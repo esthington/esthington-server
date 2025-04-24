@@ -25,13 +25,11 @@ router.put(
   "/profile",
   protect,
   upload.single("profileImage") as unknown as RequestHandler,
-  validateWithJoi(updateProfileSchema),
   updateProfile
 );
 router.put(
   "/change-password",
   protect,
-  validateWithJoi(changePasswordSchema),
   changePassword
 );
 router.delete("/", protect, deleteAccount);
