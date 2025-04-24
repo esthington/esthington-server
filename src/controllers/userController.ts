@@ -7,7 +7,7 @@ import { uploadToCloudinary } from "../services/cloudinaryService";
 
 // Define a custom interface that extends Request to include the file property
 interface RequestWithFile extends Request {
-  file?: Express.Multer.File;
+  file?: any; // Use 'any' instead of Express.Multer.File
 }
 
 // Update user profile
@@ -69,6 +69,8 @@ export const updateProfile = asyncHandler(
     });
   }
 );
+
+// Rest of your code remains the same...
 
 // Change password
 export const changePassword = asyncHandler(
