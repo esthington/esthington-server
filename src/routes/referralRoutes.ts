@@ -31,7 +31,6 @@ router.get("/agent-rank", restrictTo(UserRole.AGENT), getAgentRankInfo)
 router.post(
   "/process",
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  validate(processReferralValidator),
   processReferral,
 )
 

@@ -31,7 +31,6 @@ router.post(
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   upload.array("images", 5),
-  validate(propertyValidator),
   createProperty,
 )
 router.put(
@@ -39,7 +38,6 @@ router.put(
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   upload.array("images", 5),
-  validate(propertyValidator),
   updateProperty,
 )
 router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), deleteProperty)

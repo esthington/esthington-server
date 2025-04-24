@@ -26,7 +26,7 @@ router.get("/:id", getMarketplaceListingById)
 router.use(protect)
 
 // Express interest in a listing
-router.post("/:id/interest", validate(marketplaceInterestValidator), expressInterest)
+router.post("/:id/interest", expressInterest)
 
 // Initiate purchase
 router.post("/:id/purchase/initiate", initiateMarketplacePurchase)
@@ -38,14 +38,12 @@ router.get("/:id/interests", getListingInterests)
 router.post(
   "/",
   restrictTo(UserRole.AGENT, UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  validate(marketplaceListingValidator),
   createMarketplaceListing,
 )
 
 router.put(
   "/:id",
   restrictTo(UserRole.AGENT, UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  validate(marketplaceListingValidator),
   updateMarketplaceListing,
 )
 

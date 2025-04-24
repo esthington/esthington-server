@@ -21,21 +21,20 @@ router.get("/:id", getInvestmentById)
 
 // Private routes
 router.get("/user", protect, getUserInvestments)
-router.post("/:id/invest", protect, validate(userInvestmentValidator), investInProperty)
+router.post("/:id/invest", protect, investInProperty)
 
 // Admin routes
 router.post(
   "/",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  validate(investmentPlanValidator),
+ 
   createInvestment,
 )
 router.put(
   "/:id",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  validate(investmentPlanValidator),
   updateInvestment,
 )
 router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), deleteInvestment)
