@@ -46,7 +46,8 @@ const app = express()
 // Middleware
 // ✅ Allowed Origins
 const allowedOrigins = [
-  "http://localhost:3000"
+  "http://localhost:3000",
+  "https://esthington-client.vercel.app",
 ];
 
 // ✅ CORS Middleware
