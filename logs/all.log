@@ -482,3 +482,7 @@
 2025-04-23 18:12:30:1230 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
 2025-04-23 20:17:50:1750 [32minfo[39m: [32mServer running on port 8000[39m
 2025-04-23 20:17:50:1750 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-24 10:15:03:153 [32minfo[39m: [32mServer running on port 8000[39m
+2025-04-24 10:15:16:1516 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-04-24 10:24:35:2435 [32minfo[39m: [32mServer running on port 8000[39m
+2025-04-24 10:24:46:2446 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
