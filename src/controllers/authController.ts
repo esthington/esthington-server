@@ -911,7 +911,7 @@ export const resetPassword = asyncHandler(
  */
 export const getCurrentUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("hit me");
+   
     const user = await User.findById(req.user?._id)
       .select("-password")
       .populate("referer", "userName email role"); // Populate the referer field

@@ -1,42 +1,61 @@
-import express from "express"
+import express from "express";
 import {
   getInvestments,
   getUserInvestments,
   getInvestmentById,
+  getAvailableProperties,
   createInvestment,
   updateInvestment,
   deleteInvestment,
+  toggleFeatured,
+  toggleTrending,
+  changeInvestmentStatus,
   investInProperty,
-} from "../controllers/investmentController"
-import { protect, restrictTo } from "../middleware/authMiddleware"
-import { investmentPlanValidator, userInvestmentValidator } from "../utils/validators"
-import { UserRole } from "../models/userModel"
-import { validate } from "../middleware/validationMiddleware"
+  verifyInvestmentPayment,
+  getInvestmentAnalytics,
+  getUserInvestmentAnalytics,
+  processInvestmentPayouts,
+} from "../controllers/investmentController";
+import { protect, restrictTo } from "../middleware/authMiddleware";
+import {
+  investmentPlanValidator,
+  userInvestmentValidator,
+} from "../utils/validators";
+import { UserRole } from "../models/userModel";
+import { validate } from "../middleware/validationMiddleware";
+import { upload } from "../middleware/uploadMiddleware";
 
-const router = express.Router()
+const router = express.Router();
 
 // Public routes
-router.get("/", getInvestments)
-router.get("/:id", getInvestmentById)
+router.get("/", getInvestments);
+router.get("/:id", getInvestmentById);
 
-// Private routes
-router.get("/user", protect, getUserInvestments)
-router.post("/:id/invest", protect, investInProperty)
+// Protected routes (user)
+router.get("/", protect, getUserInvestments);
+router.get("/analytics", protect, getUserInvestmentAnalytics);
+router.post("/:id/invest", protect, investInProperty);
+router.post("/verify-payment", verifyInvestmentPayment);
 
 // Admin routes
+router.get("/analytics/platform", getInvestmentAnalytics);
+router.get("/properties/available", getAvailableProperties);
 router.post(
   "/",
+  upload.array("documents", 5),
   protect,
-  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
- 
-  createInvestment,
-)
+  createInvestment
+);
 router.put(
   "/:id",
+  upload.array("documents", 5),
   protect,
-  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  updateInvestment,
-)
-router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), deleteInvestment)
+  updateInvestment
+);
+router.delete("/:id", protect, deleteInvestment);
+router.patch("/:id/featured", protect, toggleFeatured);
+router.patch("/:id/trending", protect, toggleTrending);
+router.patch("/:id/status", protect, changeInvestmentStatus);
+router.post("/process-payouts", protect, processInvestmentPayouts);
 
-export default router
+export default router;

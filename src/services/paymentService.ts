@@ -1,669 +1,791 @@
-import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 import {
-  TransactionType,
+  Transaction,
   TransactionStatus,
+  TransactionType,
   PaymentMethod,
   Wallet,
-  type IWallet,
-  type ITransaction,
 } from "../models/walletModel";
+import User from "../models/userModel";
 import notificationService from "./notificationService";
 import { NotificationType } from "../models/notificationModel";
 import logger from "../utils/logger";
-import mongoose from "mongoose";
-import config from "../config/config";
-
-// Initialize Paystack directly
-const paystack = require("paystack")(config.paystack.secretKey);
+import emailService from "./emailService";
 
 class PaymentService {
+  private paystackSecretKey: string;
+  private paystackBaseUrl: string;
+
+  constructor() {
+    this.paystackSecretKey = process.env.PAYSTACK_SECRET_KEY || "";
+    this.paystackBaseUrl = "https://api.paystack.co";
+  }
+
   /**
-   * Initialize payment for wallet funding
+   * Initialize wallet funding via Paystack
    */
   async initializeWalletFunding(userId: string, amount: number, email: string) {
-    const reference = `fund_${uuidv4()}`;
-    const session = await mongoose.startSession();
-
     try {
-      session.startTransaction();
-
-      // Use Paystack directly
-      const paystackResponse = await paystack.transaction.initialize({
-        email,
-        amount: amount * 100, // Convert to kobo
-        reference,
-        callback_url: null,
-        metadata: JSON.stringify({ userId, type: "wallet_funding" }),
-      });
-
-      // Create transaction record
-      const wallet = await this.findOrCreateWallet(userId);
-
-      // Add transaction to wallet
-      const newTransaction: Partial<ITransaction> = {
-        _id: new mongoose.Types.ObjectId(), // Now correctly typed as ObjectId
-        type: TransactionType.DEPOSIT,
-        amount,
-        status: TransactionStatus.PENDING,
-        reference,
-        description: `Wallet funding via Paystack ${
-          this.isTestMode() ? "(Test Mode)" : ""
-        }`,
-        paymentMethod: PaymentMethod.PAYSTACK,
-        date: new Date(),
-        metadata: {
-          authorization_url: paystackResponse.data.authorization_url,
-          access_code: paystackResponse.data.access_code,
-          is_test: this.isTestMode(),
+      const response = await axios.post(
+        `${this.paystackBaseUrl}/transaction/initialize`,
+        {
+          email,
+          amount: amount * 100, // Convert to kobo
+          callback_url: `${process.env.FRONTEND_URL}/dashboard/fund-wallet`,
+          metadata: {
+            userId,
+            custom_fields: [
+              {
+                display_name: "Payment For",
+                variable_name: "payment_for",
+                value: "Wallet Funding",
+              },
+            ],
+          },
         },
-      };
-
-      wallet.transactions.push(newTransaction as ITransaction);
-      await wallet.save({ session });
-      await session.commitTransaction();
-
-      // Get the created transaction
-      const transaction = wallet.transactions[wallet.transactions.length - 1];
-
-      return {
-        authorization_url: paystackResponse.data.authorization_url,
-        reference,
-        transaction,
-      };
-    } catch (error) {
-      await session.abortTransaction();
-      logger.error(
-        `Payment initialization error: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
+        {
+          headers: {
+            Authorization: `Bearer ${this.paystackSecretKey}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
-      throw error;
-    } finally {
-      session.endSession();
+
+      return response.data.data;
+    } catch (error) {
+      console.error("Paystack initialization error:", error);
+      throw new Error("Failed to initialize payment");
     }
   }
 
   /**
-   * Initialize payment for property purchase
-   */
-  async initializePropertyPurchase(
-    userId: string,
-    propertyId: string,
-    amount: number,
-    email: string
-  ) {
-    const reference = `property_${uuidv4()}`;
-    const session = await mongoose.startSession();
-
-    try {
-      session.startTransaction();
-
-      // Use Paystack directly
-      const paystackResponse = await paystack.transaction.initialize({
-        email,
-        amount: amount * 100, // Convert to kobo
-        reference,
-        callback_url: null,
-        metadata: JSON.stringify({
-          userId,
-          propertyId,
-          type: "property_purchase",
-        }),
-      });
-
-      // Find or create wallet
-      const wallet = await this.findOrCreateWallet(userId);
-
-      // Add transaction to wallet
-      const newTransaction: Partial<ITransaction> = {
-        _id: new mongoose.Types.ObjectId(), // Now correctly typed as ObjectId
-        type: TransactionType.PROPERTY_PURCHASE,
-        amount,
-        status: TransactionStatus.PENDING,
-        reference,
-        description: `Property purchase payment ${
-          this.isTestMode() ? "(Test Mode)" : ""
-        }`,
-        paymentMethod: PaymentMethod.PAYSTACK,
-        date: new Date(),
-        property: new mongoose.Types.ObjectId(propertyId), // Properly convert to ObjectId
-        metadata: {
-          authorization_url: paystackResponse.data.authorization_url,
-          access_code: paystackResponse.data.access_code,
-          is_test: this.isTestMode(),
-        },
-      };
-
-      wallet.transactions.push(newTransaction as ITransaction);
-      await wallet.save({ session });
-      await session.commitTransaction();
-
-      // Get the created transaction
-      const transaction = wallet.transactions[wallet.transactions.length - 1];
-
-      return {
-        authorization_url: paystackResponse.data.authorization_url,
-        reference,
-        transaction,
-      };
-    } catch (error) {
-      await session.abortTransaction();
-      logger.error(
-        `Property payment initialization error: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-      throw error;
-    } finally {
-      session.endSession();
-    }
-  }
-
-  /**
-   * Initialize payment for investment
-   */
-  async initializeInvestment(
-    userId: string,
-    investmentPlanId: string,
-    amount: number,
-    email: string
-  ) {
-    const reference = `invest_${uuidv4()}`;
-    const session = await mongoose.startSession();
-
-    try {
-      session.startTransaction();
-
-      // Use Paystack directly
-      const paystackResponse = await paystack.transaction.initialize({
-        email,
-        amount: amount * 100, // Convert to kobo
-        reference,
-        callback_url: null,
-        metadata: JSON.stringify({
-          userId,
-          investmentPlanId,
-          type: "investment",
-        }),
-      });
-
-      // Find or create wallet
-      const wallet = await this.findOrCreateWallet(userId);
-
-      // Add transaction to wallet
-      const newTransaction: Partial<ITransaction> = {
-        _id: new mongoose.Types.ObjectId(), // Now correctly typed as ObjectId
-        type: TransactionType.INVESTMENT,
-        amount,
-        status: TransactionStatus.PENDING,
-        reference,
-        description: `Investment payment ${
-          this.isTestMode() ? "(Test Mode)" : ""
-        }`,
-        paymentMethod: PaymentMethod.PAYSTACK,
-        date: new Date(),
-        investment: new mongoose.Types.ObjectId(investmentPlanId), // Properly convert to ObjectId
-        metadata: {
-          authorization_url: paystackResponse.data.authorization_url,
-          access_code: paystackResponse.data.access_code,
-          is_test: this.isTestMode(),
-        },
-      };
-
-      wallet.transactions.push(newTransaction as ITransaction);
-      await wallet.save({ session });
-      await session.commitTransaction();
-
-      // Get the created transaction
-      const transaction = wallet.transactions[wallet.transactions.length - 1];
-
-      return {
-        authorization_url: paystackResponse.data.authorization_url,
-        reference,
-        transaction,
-      };
-    } catch (error) {
-      await session.abortTransaction();
-      logger.error(
-        `Investment payment initialization error: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-      throw error;
-    } finally {
-      session.endSession();
-    }
-  }
-
-  /**
-   * Initialize payment for marketplace listing
-   */
-  async initializeMarketplacePurchase(
-    userId: string,
-    listingId: string,
-    amount: number,
-    email: string
-  ) {
-    const reference = `marketplace_${uuidv4()}`;
-    const session = await mongoose.startSession();
-
-    try {
-      session.startTransaction();
-
-      // Use Paystack directly
-      const paystackResponse = await paystack.transaction.initialize({
-        email,
-        amount: amount * 100, // Convert to kobo
-        reference,
-        callback_url: null,
-        metadata: JSON.stringify({
-          userId,
-          listingId,
-          type: "marketplace_purchase",
-        }),
-      });
-
-      // Find or create wallet
-      const wallet = await this.findOrCreateWallet(userId);
-
-      // Add transaction to wallet
-      const newTransaction: Partial<ITransaction> = {
-        _id: new mongoose.Types.ObjectId(), // Now correctly typed as ObjectId
-        type: TransactionType.PAYMENT,
-        amount,
-        status: TransactionStatus.PENDING,
-        reference,
-        description: `Marketplace listing purchase ${
-          this.isTestMode() ? "(Test Mode)" : ""
-        }`,
-        paymentMethod: PaymentMethod.PAYSTACK,
-        date: new Date(),
-        metadata: {
-          listingId,
-          authorization_url: paystackResponse.data.authorization_url,
-          access_code: paystackResponse.data.access_code,
-          is_test: this.isTestMode(),
-        },
-      };
-
-      wallet.transactions.push(newTransaction as ITransaction);
-      await wallet.save({ session });
-      await session.commitTransaction();
-
-      // Get the created transaction
-      const transaction = wallet.transactions[wallet.transactions.length - 1];
-
-      return {
-        authorization_url: paystackResponse.data.authorization_url,
-        reference,
-        transaction,
-      };
-    } catch (error) {
-      await session.abortTransaction();
-      logger.error(
-        `Marketplace payment initialization error: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-      throw error;
-    } finally {
-      session.endSession();
-    }
-  }
-
-  /**
-   * Verify payment and process based on transaction type
+   * Verify payment via Paystack
    */
   async verifyPayment(reference: string) {
-    const session = await mongoose.startSession();
-
     try {
-      session.startTransaction();
-
-      // Find wallet with transaction
-      const wallet = await Wallet.findOne({
-        "transactions.reference": reference,
-      });
-
-      if (!wallet) {
-        throw new Error("Transaction not found");
-      }
-
-      // Find transaction in wallet
-      const transactionIndex = wallet.transactions.findIndex(
-        (t) => t.reference === reference
+      console.log(
+        "🔍 Starting payment verification with reference:",
+        reference
       );
 
-      if (transactionIndex === -1) {
-        throw new Error("Transaction not found");
-      }
+      // Check if transaction already exists in our database
+      console.log("📦 Checking if transaction already exists in DB...");
+      const existingTransaction = await Transaction.findOne({ reference });
 
-      const transaction = wallet.transactions[transactionIndex];
-
-      // Check if transaction is already completed
-      if (transaction.status === TransactionStatus.COMPLETED) {
+      if (existingTransaction) {
+        console.log("✅ Transaction already processed:", existingTransaction);
         return {
           success: true,
-          message: "Transaction already verified and completed",
-          transaction,
+          message: "Transaction already processed",
+          transaction: existingTransaction,
         };
       }
 
-      // Verify with Paystack directly
-      const verification = await paystack.transaction.verify(reference);
-
-      if (verification.data.status === "success") {
-        // Update transaction status
-        wallet.transactions[transactionIndex].status =
-          TransactionStatus.COMPLETED;
-        wallet.transactions[transactionIndex].metadata = {
-          ...transaction.metadata,
-          paystack_response: {
-            status: verification.data.status,
-            amount: verification.data.amount,
-            currency: verification.data.currency,
-            transaction_date: verification.data.transaction_date,
-            gateway_response: verification.data.gateway_response,
+      // Verify with Paystack
+      console.log("📡 Verifying transaction with Paystack...");
+      const response = await axios.get(
+        `${this.paystackBaseUrl}/transaction/verify/${reference}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.paystackSecretKey}`,
+            "Content-Type": "application/json",
           },
-        };
+        }
+      );
 
-        await wallet.save({ session });
+      const { data } = response.data;
+      console.log("📬 Paystack response received:", data);
 
-        // Process based on transaction type
-        await this.processCompletedTransaction(wallet, transaction, session);
-
-        await session.commitTransaction();
-
-        return {
-          success: true,
-          message: "Payment verified and processed successfully",
-          transaction: wallet.transactions[transactionIndex],
-        };
-      } else {
-        wallet.transactions[transactionIndex].status = TransactionStatus.FAILED;
-        wallet.transactions[transactionIndex].metadata = {
-          ...transaction.metadata,
-          paystack_response: {
-            status: verification.data.status,
-            amount: verification.data.amount,
-            currency: verification.data.currency,
-            transaction_date: verification.data.transaction_date,
-            gateway_response: verification.data.gateway_response,
-          },
-        };
-
-        await wallet.save({ session });
-        await session.commitTransaction();
-
+      if (data.status !== "success") {
+        console.log("❌ Payment verification failed from Paystack.");
         return {
           success: false,
-          message: `Payment verification failed: ${
-            verification.data.gateway_response || "Unknown error"
-          }`,
-          transaction: wallet.transactions[transactionIndex],
+          message: "Payment verification failed",
+          transaction: null,
         };
       }
-    } catch (error) {
-      await session.abortTransaction();
-      logger.error(
-        `Payment verification error: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-      throw error;
-    } finally {
-      session.endSession();
-    }
-  }
 
-  /**
-   * Process completed transaction based on type
-   */
-  private async processCompletedTransaction(
-    wallet: IWallet,
-    transaction: ITransaction,
-    session: mongoose.ClientSession
-  ) {
-    const userId = wallet.user.toString();
-
-    switch (transaction.type) {
-      case TransactionType.DEPOSIT:
-        await this.processWalletFunding(wallet, transaction, session);
-        break;
-
-      case TransactionType.PROPERTY_PURCHASE:
-        await this.processPropertyPurchase(wallet, transaction, session);
-        break;
-
-      case TransactionType.INVESTMENT:
-        await this.processInvestment(wallet, transaction, session);
-        break;
-
-      case TransactionType.PAYMENT:
-        await this.processMarketplacePurchase(wallet, transaction, session);
-        break;
-
-      default:
-        logger.warn(`Unhandled transaction type: ${transaction.type}`);
-    }
-  }
-
-  /**
-   * Process wallet funding
-   */
-  private async processWalletFunding(
-    wallet: IWallet,
-    transaction: ITransaction,
-    session: mongoose.ClientSession
-  ) {
-    // Update wallet balance
-    wallet.balance += transaction.amount;
-    wallet.availableBalance += transaction.amount;
-    await wallet.save({ session });
-
-    // Create notification
-    await notificationService.createNotification(
-      wallet.user.toString(),
-      "Payment Successful",
-      `Your wallet has been funded with ₦${transaction.amount.toLocaleString()}.`,
-      NotificationType.TRANSACTION,
-      "/dashboard/wallet",
-      { transactionId: transaction._id.toString() } // Convert ObjectId to string for notification
-    );
-  }
-
-  /**
-   * Process property purchase
-   */
-  private async processPropertyPurchase(
-    wallet: IWallet,
-    transaction: ITransaction,
-    session: mongoose.ClientSession
-  ) {
-    if (!transaction.property) {
-      logger.error("Missing property ID in transaction");
-      throw new Error("Missing property ID in transaction");
-    }
-
-    // Update property status
-    const Property = mongoose.model("Property");
-    const property = await Property.findById(transaction.property);
-
-    if (property) {
-      property.status = "sold";
-      property.soldAt = new Date();
-      property.buyer = wallet.user;
-      await property.save({ session });
-
-      // Create notification for buyer
-      await notificationService.createNotification(
-        wallet.user.toString(),
-        "Property Purchase Successful",
-        `Your purchase of ${property.title} has been completed successfully.`,
-        NotificationType.PROPERTY,
-        `/dashboard/properties/${property._id}`,
-        { propertyId: property._id.toString() } // Convert ObjectId to string for notification
-      );
-
-      // Create notification for seller
-      if (property.owner) {
-        await notificationService.createNotification(
-          property.owner.toString(),
-          "Property Sold",
-          `Your property ${property.title} has been sold.`,
-          NotificationType.PROPERTY,
-          `/dashboard/properties/${property._id}`,
-          { propertyId: property._id.toString() } // Convert ObjectId to string for notification
-        );
+      // Find user by email only
+      if (!data.customer?.email) {
+        console.error("🚫 Customer email not found in payment data");
+        return {
+          success: false,
+          message: "Customer email not found in payment data",
+          transaction: null,
+        };
       }
-    } else {
-      logger.error(`Property not found for transaction: ${transaction._id}`);
-      throw new Error(`Property not found for transaction: ${transaction._id}`);
-    }
-  }
 
-  /**
-   * Process investment
-   */
-  private async processInvestment(
-    wallet: IWallet,
-    transaction: ITransaction,
-    session: mongoose.ClientSession
-  ) {
-    if (!transaction.investment) {
-      logger.error("Missing investment ID in transaction");
-      throw new Error("Missing investment ID in transaction");
-    }
+      console.log("🔍 Finding user by email:", data.customer.email);
+      const user = await User.findOne({ email: data.customer.email });
 
-    const InvestmentPlan = mongoose.model("InvestmentPlan");
-    const UserInvestment = mongoose.model("UserInvestment");
+      if (!user) {
+        console.error("🚫 No user found with email:", data.customer.email);
+        return {
+          success: false,
+          message: `No user found with email: ${data.customer.email}`,
+          transaction: null,
+        };
+      }
 
-    const investmentPlan = await InvestmentPlan.findById(
-      transaction.investment
-    );
+      console.log("✅ Found user:", user._id);
 
-    if (investmentPlan) {
-      // Create user investment
-      const userInvestment = await UserInvestment.create(
-        [
-          {
-            user: wallet.user,
-            plan: investmentPlan._id,
-            amount: transaction.amount,
-            startDate: new Date(),
-            endDate: new Date(
-              Date.now() + investmentPlan.duration * 30 * 24 * 60 * 60 * 1000
-            ),
-            expectedReturn:
-              (transaction.amount * investmentPlan.expectedReturn) / 100,
-            status: "active",
-          },
-        ],
-        { session }
-      );
+      // Check wallet for user
+      console.log("👛 Checking wallet for user...");
+      let wallet = await Wallet.findOne({ user: user._id });
+      if (!wallet) {
+        console.log("🆕 Creating new wallet for user...");
+        wallet = await Wallet.create({
+          user: user._id,
+          balance: 0,
+          availableBalance: 0,
+          pendingBalance: 0,
+        });
+      }
 
-      // Update investment plan
-      investmentPlan.totalRaised += transaction.amount;
-      await investmentPlan.save({ session });
+      // Create transaction
+      const amount = data.amount / 100; // Convert from kobo to naira
+      console.log(`💰 Creating transaction for amount ₦${amount}`);
+      const transaction = await Transaction.create({
+        user: user._id,
+        type: TransactionType.DEPOSIT,
+        amount,
+        status: TransactionStatus.COMPLETED,
+        reference: data.reference,
+        description: `Wallet funding via Paystack`,
+        paymentMethod: PaymentMethod.CARD,
+        metadata: {
+          paystackData: data,
+          verificationProcessed: true,
+          processedAt: new Date(),
+        },
+      });
+
+      // Update wallet balance
+      console.log("💼 Updating wallet balances...");
+      wallet.balance += amount;
+      wallet.availableBalance += amount;
+      await wallet.save();
+      console.log("✅ Wallet updated:", wallet);
 
       // Create notification
+      console.log("📣 Sending notification to user...");
       await notificationService.createNotification(
-        wallet.user.toString(),
-        "Investment Successful",
-        `Your investment of ₦${transaction.amount.toLocaleString()} in ${
-          investmentPlan.title
-        } has been processed successfully.`,
-        NotificationType.INVESTMENT,
-        `/dashboard/investments/${userInvestment[0]._id}`,
-        { investmentId: userInvestment[0]._id.toString() } // Convert ObjectId to string for notification
+        user._id,
+        "Wallet Funded",
+        `Your wallet has been credited with ₦${amount.toLocaleString()}.`,
+        NotificationType.TRANSACTION,
+        "/dashboard/my-transactions",
+        { transactionId: transaction._id }
       );
-    } else {
-      logger.error(
-        `Investment plan not found for transaction: ${transaction._id}`
-      );
-      throw new Error(
-        `Investment plan not found for transaction: ${transaction._id}`
-      );
+
+      console.log("🎉 Payment verified and processed successfully.");
+      return {
+        success: true,
+        message: "Payment verified successfully",
+        transaction,
+      };
+    } catch (error) {
+      console.error("💥 Payment verification error:", error);
+      return {
+        success: false,
+        message: "Payment verification failed",
+        transaction: null,
+      };
+    }
+  }
+
+  
+  /**
+   * Process Paystack webhook
+   * @param payload Webhook payload from Paystack
+   */
+  async processPaystackWebhook(payload: any) {
+    logger.info("Processing Paystack webhook:", {
+      reference: payload.data?.reference,
+      event: payload.event,
+    });
+
+    try {
+      const { event, data } = payload;
+      const reference = data?.reference;
+
+      // First check if we already have a transaction with this reference
+      if (reference) {
+        const existingTransaction = await Transaction.findOne({ reference });
+
+        if (existingTransaction) {
+          // If transaction exists but webhook hasn't been processed yet
+          if (!existingTransaction.metadata?.webhookProcessed) {
+            // Update the transaction to mark webhook as processed
+            existingTransaction.metadata = {
+              ...existingTransaction.metadata,
+              webhookProcessed: true,
+              webhookEvent: event,
+              webhookData: data,
+              processedAt: new Date(),
+            };
+            await existingTransaction.save();
+
+            logger.info(
+              `Updated existing transaction ${reference} with webhook data`
+            );
+            return {
+              success: true,
+              message: "Transaction updated with webhook data",
+              transaction: existingTransaction,
+            };
+          } else {
+            // Webhook already processed for this transaction
+            logger.info(
+              `Webhook already processed for transaction ${reference}`
+            );
+            return {
+              success: true,
+              message: "Webhook already processed for this transaction",
+              transaction: existingTransaction,
+            };
+          }
+        }
+      }
+
+      // If no transaction exists yet, handle different event types
+      switch (event) {
+        case "charge.success":
+          return this.handleSuccessfulCharge(data);
+        case "charge.failed":
+          return this.handleFailedCharge(data);
+        case "transfer.failed":
+          return this.handleFailedTransfer(data);
+        case "transfer.reversed":
+          return this.handleReversedTransfer(data);
+        default:
+          logger.info(`Ignoring Paystack webhook event: ${event}`);
+          return {
+            success: true,
+            message: `Ignoring event: ${event}`,
+          };
+      }
+    } catch (error) {
+      logger.error("Webhook processing error:", error);
+      return {
+        success: false,
+        message: "Webhook processing failed",
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
     }
   }
 
   /**
-   * Process marketplace purchase
+   * Extract user ID from webhook data
    */
-  private async processMarketplacePurchase(
-    wallet: IWallet,
-    transaction: ITransaction,
-    session: mongoose.ClientSession
-  ) {
-    if (!transaction.metadata || !transaction.metadata.listingId) {
-      logger.error("Missing listing ID in transaction metadata");
-      throw new Error("Missing listing ID in transaction metadata");
+  private async extractUserId(data: any): Promise<string | null> {
+    // First try to get it directly from metadata.userId
+    let userId = data.metadata?.userId;
+
+    // If not found, try to extract from the email in customer data
+    if (!userId) {
+      logger.info("userId not found in metadata, trying to find user by email");
+      const userEmail = data.customer?.email;
+
+      if (userEmail) {
+        const user = await User.findOne({ email: userEmail });
+        if (user) {
+          userId = user._id.toString();
+          logger.info(`Found user by email: ${userEmail}, userId: ${userId}`);
+        }
+      }
     }
 
-    const MarketplaceListing = mongoose.model("MarketplaceListing");
-    const listing = await MarketplaceListing.findById(
-      transaction.metadata.listingId
-    );
-
-    if (listing) {
-      listing.status = "sold";
-      listing.buyer = wallet.user;
-      listing.soldAt = new Date();
-      await listing.save({ session });
-
-      // Create notification for buyer
-      await notificationService.createNotification(
-        wallet.user.toString(),
-        "Marketplace Purchase Successful",
-        `Your purchase of ${listing.title} has been completed successfully.`,
-        NotificationType.TRANSACTION,
-        `/dashboard/marketplace/purchases/${listing._id}`,
-        { listingId: listing._id.toString() } // Convert ObjectId to string for notification
+    // If still not found, try to extract from custom_fields if available
+    if (!userId && data.metadata?.custom_fields) {
+      const paymentForField = data.metadata.custom_fields.find(
+        (field: any) =>
+          field.variable_name === "payment_for" &&
+          field.value === "Wallet Funding"
       );
 
-      // Create notification for seller
-      await notificationService.createNotification(
-        listing.seller.toString(),
-        "Listing Sold",
-        `Your listing ${listing.title} has been sold.`,
-        NotificationType.TRANSACTION,
-        `/dashboard/marketplace/listings/${listing._id}`,
-        { listingId: listing._id.toString() } // Convert ObjectId to string for notification
-      );
-    } else {
-      logger.error(
-        `Marketplace listing not found for transaction: ${transaction._id}`
-      );
-      throw new Error(
-        `Marketplace listing not found for transaction: ${transaction._id}`
-      );
+      if (paymentForField) {
+        // Try to find the transaction by reference in your database
+        const pendingTransaction = await Transaction.findOne({
+          reference: data.reference,
+          status: TransactionStatus.PENDING,
+        });
+
+        if (pendingTransaction) {
+          userId = pendingTransaction.user.toString();
+          logger.info(`Found pending transaction with userId: ${userId}`);
+        }
+      }
     }
+
+    return userId;
   }
 
   /**
-   * Find or create a wallet for a user
+   * Handle successful charge event
    */
-  private async findOrCreateWallet(userId: string): Promise<IWallet> {
+  private async handleSuccessfulCharge(data: any) {
+    // Check if transaction already exists
+    const existingTransaction = await Transaction.findOne({
+      reference: data.reference,
+    });
+
+    if (existingTransaction) {
+      logger.info(`Transaction already processed: ${data.reference}`);
+      return {
+        success: true,
+        message: "Transaction already processed",
+        transaction: existingTransaction,
+      };
+    }
+
+    // Extract user ID from metadata
+    const userId = await this.extractUserId(data);
+
+    if (!userId) {
+      logger.error("User ID not found in payment metadata", data.metadata);
+
+      // Store the webhook data for manual processing later
+      await Transaction.create({
+        type: TransactionType.DEPOSIT,
+        amount: data.amount / 100, // Convert from kobo to naira
+        status: TransactionStatus.PENDING,
+        reference: data.reference,
+        description: `Unprocessed Paystack webhook - missing userId`,
+        paymentMethod: PaymentMethod.CARD,
+        metadata: {
+          paystackData: data,
+          webhookProcessed: false,
+          requiresManualProcessing: true,
+          processedAt: new Date(),
+        },
+      });
+
+      return {
+        success: false,
+        message:
+          "User ID not found in payment metadata, stored for manual processing",
+      };
+    }
+
+    // Find user and wallet
+    const user = await User.findById(userId);
+    if (!user) {
+      logger.error(`User not found: ${userId}`);
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    logger.info(`Processing payment for user: ${user.email || userId}`);
+
+    // Find or create wallet
     let wallet = await Wallet.findOne({ user: userId });
-
     if (!wallet) {
+      logger.info(`Creating new wallet for user: ${userId}`);
       wallet = await Wallet.create({
-        user: new mongoose.Types.ObjectId(userId),
+        user: userId,
         balance: 0,
         availableBalance: 0,
         pendingBalance: 0,
-        transactions: [],
       });
     }
 
-    return wallet;
+    // Create transaction
+    const amount = data.amount / 100; // Convert from kobo to naira
+    logger.info(`Creating transaction for amount: ₦${amount}`);
+
+    const transaction = await Transaction.create({
+      user: userId,
+      type: TransactionType.DEPOSIT,
+      amount,
+      status: TransactionStatus.COMPLETED,
+      reference: data.reference,
+      description: `Wallet funding via Paystack`,
+      paymentMethod: PaymentMethod.CARD,
+      metadata: {
+        paystackData: data,
+        webhookProcessed: true,
+        processedAt: new Date(),
+      },
+    });
+
+    // Update wallet balance
+    logger.info(`Updating wallet balance: +₦${amount}`);
+    wallet.balance += amount;
+    wallet.availableBalance += amount;
+    await wallet.save();
+
+    // Create notification
+    await notificationService.createNotification(
+      userId,
+      "Wallet Funded",
+      `Your wallet has been credited with ₦${amount.toLocaleString()}.`,
+      NotificationType.TRANSACTION,
+      "/dashboard/my-transactions",
+      { transactionId: transaction._id }
+    );
+
+    // Send wallet funding confirmation email
+    if (user.email) {
+      try {
+        // Get card details if available
+        const cardLastFour = data.authorization?.last4 || "****";
+
+        // Send transaction status email
+        await emailService.sendTransactionStatusEmail(
+          user.email,
+          user.firstName || user.userName || "Valued Customer",
+          amount,
+          data.reference,
+          TransactionStatus.COMPLETED,
+          new Date(),
+          cardLastFour,
+          transaction._id.toString()
+        );
+
+        logger.info(`Wallet funding confirmation email sent to: ${user.email}`);
+      } catch (emailError) {
+        // Log the error but don't fail the webhook processing
+        logger.error("Failed to send wallet funding email:", emailError);
+      }
+    }
+
+    logger.info(
+      `Webhook processing completed successfully for reference: ${data.reference}`
+    );
+    return {
+      success: true,
+      message: "Webhook processed successfully",
+      transaction,
+    };
   }
 
   /**
-   * Check if we're in test mode
+   * Handle failed charge event
    */
-  private isTestMode(): boolean {
-    return config.paystack.secretKey.startsWith("sk_test_");
+  private async handleFailedCharge(data: any) {
+    logger.info(`Processing failed charge for reference: ${data.reference}`);
+
+    // Check if transaction already exists
+    const existingTransaction = await Transaction.findOne({
+      reference: data.reference,
+    });
+
+    if (
+      existingTransaction &&
+      existingTransaction.status !== TransactionStatus.PENDING
+    ) {
+      logger.info(`Transaction already processed: ${data.reference}`);
+      return {
+        success: true,
+        message: "Transaction already processed",
+        transaction: existingTransaction,
+      };
+    }
+
+    // Extract user ID from metadata
+    const userId = await this.extractUserId(data);
+
+    if (!userId) {
+      logger.error("User ID not found in payment metadata", data.metadata);
+
+      // Store the webhook data for manual processing later
+      await Transaction.create({
+        type: TransactionType.DEPOSIT,
+        amount: data.amount / 100, // Convert from kobo to naira
+        status: TransactionStatus.FAILED,
+        reference: data.reference,
+        description: `Failed Paystack charge - missing userId`,
+        paymentMethod: PaymentMethod.CARD,
+        metadata: {
+          paystackData: data,
+          webhookProcessed: true,
+          requiresManualProcessing: true,
+          processedAt: new Date(),
+        },
+      });
+
+      return {
+        success: false,
+        message:
+          "User ID not found in payment metadata, stored for manual processing",
+      };
+    }
+
+    // Find user
+    const user = await User.findById(userId);
+    if (!user) {
+      logger.error(`User not found: ${userId}`);
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    // Create or update transaction
+    const amount = data.amount / 100; // Convert from kobo to naira
+
+    let transaction;
+    if (existingTransaction) {
+      existingTransaction.status = TransactionStatus.FAILED;
+      existingTransaction.metadata = {
+        ...existingTransaction.metadata,
+        paystackData: data,
+        webhookProcessed: true,
+        processedAt: new Date(),
+        failureReason: data.gateway_response || "Payment failed",
+      };
+      transaction = await existingTransaction.save();
+    } else {
+      transaction = await Transaction.create({
+        user: userId,
+        type: TransactionType.DEPOSIT,
+        amount,
+        status: TransactionStatus.FAILED,
+        reference: data.reference,
+        description: `Failed wallet funding via Paystack`,
+        paymentMethod: PaymentMethod.CARD,
+        metadata: {
+          paystackData: data,
+          webhookProcessed: true,
+          processedAt: new Date(),
+          failureReason: data.gateway_response || "Payment failed",
+        },
+      });
+    }
+
+    // Create notification
+    await notificationService.createNotification(
+      userId,
+      "Payment Failed",
+      `Your wallet funding of ₦${amount.toLocaleString()} was not successful.`,
+      NotificationType.TRANSACTION,
+      "/dashboard/my-transactions",
+      { transactionId: transaction._id }
+    );
+
+    // Send failed transaction email
+    if (user.email) {
+      try {
+        // Get card details if available
+        const cardLastFour = data.authorization?.last4 || "****";
+        const failureReason =
+          data.gateway_response || "Payment could not be processed";
+
+        // Send transaction status email
+        await emailService.sendTransactionStatusEmail(
+          user.email,
+          user.firstName || user.userName || "Valued Customer",
+          amount,
+          data.reference,
+          TransactionStatus.FAILED,
+          new Date(),
+          cardLastFour,
+          transaction._id.toString(),
+          failureReason
+        );
+
+        logger.info(`Failed transaction email sent to: ${user.email}`);
+      } catch (emailError) {
+        // Log the error but don't fail the webhook processing
+        logger.error("Failed to send transaction failed email:", emailError);
+      }
+    }
+
+    logger.info(
+      `Failed charge webhook processed for reference: ${data.reference}`
+    );
+    return {
+      success: true,
+      message: "Failed charge webhook processed",
+      transaction,
+    };
+  }
+
+  /**
+   * Handle failed transfer event
+   */
+  private async handleFailedTransfer(data: any) {
+    logger.info(`Processing failed transfer for reference: ${data.reference}`);
+
+    // Find the transaction by reference
+    const transaction = await Transaction.findOne({
+      reference: data.reference,
+    });
+
+    if (!transaction) {
+      logger.info(`No transaction found for reference: ${data.reference}`);
+      return {
+        success: false,
+        message: "No transaction found for this reference",
+      };
+    }
+
+    // Update transaction status
+    transaction.status = TransactionStatus.FAILED;
+    transaction.metadata = {
+      ...transaction.metadata,
+      paystackData: data,
+      webhookProcessed: true,
+      processedAt: new Date(),
+      failureReason: data.reason || "Transfer failed",
+    };
+
+    await transaction.save();
+
+    // Find user
+    const user = await User.findById(transaction.user);
+    if (!user) {
+      logger.error(`User not found: ${transaction.user}`);
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    // Create notification
+    await notificationService.createNotification(
+      transaction.user.toString(),
+      "Transfer Failed",
+      `Your transfer of ₦${transaction.amount.toLocaleString()} was not successful.`,
+      NotificationType.TRANSACTION,
+      "/dashboard/my-transactions",
+      { transactionId: transaction._id }
+    );
+
+    // Send failed transaction email
+    if (user.email) {
+      try {
+        // Send transaction status email
+        await emailService.sendTransactionStatusEmail(
+          user.email,
+          user.firstName || user.userName || "Valued Customer",
+          transaction.amount,
+          data.reference,
+          TransactionStatus.FAILED,
+          new Date(),
+          undefined,
+          transaction._id.toString(),
+          data.reason || "Transfer could not be completed"
+        );
+
+        logger.info(`Failed transfer email sent to: ${user.email}`);
+      } catch (emailError) {
+        // Log the error but don't fail the webhook processing
+        logger.error("Failed to send transfer failed email:", emailError);
+      }
+    }
+
+    logger.info(
+      `Failed transfer webhook processed for reference: ${data.reference}`
+    );
+    return {
+      success: true,
+      message: "Failed transfer webhook processed",
+      transaction,
+    };
+  }
+
+  /**
+   * Handle reversed transfer event
+   */
+  private async handleReversedTransfer(data: any) {
+    logger.info(
+      `Processing reversed transfer for reference: ${data.reference}`
+    );
+
+    // Find the transaction by reference
+    const transaction = await Transaction.findOne({
+      reference: data.reference,
+    });
+
+    if (!transaction) {
+      logger.info(`No transaction found for reference: ${data.reference}`);
+      return {
+        success: false,
+        message: "No transaction found for this reference",
+      };
+    }
+
+    // Update transaction status
+    transaction.status = TransactionStatus.DECLINED;
+    transaction.metadata = {
+      ...transaction.metadata,
+      paystackData: data,
+      webhookProcessed: true,
+      processedAt: new Date(),
+      reversalReason: data.reason || "Transfer reversed",
+    };
+
+    await transaction.save();
+
+    // Find user
+    const user = await User.findById(transaction.user);
+    if (!user) {
+      logger.error(`User not found: ${transaction.user}`);
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    // If this was a withdrawal, we need to credit the wallet back
+    if (transaction.type === TransactionType.WITHDRAWAL) {
+      const wallet = await Wallet.findOne({ user: transaction.user });
+      if (wallet) {
+        wallet.balance += transaction.amount;
+        wallet.availableBalance += transaction.amount;
+        await wallet.save();
+
+        logger.info(
+          `Wallet balance updated after transfer reversal: +₦${transaction.amount}`
+        );
+      }
+    }
+
+    // Create notification
+    await notificationService.createNotification(
+      transaction.user.toString(),
+      "Transfer Reversed",
+      `Your transfer of ₦${transaction.amount.toLocaleString()} has been reversed.`,
+      NotificationType.TRANSACTION,
+      "/dashboard/my-transactions",
+      { transactionId: transaction._id }
+    );
+
+    // Send declined transaction email
+    if (user.email) {
+      try {
+        // Send transaction status email
+        await emailService.sendTransactionStatusEmail(
+          user.email,
+          user.firstName || user.userName || "Valued Customer",
+          transaction.amount,
+          data.reference,
+          TransactionStatus.DECLINED,
+          new Date(),
+          undefined,
+          transaction._id.toString(),
+          data.reason || "Transfer was reversed"
+        );
+
+        logger.info(`Transfer reversed email sent to: ${user.email}`);
+      } catch (emailError) {
+        // Log the error but don't fail the webhook processing
+        logger.error("Failed to send transfer reversed email:", emailError);
+      }
+    }
+
+    logger.info(
+      `Reversed transfer webhook processed for reference: ${data.reference}`
+    );
+    return {
+      success: true,
+      message: "Reversed transfer webhook processed",
+      transaction,
+    };
   }
 }
 

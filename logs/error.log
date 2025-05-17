@@ -43,3 +43,95 @@
 2025-04-22 08:06:49:649 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m
 2025-04-22 16:42:40:4240 [31merror[39m: [31mError connecting to MongoDB: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
 2025-04-23 20:17:50:1750 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-04-29 15:57:29:5729 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-04-29 18:00:27:027 [31merror[39m: [31mError connecting to MongoDB: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-04-29 23:41:26:4126 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-04-30 00:00:29:029 [31merror[39m: [31mPayment verification error: Transaction not found[39m
+2025-04-30 00:02:02:22 [31merror[39m: [31mPayment verification error: Transaction not found[39m
+2025-04-30 21:55:06:556 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-05-01 11:53:00:530 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-01 11:53:00:530 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-01 11:53:19:5319 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-01 11:55:13:5513 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-05-01 11:56:23:5623 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-05-01 12:29:58:2958 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-05-01 14:01:55:155 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-05-01 14:26:31:2631 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30000ms (connectTimeoutMS: 30000)[39m
+2025-05-02 09:44:39:4439 [31merror[39m: [31mUser ID not found in payment metadata[39m
+2025-05-02 09:47:35:4735 [31merror[39m: [31mUser ID not found in payment metadata[39m
+2025-05-02 09:48:46:4846 [31merror[39m: [31mUser ID not found in payment metadata[39m
+2025-05-02 09:51:36:5136 [31merror[39m: [31mUser ID not found in payment metadata[39m
+2025-05-02 09:56:57:5657 [31merror[39m: [31mPayment verification failed: User ID not found in payment metadata[39m
+2025-05-02 10:00:22:022 [31merror[39m: [31mPayment verification failed: User ID not found in payment metadata[39m
+2025-05-02 10:05:20:520 [31merror[39m: [31mUser ID not found in payment metadata[39m
+2025-05-02 11:29:24:2924 [31merror[39m: [31mPayment verification failed: User ID not found in payment metadata[39m
+2025-05-02 21:19:39:1939 [31merror[39m: [31mError connecting to MongoDB: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-06 19:32:40:3240 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-06 19:32:40:3240 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-06 19:33:00:330 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-07 09:12:30:1230 [31merror[39m: [31mCloudinary upload error: Unknown error[39m
+2025-05-07 09:20:24:2024 [31merror[39m: [31mCloudinary upload error: Unknown error[39m
+2025-05-07 13:11:34:1134 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-07 13:11:34:1134 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-07 13:11:44:1144 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-07 13:11:52:1152 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-07 13:11:52:1152 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-07 13:12:12:1212 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-07 19:19:52:1952 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-05-07 19:19:53:1953 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-05-07 19:32:44:3244 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-07 19:33:03:333 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-07 19:33:03:333 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-07 19:33:14:3314 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-07 19:33:34:3334 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-07 19:33:44:3344 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-07 19:33:54:3354 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-12 11:17:56:1756 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30487ms (connectTimeoutMS: 30000)[39m
+2025-05-12 11:17:56:1756 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30487ms (connectTimeoutMS: 30000)[39m
+2025-05-12 12:05:17:517 [31merror[39m: [31mError connecting to MongoDB: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-13 12:02:14:214 [31merror[39m: [31mError connecting to MongoDB: querySrv ETIMEOUT _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-05-13 12:03:54:354 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-05-13 12:04:28:428 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-05-13 15:00:47:047 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-13 15:00:47:047 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-13 15:00:47:047 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-13 15:01:02:12 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-13 15:01:02:12 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-13 15:01:03:13 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-13 15:01:38:138 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-13 15:01:38:138 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-13 15:02:13:213 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-13 15:02:13:213 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-13 15:02:17:217 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-13 17:19:44:1944 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-14 12:32:01:321 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-14 17:55:56:5556 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-14 17:55:57:5557 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-14 18:00:25:025 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 07:15:57:1557 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.187:27017 timed out[39m
+2025-05-15 07:15:57:1557 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.187:27017 timed out[39m
+2025-05-15 07:15:57:1557 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.187:27017 timed out[39m
+2025-05-15 07:16:03:163 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.187:27017 timed out[39m
+2025-05-15 07:16:03:163 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.187:27017 timed out[39m
+2025-05-15 07:16:33:1633 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 07:16:42:1642 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 07:16:42:1642 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 08:38:07:387 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 08:43:52:4352 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-05-15 11:33:38:3338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 11:45:36:4536 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 14:24:13:2413 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30167ms (connectTimeoutMS: 30000)[39m
+2025-05-15 14:24:13:2413 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30167ms (connectTimeoutMS: 30000)[39m
+2025-05-15 14:24:21:2421 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30167ms (connectTimeoutMS: 30000)[39m
+2025-05-15 14:24:22:2422 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30167ms (connectTimeoutMS: 30000)[39m
+2025-05-15 14:24:29:2429 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 14:24:29:2429 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 14:24:52:2452 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30147ms (connectTimeoutMS: 30000)[39m
+2025-05-15 14:26:20:2620 [31merror[39m: [31mError connecting to MongoDB: Socket 'secureConnect' timed out after 30151ms (connectTimeoutMS: 30000)[39m
+2025-05-15 14:28:23:2823 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-05-15 16:46:06:466 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 16:46:06:466 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-15 16:55:00:550 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-16 08:35:21:3521 [31merror[39m: [31mError connecting to MongoDB: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-16 08:38:42:3842 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-16 17:57:32:5732 [31merror[39m: [31mJWT verification error: jwt malformed[39m

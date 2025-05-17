@@ -16,6 +16,7 @@ export enum TransactionStatus {
   COMPLETED = "completed",
   FAILED = "failed",
   CANCELLED = "cancelled",
+  DECLINED = "declined",
 }
 
 export enum PaymentMethod {
@@ -28,6 +29,7 @@ export enum PaymentMethod {
 // Extend Document but omit _id to avoid conflicts
 export interface ITransaction extends Omit<Document, "_id"> {
   _id: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId; // Add user field
   type: TransactionType;
   amount: number;
   status: TransactionStatus;
@@ -43,6 +45,11 @@ export interface ITransaction extends Omit<Document, "_id"> {
 }
 
 const transactionSchema = new Schema<ITransaction>({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   type: {
     type: String,
     enum: Object.values(TransactionType),

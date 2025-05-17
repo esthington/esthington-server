@@ -5,181 +5,143 @@ import {
   Wallet,
   TransactionType,
   TransactionStatus,
+  Transaction,
 } from "../models/walletModel";
 import User from "../models/userModel";
 import mongoose from "mongoose";
+import { StatusCodes } from "http-status-codes";
 
-// Get all transactions with filtering
+/**
+ * @desc    Get user transactions
+ * @route   GET /api/wallet/transactions
+ * @access  Private
+ */
 export const getAllTransactions = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
+    }
+
+    const userId = req.user._id;
+
+    // Extract query parameters with default values
     const {
+      page = "1",
+      limit = "10",
       type,
       status,
-      minAmount,
-      maxAmount,
       startDate,
       endDate,
-      userId,
-      page = 1,
-      limit = 10,
-      sort = "-date",
     } = req.query;
 
-    // Build filter object
-    const filter: any = {};
+    // Build query object
+    const query: any = { user: userId };
 
-    if (type) filter["transactions.type"] = type;
-    if (status) filter["transactions.status"] = status;
-    if (minAmount) filter["transactions.amount"] = { $gte: Number(minAmount) };
-    if (maxAmount) {
-      if (filter["transactions.amount"]) {
-        filter["transactions.amount"].$lte = Number(maxAmount);
-      } else {
-        filter["transactions.amount"] = { $lte: Number(maxAmount) };
-      }
+    if (type) query.type = type;
+    if (status) query.status = status;
+
+    if (startDate && endDate) {
+      query.createdAt = {
+        $gte: new Date(startDate as string),
+        $lte: new Date(endDate as string),
+      };
     }
-
-    if (startDate) {
-      filter["transactions.date"] = { $gte: new Date(startDate as string) };
-    }
-
-    if (endDate) {
-      if (filter["transactions.date"]) {
-        filter["transactions.date"].$lte = new Date(endDate as string);
-      } else {
-        filter["transactions.date"] = { $lte: new Date(endDate as string) };
-      }
-    }
-
-    if (userId) filter.user = new mongoose.Types.ObjectId(userId as string);
 
     // Pagination
-    const skip = (Number(page) - 1) * Number(limit);
+    const pageNum = parseInt(page as string, 10);
+    const limitNum = parseInt(limit as string, 10);
+    const skip = (pageNum - 1) * limitNum;
 
-    // Aggregation pipeline
-    const pipeline = [
-      { $match: filter },
-      { $unwind: "$transactions" },
-      { $match: filter }, // Apply filters to unwound transactions
-      {
-        $sort: {
-          [`transactions.${
-            typeof sort === "string" ? sort.replace("-", "") : ""
-          }`]: typeof sort === "string" && sort.startsWith("-") ? -1 : 1,
-        } as Record<string, 1 | -1>,
-      },
-      { $skip: skip },
-      { $limit: Number(limit) },
-      {
-        $lookup: {
-          from: "users",
-          localField: "user",
-          foreignField: "_id",
-          as: "userDetails",
-        },
-      },
-      { $unwind: "$userDetails" },
-      {
-        $project: {
-          _id: "$transactions._id",
-          type: "$transactions.type",
-          amount: "$transactions.amount",
-          status: "$transactions.status",
-          date: "$transactions.date",
-          description: "$transactions.description",
-          reference: "$transactions.reference",
-          paymentMethod: "$transactions.paymentMethod",
-          metadata: "$transactions.metadata",
-          recipient: "$transactions.recipient",
-          sender: "$transactions.sender",
-          property: "$transactions.property",
-          investment: "$transactions.investment",
-          userId: "$user",
-          userName: "$userDetails.name",
-          userEmail: "$userDetails.email",
-        },
-      },
-    ];
+    // Fetch transactions
+    const transactions = await Transaction.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .populate(
+        "recipient sender property investment",
+        "firstName lastName email title"
+      );
 
-    // Count total documents for pagination
-    const countPipeline = [
-      { $match: filter },
-      { $unwind: "$transactions" },
-      { $match: filter },
-      { $count: "total" },
-    ];
+    // Count total matching documents
+    const total = await Transaction.countDocuments(query);
 
-    const [transactions, countResult] = await Promise.all([
-      Wallet.aggregate(pipeline),
-      Wallet.aggregate(countPipeline),
-    ]);
 
-    const total = countResult.length > 0 ? countResult[0].total : 0;
-
-    res.status(200).json({
-      status: "success",
-      results: transactions.length,
+    res.status(StatusCodes.OK).json({
+      success: true,
+      count: transactions.length,
       total,
-      totalPages: Math.ceil(total / Number(limit)),
-      currentPage: Number(page),
+      totalPages: Math.ceil(total / limitNum),
+      currentPage: pageNum,
       data: transactions,
     });
   }
 );
 
+
 // Get transaction details
 export const getTransactionById = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
 
-    const transaction = await Wallet.aggregate([
-      { $unwind: "$transactions" },
-      { $match: { "transactions._id": new mongoose.Types.ObjectId(id) } },
-      {
-        $lookup: {
-          from: "users",
-          localField: "user",
-          foreignField: "_id",
-          as: "userDetails",
-        },
-      },
-      { $unwind: "$userDetails" },
-      {
-        $project: {
-          _id: "$transactions._id",
-          type: "$transactions.type",
-          amount: "$transactions.amount",
-          status: "$transactions.status",
-          date: "$transactions.date",
-          description: "$transactions.description",
-          reference: "$transactions.reference",
-          paymentMethod: "$transactions.paymentMethod",
-          metadata: "$transactions.metadata",
-          recipient: "$transactions.recipient",
-          sender: "$transactions.sender",
-          property: "$transactions.property",
-          investment: "$transactions.investment",
-          userId: "$user",
-          userName: "$userDetails.name",
-          userEmail: "$userDetails.email",
-        },
-      },
-    ]);
-
-    if (!transaction || transaction.length === 0) {
-      return next(new AppError("Transaction not found", 404));
+    console.log("New update");
+    
+    if (!req.user) {
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
     }
 
-    res.status(200).json({
+    const { id } = req.params;
+
+    const transaction = await Transaction.findOne({
+      _id: id,
+      user: req.user._id, // Optional: Only show user’s own transactions
+    }).populate(
+      "recipient sender property investment",
+      "firstName lastName email title"
+    );
+
+    if (!transaction) {
+      return next(new AppError("Transaction not found", StatusCodes.NOT_FOUND));
+    }
+
+    res.status(StatusCodes.OK).json({
       status: "success",
-      data: transaction[0],
+      data: transaction,
     });
   }
 );
 
+
 // Approve a transaction
 export const approveTransaction = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    // Always check authentication first
+    if (!req.user) {
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
+    }
+
+    const userId = req.user._id;
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Check if user is admin
+    if (user.role !== "admin") {
+      return next(
+        new AppError(
+          "Not authorized to approve transactions",
+          StatusCodes.FORBIDDEN
+        )
+      );
+    }
+
     const { id } = req.params;
     const { notes } = req.body;
 
@@ -187,7 +149,7 @@ export const approveTransaction = asyncHandler(
     const wallet = await Wallet.findOne({ "transactions._id": id });
 
     if (!wallet) {
-      return next(new AppError("Transaction not found", 404));
+      return next(new AppError("Transaction not found", StatusCodes.NOT_FOUND));
     }
 
     // Find the transaction in the wallet
@@ -196,7 +158,9 @@ export const approveTransaction = asyncHandler(
     );
 
     if (transactionIndex === -1) {
-      return next(new AppError("Pending transaction not found", 404));
+      return next(
+        new AppError("Pending transaction not found", StatusCodes.NOT_FOUND)
+      );
     }
 
     const transaction = wallet.transactions[transactionIndex];
@@ -208,6 +172,13 @@ export const approveTransaction = asyncHandler(
         transactionIndex
       ].description += ` - Admin notes: ${notes}`;
     }
+
+    // Add audit trail
+    wallet.transactions[transactionIndex].metadata = {
+      ...wallet.transactions[transactionIndex].metadata,
+      approvedBy: userId,
+      approvedAt: new Date(),
+    };
 
     // Update balances based on transaction type
     if (transaction.type === TransactionType.DEPOSIT) {
@@ -229,16 +200,10 @@ export const approveTransaction = asyncHandler(
 
     await wallet.save();
 
-    // Get user for notification
-    const user = await User.findById(wallet.user);
-
-    // Send notification (you would implement this)
-    // await notificationService.sendNotification({
-    //   userId: wallet.user,
-    //   title: 'Transaction Approved',
-    //   message: `Your ${transaction.type} of ${transaction.amount} has been approved.`,
-    //   type: 'transaction'
-    // });
+    // Log the admin action for audit purposes
+    console.log(
+      `Transaction ${id} approved by admin ${userId} at ${new Date().toISOString()}`
+    );
 
     res.status(200).json({
       status: "success",
@@ -250,18 +215,45 @@ export const approveTransaction = asyncHandler(
 // Reject a transaction
 export const rejectTransaction = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    // Always check authentication first
+    if (!req.user) {
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
+    }
+
+    const userId = req.user._id;
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Check if user is admin
+    if (user.role !== "admin") {
+      return next(
+        new AppError(
+          "Not authorized to reject transactions",
+          StatusCodes.FORBIDDEN
+        )
+      );
+    }
+
     const { id } = req.params;
     const { reason } = req.body;
 
     if (!reason) {
-      return next(new AppError("Rejection reason is required", 400));
+      return next(
+        new AppError("Rejection reason is required", StatusCodes.BAD_REQUEST)
+      );
     }
 
     // Find the wallet containing this transaction
     const wallet = await Wallet.findOne({ "transactions._id": id });
 
     if (!wallet) {
-      return next(new AppError("Transaction not found", 404));
+      return next(new AppError("Transaction not found", StatusCodes.NOT_FOUND));
     }
 
     // Find the transaction in the wallet
@@ -270,7 +262,9 @@ export const rejectTransaction = asyncHandler(
     );
 
     if (transactionIndex === -1) {
-      return next(new AppError("Pending transaction not found", 404));
+      return next(
+        new AppError("Pending transaction not found", StatusCodes.NOT_FOUND)
+      );
     }
 
     const transaction = wallet.transactions[transactionIndex];
@@ -280,6 +274,14 @@ export const rejectTransaction = asyncHandler(
     wallet.transactions[
       transactionIndex
     ].description += ` - Rejected: ${reason}`;
+
+    // Add audit trail
+    wallet.transactions[transactionIndex].metadata = {
+      ...wallet.transactions[transactionIndex].metadata,
+      rejectedBy: userId,
+      rejectedAt: new Date(),
+      rejectionReason: reason,
+    };
 
     // Update balances based on transaction type
     if (transaction.type === TransactionType.DEPOSIT) {
@@ -300,16 +302,10 @@ export const rejectTransaction = asyncHandler(
 
     await wallet.save();
 
-    // Get user for notification
-    const user = await User.findById(wallet.user);
-
-    // Send notification (you would implement this)
-    // await notificationService.sendNotification({
-    //   userId: wallet.user,
-    //   title: 'Transaction Rejected',
-    //   message: `Your ${transaction.type} of ${transaction.amount} has been rejected. Reason: ${reason}`,
-    //   type: 'transaction'
-    // });
+    // Log the admin action for audit purposes
+    console.log(
+      `Transaction ${id} rejected by admin ${userId} at ${new Date().toISOString()}: ${reason}`
+    );
 
     res.status(200).json({
       status: "success",
@@ -321,6 +317,31 @@ export const rejectTransaction = asyncHandler(
 // Get transaction statistics
 export const getTransactionStats = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    // Always check authentication first
+    if (!req.user) {
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
+    }
+
+    const userId = req.user._id;
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Check if user is admin
+    if (user.role !== "admin") {
+      return next(
+        new AppError(
+          "Not authorized to access transaction statistics",
+          StatusCodes.FORBIDDEN
+        )
+      );
+    }
+
     const { period = "month" } = req.query;
 
     let dateFilter: any = {};
@@ -344,6 +365,13 @@ export const getTransactionStats = asyncHandler(
     } else if (period === "year") {
       const startOfYear = new Date(now.getFullYear(), 0, 1);
       dateFilter = { $gte: startOfYear };
+    } else {
+      return next(
+        new AppError(
+          "Invalid period. Use day, week, month, or year",
+          StatusCodes.BAD_REQUEST
+        )
+      );
     }
 
     const stats = await Wallet.aggregate([

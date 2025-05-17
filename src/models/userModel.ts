@@ -46,6 +46,8 @@ export interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
   lastLogin?: Date;
+  securityOTP: string | undefined;
+  securityOTPExpiry: Date | undefined;
   comparePassword(enteredPassword: string): Promise<boolean>;
   generateVerificationToken(): { token: string; expires: Date };
   generatePasswordResetToken(): { token: string; expires: Date };
@@ -120,6 +122,13 @@ const userSchema = new Schema<IUser>(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    // Security OTP fields
+    securityOTP: {
+      type: String,
+    },
+    securityOTPExpiry: {
+      type: Date,
     },
     verificationToken: String,
     verificationTokenExpires: Date,

@@ -15,13 +15,13 @@ const router = express.Router()
 router.use(protect)
 
 // Routes accessible by all authenticated users
-router.get("/stats", getTransactionStats)
+router.get("/stats", protect, getTransactionStats)
 
 // Routes restricted to admin
-router.use(restrictTo(UserRole.ADMIN))
-router.get("/", getAllTransactions)
-router.get("/:id", getTransactionById)
-router.patch("/:id/approve", approveTransaction)
-router.patch("/:id/reject", rejectTransaction)
+// router.use(restrictTo(UserRole.ADMIN))
+router.get("/", protect, getAllTransactions)
+router.get("/:id", protect, getTransactionById)
+router.patch("/:id/approve", protect, approveTransaction)
+router.patch("/:id/reject", protect, rejectTransaction)
 
 export default router

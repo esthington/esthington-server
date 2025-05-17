@@ -1,57 +1,57 @@
-import mongoose, { type Document, Schema } from "mongoose"
-import { PropertyType } from "./propertyModel"
-
-export enum ListingType {
-  SALE = "sale",
-  RENT = "rent",
-  LEASE = "lease",
-}
+import mongoose, { type Document, Schema } from "mongoose";
 
 export enum ListingStatus {
-  ACTIVE = "active",
+  AVAILABLE = "available",
   PENDING = "pending",
   SOLD = "sold",
-  EXPIRED = "expired",
-  REJECTED = "rejected",
+  OUT_OF_STOCK = "out_of_stock",
 }
 
 export interface IMarketplaceListing extends Document {
-  _id: string;
   title: string;
   description: string;
-  rejectionReason: string;
   price: number;
-  negotiable: boolean;
-  type: ListingType;
-  propertyType: PropertyType;
-  location: {
-    address: string;
-    city: string;
-    state: string;
-    country: string;
-    coordinates?: {
-      latitude: number;
-      longitude: number;
-    };
+  discountedPrice?: number;
+  quantity: number;
+  sku?: string;
+  barcode?: string;
+  weight?: number;
+  dimensions?: {
+    length?: number;
+    width?: number;
+    height?: number;
   };
-  features: {
-    size: number;
-    sizeUnit: string;
-    bedrooms?: number;
-    bathrooms?: number;
-    amenities: string[];
-  };
+  location: string;
+  type: string;
+  size?: string;
+  status: "available" | "pending" | "sold" | "out_of_stock";
+  featured: boolean;
+  trending?: boolean;
   images: string[];
-  documents: string[];
-  status: ListingStatus;
-  seller: mongoose.Types.ObjectId;
-  property?: mongoose.Types.ObjectId;
-  isVerified: boolean;
-  expiresAt: Date;
-  viewCount: number;
-  interestedCount: number;
+  amenities?: string[];
   createdAt: Date;
   updatedAt: Date;
+  companyId: mongoose.Types.ObjectId;
+  creatorId: string;
+  categories?: string[];
+  tags?: string[];
+  isDigital?: boolean;
+  downloadUrl?: string;
+  variations?: Array<{
+    id: string;
+    name: string;
+    options: Array<{
+      id: string;
+      name: string;
+      price: number;
+      discountedPrice?: number;
+      quantity: number;
+      sku?: string;
+    }>;
+  }>;
+  thumbnail?: string;
+  gallery?: string[];
+  documents?: string[];
 }
 
 const marketplaceListingSchema = new Schema<IMarketplaceListing>(
@@ -70,142 +70,148 @@ const marketplaceListingSchema = new Schema<IMarketplaceListing>(
       required: [true, "Price is required"],
       min: [0, "Price cannot be negative"],
     },
-    negotiable: {
-      type: Boolean,
-      default: false,
+    discountedPrice: {
+      type: Number,
+      min: [0, "Discounted price cannot be negative"],
+      validate: {
+        validator: function (this: any, value: number) {
+          if (!value) return true;
+
+          // Use current document's price or fallback to update object
+          const price =
+            this.price ??
+            this.getUpdate?.()?.price ??
+            this.getUpdate?.()?.$set?.price;
+
+          return value < price;
+        },
+        message: "Discounted price must be less than regular price",
+      },
+    },
+    quantity: {
+      type: Number,
+      default: 1,
+      min: [0, "Quantity cannot be negative"],
+    },
+    sku: {
+      type: String,
+      trim: true,
+    },
+    barcode: {
+      type: String,
+      trim: true,
+    },
+    weight: {
+      type: Number,
+      min: [0, "Weight cannot be negative"],
+    },
+    dimensions: {
+      length: {
+        type: Number,
+        min: [0, "Length cannot be negative"],
+      },
+      width: {
+        type: Number,
+        min: [0, "Width cannot be negative"],
+      },
+      height: {
+        type: Number,
+        min: [0, "Height cannot be negative"],
+      },
+    },
+    location: {
+      type: String,
+      required: [true, "Location is required"],
     },
     type: {
       type: String,
-      enum: Object.values(ListingType),
-      required: [true, "Listing type is required"],
+      required: [true, "Type is required"],
     },
-    propertyType: {
-      type: String,
-      enum: Object.values(PropertyType),
-      required: [true, "Property type is required"],
-    },
-    rejectionReason: {
+    size: {
       type: String,
     },
-    location: {
-      address: {
-        type: String,
-        required: [true, "Address is required"],
-      },
-      city: {
-        type: String,
-        required: [true, "City is required"],
-      },
-      state: {
-        type: String,
-        required: [true, "State is required"],
-      },
-      country: {
-        type: String,
-        required: [true, "Country is required"],
-        default: "Nigeria",
-      },
-      coordinates: {
-        latitude: Number,
-        longitude: Number,
-      },
-    },
-    features: {
-      size: {
-        type: Number,
-        required: [true, "Size is required"],
-      },
-      sizeUnit: {
-        type: String,
-        required: [true, "Size unit is required"],
-        enum: ["sqm", "sqft", "acres", "hectares"],
-        default: "sqm",
-      },
-      bedrooms: Number,
-      bathrooms: Number,
-      amenities: [String],
-    },
-    images: [String],
-    documents: [String],
     status: {
       type: String,
       enum: Object.values(ListingStatus),
       default: ListingStatus.PENDING,
     },
-    seller: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    property: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Property",
-    },
-    isVerified: {
+    featured: {
       type: Boolean,
       default: false,
     },
-    expiresAt: {
-      type: Date,
+    trending: {
+      type: Boolean,
+      default: false,
+    },
+    images: [String],
+    amenities: [String],
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
       required: true,
     },
-    viewCount: {
-      type: Number,
-      default: 0,
+    creatorId: {
+      type: String,
+      required: true,
     },
-    interestedCount: {
-      type: Number,
-      default: 0,
+    categories: [String],
+    tags: [String],
+    isDigital: {
+      type: Boolean,
+      default: false,
     },
+    downloadUrl: {
+      type: String,
+      validate: {
+        validator: function (this: IMarketplaceListing, value: string) {
+          return !this.isDigital || (this.isDigital && !!value);
+        },
+        message: "Download URL is required for digital products",
+      },
+    },
+    variations: [
+      {
+        id: String,
+        name: String,
+        options: [
+          {
+            id: String,
+            name: String,
+            price: Number,
+            discountedPrice: Number,
+            quantity: Number,
+            sku: String,
+          },
+        ],
+      },
+    ],
+    thumbnail: {
+      type: String,
+    },
+    gallery: [String],
+    documents: [String],
   },
   {
     timestamps: true,
   }
 );
 
-// Index for search
+// Middleware to auto-set status
+marketplaceListingSchema.pre("save", function (next) {
+  if (this.isModified("quantity") && this.quantity <= 0) {
+    this.status = ListingStatus.OUT_OF_STOCK;
+  }
+  next();
+});
+
+// Search index
 marketplaceListingSchema.index({
   title: "text",
-  "location.city": "text",
-  "location.state": "text",
   description: "text",
-})
+  location: "text",
+});
 
-export interface IMarketplaceInterest extends Document {
-  listing: mongoose.Types.ObjectId
-  user: mongoose.Types.ObjectId
-  message?: string
-  status: "pending" | "contacted" | "rejected" | "completed"
-  createdAt: Date
-  updatedAt: Date
-}
-
-const marketplaceInterestSchema = new Schema<IMarketplaceInterest>(
-  {
-    listing: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "MarketplaceListing",
-      required: true,
-    },
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    message: String,
-    status: {
-      type: String,
-      enum: ["pending", "contacted", "rejected", "completed"],
-      default: "pending",
-    },
-  },
-  {
-    timestamps: true,
-  },
-)
-
-export const MarketplaceListing = mongoose.model<IMarketplaceListing>("MarketplaceListing", marketplaceListingSchema)
-export const MarketplaceInterest = mongoose.model<IMarketplaceInterest>(
-  "MarketplaceInterest",
-  marketplaceInterestSchema,
-)
+export const MarketplaceListing = mongoose.model<IMarketplaceListing>(
+  "MarketplaceListing",
+  marketplaceListingSchema
+);

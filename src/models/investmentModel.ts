@@ -1,17 +1,11 @@
-import mongoose, { type Document, Schema } from "mongoose"
-
-export enum InvestmentType {
-  REAL_ESTATE = "real_estate",
-  AGRICULTURE = "agriculture",
-  BUSINESS = "business",
-  STOCKS = "stocks",
-}
+import mongoose, { type Document, Schema } from "mongoose";
 
 export enum InvestmentStatus {
+  DRAFT = "draft",
+  PENDING = "pending",
   ACTIVE = "active",
   COMPLETED = "completed",
   CANCELLED = "cancelled",
-  PENDING = "pending",
 }
 
 export enum ReturnType {
@@ -28,37 +22,56 @@ export enum PayoutFrequency {
   END_OF_TERM = "end_of_term",
 }
 
-export interface IInvestmentPlan extends Document {
-  _id: string
-  title: string
-  description: string
-  type: InvestmentType
-  minimumAmount: number
-  maximumAmount: number
-  expectedReturn: number
-  returnType: ReturnType
-  duration: number // in months
-  payoutFrequency: PayoutFrequency
-  riskLevel: number // 1-5 (low to high)
-  isActive: boolean
-  startDate: Date
-  endDate: Date
-  totalRaised: number
-  targetAmount: number
-  creator: mongoose.Types.ObjectId
-  images: string[]
-  documents: string[]
-  location?: {
-    address?: string
-    city?: string
-    state?: string
-    country?: string
-  }
-  createdAt: Date
-  updatedAt: Date
+export enum InvestmentType {
+  REAL_ESTATE = "real_estate",
+  AGRICULTURE = "agriculture",
+  BUSINESS = "business",
+  STOCKS = "stocks",
 }
 
-const investmentPlanSchema = new Schema<IInvestmentPlan>(
+export interface IInvestment extends Document {
+  _id: string;
+  title: string;
+  description: string;
+  propertyId: mongoose.Types.ObjectId;
+  minimumInvestment: number;
+  targetAmount: number;
+  raisedAmount: number;
+  returnRate: number;
+  returnType: ReturnType;
+  investmentPeriod: number; // in months
+  payoutFrequency: PayoutFrequency;
+  startDate: Date;
+  endDate: Date;
+  status: InvestmentStatus;
+  type: InvestmentType;
+  featured: boolean;
+  trending: boolean;
+  investors: {
+    userId: mongoose.Types.ObjectId;
+    amount: number;
+    date: Date;
+  }[];
+  totalInvestors: number;
+  documents: string[];
+  createdBy: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+  maxInvestors?: number;
+  investmentPlans: {
+    name: string;
+    minAmount: number;
+    returnRate: number;
+  }[];
+  durations: {
+    name: string;
+    months: number;
+    bonusRate: number;
+  }[];
+  amenities: string[];
+}
+
+const investmentSchema = new Schema<IInvestment>(
   {
     title: {
       type: String,
@@ -69,32 +82,37 @@ const investmentPlanSchema = new Schema<IInvestmentPlan>(
       type: String,
       required: [true, "Investment description is required"],
     },
-    type: {
-      type: String,
-      enum: Object.values(InvestmentType),
-      required: [true, "Investment type is required"],
+    propertyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Property",
+      required: [true, "Property is required"],
     },
-    minimumAmount: {
+    minimumInvestment: {
       type: Number,
       required: [true, "Minimum investment amount is required"],
-      min: [0, "Minimum amount cannot be negative"],
+      min: [0, "Minimum investment cannot be negative"],
     },
-    maximumAmount: {
+    targetAmount: {
       type: Number,
-      required: [true, "Maximum investment amount is required"],
-      min: [0, "Maximum amount cannot be negative"],
+      required: [true, "Target amount is required"],
+      min: [0, "Target amount cannot be negative"],
     },
-    expectedReturn: {
+    raisedAmount: {
       type: Number,
-      required: [true, "Expected return is required"],
-      min: [0, "Expected return cannot be negative"],
+      default: 0,
+      min: [0, "Raised amount cannot be negative"],
+    },
+    returnRate: {
+      type: Number,
+      required: [true, "Return rate is required"],
+      min: [0, "Return rate cannot be negative"],
     },
     returnType: {
       type: String,
       enum: Object.values(ReturnType),
-      required: [true, "Return type is required"],
+      default: ReturnType.FIXED,
     },
-    duration: {
+    investmentPeriod: {
       type: Number,
       required: [true, "Duration is required"],
       min: [1, "Duration must be at least 1 month"],
@@ -102,17 +120,7 @@ const investmentPlanSchema = new Schema<IInvestmentPlan>(
     payoutFrequency: {
       type: String,
       enum: Object.values(PayoutFrequency),
-      required: [true, "Payout frequency is required"],
-    },
-    riskLevel: {
-      type: Number,
-      required: [true, "Risk level is required"],
-      min: [1, "Risk level must be at least 1"],
-      max: [5, "Risk level must be at most 5"],
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
+      default: PayoutFrequency.MONTHLY,
     },
     startDate: {
       type: Date,
@@ -121,131 +129,128 @@ const investmentPlanSchema = new Schema<IInvestmentPlan>(
     endDate: {
       type: Date,
       required: [true, "End date is required"],
-    },
-    totalRaised: {
-      type: Number,
-      default: 0,
-      min: [0, "Total raised cannot be negative"],
-    },
-    targetAmount: {
-      type: Number,
-      required: [true, "Target amount is required"],
-      min: [0, "Target amount cannot be negative"],
-    },
-    creator: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    images: [String],
-    documents: [String],
-    location: {
-      address: String,
-      city: String,
-      state: String,
-      country: {
-        type: String,
-        default: "Nigeria",
-      },
-    },
-  },
-  {
-    timestamps: true,
-  },
-)
-
-export interface IUserInvestment extends Document {
-  user: mongoose.Types.ObjectId;
-  plan: mongoose.Types.ObjectId;
-  amount: number;
-  status: InvestmentStatus;
-  rejectionReason: string;
-  startDate: Date;
-  endDate: Date;
-  expectedReturn: number;
-  actualReturn: number;
-  nextPayoutDate?: Date;
-  payouts: {
-    date: Date;
-    amount: number;
-    status: "pending" | "paid" | "failed";
-    transaction?: mongoose.Types.ObjectId;
-  }[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const userInvestmentSchema = new Schema<IUserInvestment>(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    plan: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "InvestmentPlan",
-      required: true,
-    },
-    rejectionReason: {
-      type: String,
-    },
-    amount: {
-      type: Number,
-      required: [true, "Investment amount is required"],
-      min: [0, "Amount cannot be negative"],
     },
     status: {
       type: String,
       enum: Object.values(InvestmentStatus),
-      default: InvestmentStatus.PENDING,
+      default: InvestmentStatus.DRAFT,
     },
-    startDate: {
-      type: Date,
-      required: [true, "Start date is required"],
+    type: {
+      type: String,
+      enum: Object.values(InvestmentType),
+      default: InvestmentType.REAL_ESTATE,
     },
-    endDate: {
-      type: Date,
-      required: [true, "End date is required"],
+    featured: {
+      type: Boolean,
+      default: false,
     },
-    expectedReturn: {
-      type: Number,
-      required: [true, "Expected return is required"],
-      min: [0, "Expected return cannot be negative"],
+    trending: {
+      type: Boolean,
+      default: false,
     },
-    actualReturn: {
-      type: Number,
-      default: 0,
-      min: [0, "Actual return cannot be negative"],
-    },
-    nextPayoutDate: Date,
-    payouts: [
+    investors: [
       {
-        date: {
-          type: Date,
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
           required: true,
         },
         amount: {
           type: Number,
           required: true,
-          min: [0, "Payout amount cannot be negative"],
+          min: [0, "Investment amount cannot be negative"],
         },
-        status: {
-          type: String,
-          enum: ["pending", "paid", "failed"],
-          default: "pending",
-        },
-        transaction: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Transaction",
+        date: {
+          type: Date,
+          default: Date.now,
         },
       },
     ],
+    totalInvestors: {
+      type: Number,
+      default: 0,
+    },
+    documents: [String],
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    maxInvestors: {
+      type: Number,
+      min: [1, "Max investors must be at least 1"],
+    },
+    investmentPlans: [
+      {
+        name: { type: String, required: true },
+        minAmount: { type: Number, required: true },
+        returnRate: { type: Number, required: true },
+      },
+    ],
+    durations: [
+      {
+        name: { type: String, required: true },
+        months: { type: Number, required: true },
+        bonusRate: { type: Number, required: true },
+      },
+    ],
+    amenities: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export const InvestmentPlan = mongoose.model<IInvestmentPlan>("InvestmentPlan", investmentPlanSchema)
-export const UserInvestment = mongoose.model<IUserInvestment>("UserInvestment", userInvestmentSchema)
+// Virtual for percentage funded
+investmentSchema.virtual("percentageFunded").get(function () {
+  return this.targetAmount > 0
+    ? Math.min(100, (this.raisedAmount / this.targetAmount) * 100)
+    : 0;
+});
+
+// Virtual for remaining amount
+investmentSchema.virtual("remainingAmount").get(function () {
+  return Math.max(0, this.targetAmount - this.raisedAmount);
+});
+
+// Update total investors and raised amount before save
+investmentSchema.pre("save", function (next) {
+  if (this.investors) {
+    this.totalInvestors = this.investors.length;
+    this.raisedAmount = this.investors.reduce(
+      (total, investor) => total + investor.amount,
+      0
+    );
+  }
+  next();
+});
+
+// Populate property and creator details on find
+investmentSchema.pre(/^find/, function (next) {
+  (this as mongoose.Query<any, any>)
+    .populate({
+      path: "propertyId",
+      select: "title location type thumbnail",
+    })
+    .populate({
+      path: "createdBy",
+      select: "firstName lastName userName avatar role",
+    });
+  next();
+});
+
+// Set toJSON and toObject to include virtuals
+investmentSchema.set("toJSON", { virtuals: true });
+investmentSchema.set("toObject", { virtuals: true });
+
+// Create text index for search
+investmentSchema.index({ title: "text", description: "text" });
+
+const Investment =
+  mongoose.models.Investment ||
+  mongoose.model<IInvestment>("Investment", investmentSchema);
+
+export default Investment;

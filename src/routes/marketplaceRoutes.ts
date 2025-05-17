@@ -1,5 +1,5 @@
-import express from "express"
-import { protect, restrictTo } from "../middleware/authMiddleware"
+import express from "express";
+import { protect, restrictTo } from "../middleware/authMiddleware";
 import {
   getMarketplaceListings,
   getMarketplaceListingById,
@@ -7,53 +7,52 @@ import {
   updateMarketplaceListing,
   deleteMarketplaceListing,
   uploadMarketplaceImages,
-  expressInterest,
-  getListingInterests,
   initiateMarketplacePurchase,
-} from "../controllers/marketplaceController"
-import { marketplaceListingValidator, marketplaceInterestValidator } from "../utils/validators"
-import { validate } from "../middleware/validationMiddleware"
-import { upload } from "../middleware/uploadMiddleware"
-import { UserRole } from "../models/userModel"
+  updateListingQuantity,
+  featureListing,
+} from "../controllers/marketplaceController";
+import { upload } from "../middleware/uploadMiddleware";
 
-const router = express.Router()
+const router = express.Router();
 
 // Public routes
-router.get("/", getMarketplaceListings)
-router.get("/:id", getMarketplaceListingById)
-
-// Protected routes
-router.use(protect)
-
-// Express interest in a listing
-router.post("/:id/interest", expressInterest)
+router.get("/listings", getMarketplaceListings);
+router.get("/listings/:id", getMarketplaceListingById);
 
 // Initiate purchase
-router.post("/:id/purchase/initiate", initiateMarketplacePurchase)
+router.post("/listings/:id/purchase/initiate", initiateMarketplacePurchase);
 
-// Get interests for a listing (seller only)
-router.get("/:id/interests", getListingInterests)
-
-// Agent/Admin routes
+// Create listing
 router.post(
-  "/",
-  restrictTo(UserRole.AGENT, UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  createMarketplaceListing,
-)
+  "/listings",
+  protect,
+  upload.fields([
+    { name: "thumbnail", maxCount: 1 },
+    { name: "gallery", maxCount: 5 },
+    { name: "documents", maxCount: 5 },
+  ]),
+  createMarketplaceListing
+);
 
+// Update listing
 router.put(
-  "/:id",
-  restrictTo(UserRole.AGENT, UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  updateMarketplaceListing,
-)
+  "/listings/:id",
+  protect,
+  upload.fields([
+    { name: "thumbnail", maxCount: 1 },
+    { name: "gallery", maxCount: 5 },
+    { name: "documents", maxCount: 5 },
+  ]),
+  updateMarketplaceListing
+);
 
-router.delete("/:id", restrictTo(UserRole.AGENT, UserRole.ADMIN, UserRole.SUPER_ADMIN), deleteMarketplaceListing)
+// Delete listing
+router.delete("/listings/:id", protect,  deleteMarketplaceListing);
 
-router.post(
-  "/:id/images",
-  restrictTo(UserRole.AGENT, UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  upload.array("images", 5),
-  uploadMarketplaceImages,
-)
+// Upload images
+router.post("/listings/:id/images", protect, upload.array("images", 5), uploadMarketplaceImages);
 
-export default router
+// Feature listing (admin only)
+router.patch("/listings/:id/feature", protect, featureListing);
+
+export default router;

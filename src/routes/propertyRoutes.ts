@@ -1,55 +1,131 @@
-import express from "express"
+import express from "express";
 import {
+  getAllProperties,
   getProperties,
   getPropertyById,
   createProperty,
   updateProperty,
   deleteProperty,
-  uploadPropertyImages,
-  deletePropertyImage,
+  uploadThumbnail,
+  uploadGalleryImages,
+  uploadPlanFile,
+  uploadDocuments,
+  deleteThumbnail,
+  deleteGalleryImage,
+  deletePlanFile,
+  deleteDocument,
   getPropertyTypes,
   getPropertyLocations,
+  getAmenities,
   initiatePropertyPurchase,
-} from "../controllers/propertyController"
-import { protect, restrictTo } from "../middleware/authMiddleware"
-import { propertyValidator } from "../utils/validators"
-import { upload } from "../middleware/uploadMiddleware"
-import { UserRole } from "../models/userModel"
-import { validate } from "../middleware/validationMiddleware"
+} from "../controllers/propertyController";
+import { protect, restrictTo } from "../middleware/authMiddleware";
+import { upload } from "../middleware/uploadMiddleware";
+import { UserRole } from "../models/userModel";
 
-const router = express.Router()
+const router = express.Router();
 
 // Public routes
-router.get("/", getProperties)
-router.get("/types", getPropertyTypes)
-router.get("/locations", getPropertyLocations)
-router.get("/:id", getPropertyById)
+router.get("/all", getAllProperties);
+router.get("/", getProperties);
+router.get("/types", getPropertyTypes);
+router.get("/locations", getPropertyLocations);
+router.get("/amenities", getAmenities);
+router.get("/:id", getPropertyById);
 
 // Admin routes
 router.post(
   "/",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  upload.array("images", 5),
-  createProperty,
-)
+  upload.fields([
+    { name: "thumbnail", maxCount: 1 },
+    { name: "gallery", maxCount: 10 },
+    { name: "planFile", maxCount: 1 },
+    { name: "documents", maxCount: 5 },
+  ]),
+  createProperty
+);
+
 router.put(
   "/:id",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  upload.array("images", 5),
-  updateProperty,
-)
-router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), deleteProperty)
-router.post(
-  "/:id/images",
+  upload.fields([
+    { name: "thumbnail", maxCount: 1 },
+    { name: "gallery", maxCount: 10 },
+    { name: "planFile", maxCount: 1 },
+    { name: "documents", maxCount: 5 },
+  ]),
+  updateProperty
+);
+
+router.delete(
+  "/:id",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  upload.array("images", 5),
-  uploadPropertyImages,
-)
-router.delete("/:id/images/:imageId", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), deletePropertyImage)
+  deleteProperty
+);
 
-router.post("/:id/purchase/initiate", protect, initiatePropertyPurchase)
+// Media routes
+router.post(
+  "/:id/thumbnail",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  upload.single("thumbnail"),
+  uploadThumbnail
+);
 
-export default router
+router.post(
+  "/:id/gallery",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  upload.array("gallery", 10),
+  uploadGalleryImages
+);
+
+router.post(
+  "/:id/plan",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  upload.single("planFile"),
+  uploadPlanFile
+);
+
+router.post(
+  "/:id/documents",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  upload.array("documents", 5),
+  uploadDocuments
+);
+
+router.delete(
+  "/:id/thumbnail",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  deleteThumbnail
+);
+router.delete(
+  "/:id/gallery",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  deleteGalleryImage
+);
+router.delete(
+  "/:id/plan",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  deletePlanFile
+);
+router.delete(
+  "/:id/documents",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  deleteDocument
+);
+
+// Purchase route
+router.post("/:id/purchase/initiate", protect, initiatePropertyPurchase);
+
+export default router;

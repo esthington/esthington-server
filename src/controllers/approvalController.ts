@@ -4,8 +4,8 @@ import AppError from "../utils/appError";
 import Property from "../models/propertyModel";
 import User from "../models/userModel";
 import { Wallet } from "../models/walletModel";
-import { MarketplaceListing } from "../models/marketplaceModel";
-import { UserInvestment } from "../models/investmentModel";
+import { MarketplaceListing } from "../models/marketplaceModel"
+import UserInvestment from "../models/userInvestmentModel";
 import emailService from "../services/emailService";
 
 // Get all pending approvals
@@ -100,32 +100,32 @@ export const updatePropertyApproval = asyncHandler(
       return next(new AppError("Property not found", 404));
     }
 
-    if (property.status !== "pending") {
+    if (property.status !== ("pending" as string)) {
       return next(new AppError("Property is not pending approval", 400));
     }
 
     property.status = status;
-    if (status === "rejected" && rejectionReason) {
-      property.rejectionReason = rejectionReason;
-    }
+    // if (status === "rejected" && rejectionReason) {
+    //   property.rejectionReason = rejectionReason;
+    // }
 
-    await property.save();
+    // await property.save();
 
-    // Get owner details for notification
-    const owner = await User.findById(property.owner);
+    // // Get owner details for notification
+    // const owner = await User.findById(property.owner);
 
-    if (owner) {
-      // Send email notification
-      await emailService.sendEmail(
-        owner.email,
-        `Your property listing has been ${status}`,
-        status === "approved"
-          ? `Congratulations! Your property "${property.title}" has been approved and is now live.`
-          : `Your property "${property.title}" has been rejected. Reason: ${
-              rejectionReason || "No reason provided"
-            }`
-      );
-    }
+    // if (owner) {
+    //   // Send email notification
+    //   await emailService.sendEmail(
+    //     owner.email,
+    //     `Your property listing has been ${status}`,
+    //     status === "approved"
+    //       ? `Congratulations! Your property "${property.title}" has been approved and is now live.`
+    //       : `Your property "${property.title}" has been rejected. Reason: ${
+    //           rejectionReason || "No reason provided"
+    //         }`
+    //   );
+    // }
 
     res.status(200).json({
       status: "success",
@@ -209,27 +209,27 @@ export const updateMarketplaceApproval = asyncHandler(
     }
 
     listing.status = status;
-    if (status === "rejected" && rejectionReason) {
-      listing.rejectionReason = rejectionReason;
-    }
+    // if (status === "rejected" && rejectionReason) {
+    //   listing.rejectionReason = rejectionReason;
+    // }
 
     await listing.save();
 
     // Get seller details for notification
-    const seller = await User.findById(listing.seller);
+    // const seller = await User.findById(listing.seller);
 
-    if (seller) {
-      // Send email notification
-      await emailService.sendEmail(
-        seller.email,
-        `Your marketplace listing has been ${status}`,
-        status === "approved"
-          ? `Congratulations! Your marketplace listing has been approved and is now live.`
-          : `Your marketplace listing has been rejected. Reason: ${
-              rejectionReason || "No reason provided"
-            }`
-      );
-    }
+    // if (seller) {
+    //   // Send email notification
+    //   await emailService.sendEmail(
+    //     seller.email,
+    //     `Your marketplace listing has been ${status}`,
+    //     status === "approved"
+    //       ? `Congratulations! Your marketplace listing has been approved and is now live.`
+    //       : `Your marketplace listing has been rejected. Reason: ${
+    //           rejectionReason || "No reason provided"
+    //         }`
+    //   );
+    // }
 
     res.status(200).json({
       status: "success",

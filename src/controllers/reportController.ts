@@ -6,7 +6,7 @@ import Property from "../models/propertyModel"
 import {Referral} from "../models/referralModel"
 import { Wallet } from "../models/walletModel";
 import { MarketplaceListing } from "../models/marketplaceModel";
-import { UserInvestment } from "../models/investmentModel";
+import UserInvestment from "../models/userInvestmentModel"
 
 // Get summary statistics for admin dashboard
 export const getDashboardStats = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -16,7 +16,7 @@ export const getDashboardStats = asyncHandler(async (req: Request, res: Response
 
   // Get total investment amount
   const investments = await UserInvestment.find();
-  const totalInvestmentAmount = investments.reduce((sum, inv) => sum + inv.amount, 0)
+  const totalInvestmentAmount = investments.reduce((sum: any, inv: any) => sum + inv.amount, 0)
 
   // Get total wallet balance
   const wallets = await Wallet.find()

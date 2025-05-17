@@ -5,7 +5,7 @@ import Property from "../models/propertyModel"
 import {Referral} from "../models/referralModel"
 import { Wallet } from "../models/walletModel";
 import { MarketplaceListing } from "../models/marketplaceModel";
-import { UserInvestment } from "../models/investmentModel";
+import UserInvestment from "../models/userInvestmentModel"
 
 // Get user dashboard data
 export const getUserDashboard = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -24,7 +24,7 @@ export const getUserDashboard = asyncHandler(async (req: Request, res: Response,
     .limit(5);
 
   // Get total investment amount
-  const totalInvestment = investments.reduce((sum, inv) => sum + inv.amount, 0)
+  const totalInvestment = investments.reduce((sum: any, inv: any) => sum + inv.amount, 0)
 
   // Get recent transactions
   const recentTransactions = wallet
@@ -156,7 +156,7 @@ export const getAdminDashboard = asyncHandler(async (req: Request, res: Response
 
   // Get total investment amount
   const investments = await UserInvestment.find();
-  const totalInvestmentAmount = investments.reduce((sum, inv) => sum + inv.amount, 0)
+  const totalInvestmentAmount = investments.reduce((sum: any, inv: any) => sum + inv.amount, 0)
 
   // Get recent users
   const recentUsers = await User.find().sort({ createdAt: -1 }).limit(5).select("name email role createdAt")
@@ -207,7 +207,7 @@ export const getAdminDashboard = asyncHandler(async (req: Request, res: Response
   const monthlyInvestments = Array(12).fill(0)
   const monthlyInvestmentAmounts = Array(12).fill(0)
 
-  investmentGrowth.forEach((item) => {
+  investmentGrowth.forEach((item: any) => {
     monthlyInvestments[item._id - 1] = item.count
     monthlyInvestmentAmounts[item._id - 1] = item.amount
   })

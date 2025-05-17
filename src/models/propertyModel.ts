@@ -1,56 +1,78 @@
-import mongoose, { type Document, Schema } from "mongoose"
+import mongoose, { type Document, Schema } from "mongoose";
 
 export enum PropertyType {
-  LAND = "land",
-  HOUSE = "house",
-  APARTMENT = "apartment",
-  COMMERCIAL = "commercial",
+  LAND = "Land",
+  RESIDENTIAL = "Residential",
+  COMMERCIAL = "Commercial",
 }
 
 export enum PropertyStatus {
-  AVAILABLE = "available",
-  SOLD = "sold",
-  PENDING = "pending",
-  RESERVED = "reserved",
+  AVAILABLE = "Available",
+  SOLD_OUT = "Sold Out",
+  COMING_SOON = "Coming Soon",
+}
+
+export enum PlotStatus {
+  AVAILABLE = "Available",
+  RESERVED = "Reserved",
+  SOLD = "Sold",
+}
+
+export interface PropertyPlot {
+  _id?: string;
+  plotId: string;
+  size: string;
+  price: number;
+  status: PlotStatus;
 }
 
 export interface IProperty extends Document {
   _id: string;
   title: string;
   description: string;
-  rejectionReason: string;
-  type: PropertyType;
+  location: string;
   price: number;
-  location: {
-    address: string;
-    city: string;
-    state: string;
-    country: string;
-    coordinates?: {
-      latitude: number;
-      longitude: number;
-    };
-  };
-  features: {
-    size: number;
-    sizeUnit: string;
-    bedrooms?: number;
-    bathrooms?: number;
-    amenities: string[];
-  };
-  images: string[];
-  documents: string[];
+  plotSize: string;
+  totalPlots: number;
+  availablePlots: number;
+  type: PropertyType;
   status: PropertyStatus;
-  owner: mongoose.Types.ObjectId;
-  isVerified: boolean;
-  isPublished: boolean;
+  featured: boolean;
+  companyId: mongoose.Types.ObjectId;
+  companyName?: string;
+  companyLogo?: string;
+  amenities: string[];
+  plots: PropertyPlot[];
+  thumbnail?: string;
+  gallery?: string[];
+  planFile?: string;
+  documents?: string[];
+  investmentId?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
-  publishedAt?: Date;
-  soldAt?: Date;
-  viewCount: number;
-  interestedCount: number;
 }
+
+const plotSchema = new Schema<PropertyPlot>({
+  plotId: {
+    type: String,
+    required: [true, "Plot ID is required"],
+    trim: true,
+  },
+  size: {
+    type: String,
+    required: [true, "Plot size is required"],
+  },
+  price: {
+    type: Number,
+    required: [true, "Plot price is required"],
+    min: [0, "Price cannot be negative"],
+  },
+  status: {
+    type: String,
+    enum: Object.values(PlotStatus),
+    default: PlotStatus.AVAILABLE,
+  },
+});
 
 const propertySchema = new Schema<IProperty>(
   {
@@ -63,87 +85,58 @@ const propertySchema = new Schema<IProperty>(
       type: String,
       required: [true, "Property description is required"],
     },
-    rejectionReason: {
+    location: {
       type: String,
-    },
-    type: {
-      type: String,
-      enum: Object.values(PropertyType),
-      required: [true, "Property type is required"],
+      required: [true, "Property location is required"],
     },
     price: {
       type: Number,
       required: [true, "Property price is required"],
       min: [0, "Price cannot be negative"],
     },
-    location: {
-      address: {
-        type: String,
-        required: [true, "Property address is required"],
-      },
-      city: {
-        type: String,
-        required: [true, "Property city is required"],
-      },
-      state: {
-        type: String,
-        required: [true, "Property state is required"],
-      },
-      country: {
-        type: String,
-        required: [true, "Property country is required"],
-        default: "Nigeria",
-      },
-      coordinates: {
-        latitude: Number,
-        longitude: Number,
+    plotSize: {
+      type: String,
+      required: [true, "Plot size is required"],
+    },
+    totalPlots: {
+      type: Number,
+      required: [true, "Total plots is required"],
+      min: [1, "Total plots must be at least 1"],
+    },
+    availablePlots: {
+      type: Number,
+      default: function () {
+        return this.totalPlots;
       },
     },
-    features: {
-      size: {
-        type: Number,
-        required: [true, "Property size is required"],
-      },
-      sizeUnit: {
-        type: String,
-        required: [true, "Size unit is required"],
-        enum: ["sqm", "sqft", "acres", "hectares"],
-        default: "sqm",
-      },
-      bedrooms: Number,
-      bathrooms: Number,
-      amenities: [String],
+    type: {
+      type: String,
+      enum: Object.values(PropertyType),
+      required: [true, "Property type is required"],
     },
-    images: [String],
-    documents: [String],
     status: {
       type: String,
       enum: Object.values(PropertyStatus),
       default: PropertyStatus.AVAILABLE,
     },
-    owner: {
+    featured: {
+      type: Boolean,
+      default: false,
+    },
+    companyId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      ref: "Company",
+      required: [true, "Company is required"],
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    isPublished: {
-      type: Boolean,
-      default: false,
-    },
-    publishedAt: Date,
-    soldAt: Date,
-    viewCount: {
-      type: Number,
-      default: 0,
-    },
-    interestedCount: {
-      type: Number,
-      default: 0,
-    },
+    companyName: String,
+    companyLogo: String,
+    amenities: [String],
+    plots: [plotSchema],
+    thumbnail: String,
+    gallery: [String],
+    planFile: String,
+    documents: [String],
+    investmentId: {type: mongoose.Schema.Types.ObjectId, ref: "Investment"},
   },
   {
     timestamps: true,
@@ -151,8 +144,27 @@ const propertySchema = new Schema<IProperty>(
 );
 
 // Index for search
-propertySchema.index({ title: "text", "location.city": "text", "location.state": "text", description: "text" })
+propertySchema.index({ title: "text", location: "text", description: "text" });
 
-const Property = mongoose.model<IProperty>("Property", propertySchema)
+// Populate company details on find
+propertySchema.pre(/^find/, function (next) {
+  (this as mongoose.Query<any, any>).populate({
+    path: "companyId",
+    select: "name logo",
+  });
+  next();
+});
 
-export default Property
+// Update available plots count before save
+propertySchema.pre("save", function (next) {
+  if (this.plots) {
+    this.availablePlots = this.plots.filter(
+      (plot) => plot.status === PlotStatus.AVAILABLE
+    ).length;
+  }
+  next();
+});
+
+const Property = mongoose.model<IProperty>("Property", propertySchema);
+
+export default Property;

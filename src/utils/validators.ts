@@ -3,7 +3,6 @@ import { UserRole } from "../models/userModel"
 import { PaymentMethod } from "../models/walletModel"
 import { PropertyType, PropertyStatus } from "../models/propertyModel"
 import { InvestmentType, ReturnType, PayoutFrequency } from "../models/investmentModel"
-import { ListingType } from "../models/marketplaceModel"
 
 // Auth validators
 export const registerValidator = [
@@ -264,7 +263,6 @@ export const marketplaceListingValidator = [
     .isFloat({ min: 0 })
     .withMessage("Price cannot be negative"),
   body("negotiable").optional().isBoolean().withMessage("Negotiable must be a boolean"),
-  body("type").isIn(Object.values(ListingType)).withMessage("Invalid listing type"),
   body("propertyType").isIn(Object.values(PropertyType)).withMessage("Invalid property type"),
   body("location.address").trim().notEmpty().withMessage("Address is required"),
   body("location.city").trim().notEmpty().withMessage("City is required"),

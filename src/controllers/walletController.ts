@@ -1,20 +1,28 @@
-import type { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import { v4 as uuidv4 } from "uuid";
+import mongoose from "mongoose";
 import {
   Wallet,
   Transaction,
   TransactionType,
   TransactionStatus,
   PaymentMethod,
+  type ITransaction,
 } from "../models/walletModel";
+import crypto from "crypto";
 import User from "../models/userModel";
 import BankAccount from "../models/bankAccountModel";
 import { AppError } from "../utils/appError";
 import { asyncHandler } from "../utils/asyncHandler";
 import notificationService from "../services/notificationService";
 import { NotificationType } from "../models/notificationModel";
-import mongoose from "mongoose";
+import paymentService from "../services/paymentService";
+
+// Extend Express Request to include user
+interface AuthRequest extends Request {
+  user?: any;
+}
 
 /**
  * @desc    Get user wallet
@@ -22,7 +30,7 @@ import mongoose from "mongoose";
  * @access  Private
  */
 export const getWallet = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
@@ -33,7 +41,7 @@ export const getWallet = asyncHandler(
 
     // Find or create wallet
     let wallet = await Wallet.findOne({ user: userId });
-    
+
     if (!wallet) {
       wallet = await Wallet.create({
         user: userId,
@@ -51,12 +59,61 @@ export const getWallet = asyncHandler(
 );
 
 /**
+ * @desc    Handle Paystack webhook
+ * @route   POST /api/wallet/webhook/paystack
+ * @access  Public
+ */
+export const handlePaystackWebhook = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  console.log("Received Paystack webhook")
+
+  // Validate webhook signature (optional but recommended)
+  const hash = crypto
+    .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY || "")
+    .update(JSON.stringify(req.body))
+    .digest("hex")
+
+  const signature = req.headers["x-paystack-signature"]
+
+  if (signature !== hash) {
+    console.error("Invalid webhook signature")
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      success: false,
+      message: "Invalid signature",
+    })
+  }
+
+  try {
+    console.log("Processing webhook payload", {
+      event: req.body.event,
+      reference: req.body.data?.reference,
+    })
+
+    const result = await paymentService.processPaystackWebhook(req.body)
+
+    // Always return 200 to Paystack, even if there's an error
+    // This prevents Paystack from retrying the webhook
+    return res.status(StatusCodes.OK).json({
+      success: result.success,
+      message: result.message,
+    })
+  } catch (error) {
+    console.error("Webhook processing error:", error)
+
+    // Always return 200 to Paystack
+    return res.status(StatusCodes.OK).json({
+      success: false,
+      message: "Webhook processing failed",
+    })
+  }
+})
+
+/**
  * @desc    Get user transactions
  * @route   GET /api/wallet/transactions
  * @access  Private
  */
 export const getTransactions = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
@@ -64,6 +121,8 @@ export const getTransactions = asyncHandler(
     }
 
     const userId = req.user._id;
+
+    // Extract query parameters with default values
     const {
       page = "1",
       limit = "10",
@@ -73,12 +132,12 @@ export const getTransactions = asyncHandler(
       endDate,
     } = req.query;
 
-    // Build query
+    // Build query object
     const query: any = { user: userId };
+
     if (type) query.type = type;
     if (status) query.status = status;
 
-    // Date range
     if (startDate && endDate) {
       query.createdAt = {
         $gte: new Date(startDate as string),
@@ -87,11 +146,11 @@ export const getTransactions = asyncHandler(
     }
 
     // Pagination
-    const pageNum = Number.parseInt(page as string, 10);
-    const limitNum = Number.parseInt(limit as string, 10);
+    const pageNum = parseInt(page as string, 10);
+    const limitNum = parseInt(limit as string, 10);
     const skip = (pageNum - 1) * limitNum;
 
-    // Get transactions
+    // Fetch transactions
     const transactions = await Transaction.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -101,7 +160,7 @@ export const getTransactions = asyncHandler(
         "firstName lastName email title"
       );
 
-    // Get total count
+    // Count total matching documents
     const total = await Transaction.countDocuments(query);
 
     res.status(StatusCodes.OK).json({
@@ -121,7 +180,7 @@ export const getTransactions = asyncHandler(
  * @access  Private
  */
 export const fundWallet = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
@@ -167,7 +226,7 @@ export const fundWallet = asyncHandler(
 
     // Create transaction
     const transaction = await Transaction.create({
-      user: userId,
+      user: userId, // Add user field
       type: TransactionType.DEPOSIT,
       amount,
       status: TransactionStatus.COMPLETED,
@@ -201,12 +260,12 @@ export const fundWallet = asyncHandler(
 );
 
 /**
- * @desc    Withdraw from wallet
- * @route   POST /api/wallet/withdraw
+ * @desc    Initialize wallet funding
+ * @route   POST /api/wallet/fund/initialize
  * @access  Private
  */
-export const withdrawFromWallet = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+export const initializeWalletFunding = asyncHandler(
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
@@ -214,7 +273,8 @@ export const withdrawFromWallet = asyncHandler(
     }
 
     const userId = req.user._id;
-    const { amount, bankAccountId, note } = req.body;
+    const { amount } = req.body;
+    const email = req.user.email;
 
     if (!amount || amount < 100) {
       return next(
@@ -222,77 +282,114 @@ export const withdrawFromWallet = asyncHandler(
       );
     }
 
-    // Find bank account
-    const bankAccount = await BankAccount.findOne({
-      _id: bankAccountId,
-      user: userId,
-    });
+    try {
+      const result = await paymentService.initializeWalletFunding(
+        userId.toString(),
+        amount,
+        email
+      );
 
-    if (!bankAccount) {
+      res.status(StatusCodes.OK).json({
+        success: true,
+        message: "Payment initialization successful",
+        data: result,
+      });
+    } catch (error) {
       return next(
-        new AppError("Bank account not found", StatusCodes.NOT_FOUND)
+        new AppError(
+          `Payment initialization failed: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          StatusCodes.BAD_REQUEST
+        )
+      );
+    }
+  }
+);
+
+/**
+ * @desc    Verify wallet funding
+ * @route   GET /api/wallet/fund/verify/:reference
+ * @access  Private
+ */
+export const verifyWalletFunding = asyncHandler(
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    const { reference } = req.params;
+
+    
+    try {
+      const result = await paymentService.verifyPayment(reference);
+      
+      console.log("Verifying payment with reference:", result);
+
+      res.status(StatusCodes.OK).json({
+        success: result.success,
+        message: result.message,
+        transaction: result.transaction,
+      });
+      
+    } catch (error) {
+      return next(
+        new AppError(
+          `Payment verification failed: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          StatusCodes.BAD_REQUEST
+        )
+      );
+    }
+  }
+);
+
+
+/**
+ * @desc    Search users by username, email, or name
+ * @route   GET /api/users/search
+ * @access  Private
+ */
+export const searchWalletUsers = asyncHandler(
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
       );
     }
 
-    // Find wallet
-    const wallet = await Wallet.findOne({ user: userId });
-    if (!wallet) {
-      return next(new AppError("Wallet not found", StatusCodes.NOT_FOUND));
-    }
-
-    // Check if wallet has sufficient balance
-    if (wallet.availableBalance < amount) {
+    const { query } = req.query;
+    
+    if (!query || typeof query !== 'string') {
       return next(
-        new AppError("Insufficient balance", StatusCodes.BAD_REQUEST)
+        new AppError("Search query is required", StatusCodes.BAD_REQUEST)
       );
     }
 
-    // Generate reference
-    const reference = `withdraw_${uuidv4()}`;
-
-    // Create transaction
-    const transaction = await Transaction.create({
-      user: userId,
-      type: TransactionType.WITHDRAWAL,
-      amount,
-      status: TransactionStatus.PENDING,
-      reference,
-      description:
-        note ||
-        `Withdrawal to bank account: ${bankAccount.bankName} - ${bankAccount.accountNumber}`,
-      metadata: {
-        bankAccount: {
-          id: bankAccount._id,
-          bankName: bankAccount.bankName,
-          accountName: bankAccount.accountName,
-          accountNumber: bankAccount.accountNumber,
-        },
-      },
-    });
-
-    // Create notification
-    await notificationService.createNotification(
-      userId.toString(),
-      "Withdrawal Request Submitted",
-      `Your withdrawal request for ₦${amount.toLocaleString()} has been submitted and is pending approval.`,
-      NotificationType.TRANSACTION,
-      "/dashboard/my-transactions",
-      { transactionId: transaction._id }
-    );
-
-    // Update wallet balance
-    wallet.availableBalance -= amount;
-    wallet.pendingBalance += amount;
-    await wallet.save();
+    // Don't include the current user in search results
+    const currentUserId = req.user._id;
+    
+    // Create a regex for case-insensitive search
+    const searchRegex = new RegExp(query, 'i');
+    
+    // Search by username, email, firstName, or lastName
+    const users = await User.find({
+      _id: { $ne: currentUserId }, // Exclude current user
+      $or: [
+        { userName: searchRegex },
+        { email: searchRegex },
+        { firstName: searchRegex },
+        { lastName: searchRegex }
+      ]
+    })
+    .select('_id firstName lastName userName email avatar')
+    .limit(10); // Limit results for performance
 
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Withdrawal request submitted successfully",
-      transaction,
-      wallet,
+      count: users.length,
+      users
     });
   }
 );
+
 
 /**
  * @desc    Transfer money to another user
@@ -300,7 +397,7 @@ export const withdrawFromWallet = asyncHandler(
  * @access  Private
  */
 export const transferMoney = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
@@ -357,35 +454,47 @@ export const transferMoney = asyncHandler(
     // Generate reference
     const reference = `transfer_${uuidv4()}`;
 
-    // Create transaction for sender
-    const senderTransaction = await Transaction.create({
-      user: senderId,
-      type: TransactionType.TRANSFER,
-      amount,
-      status: TransactionStatus.COMPLETED,
-      reference,
-      description:
-        note || `Transfer to ${recipient.firstName} ${recipient.lastName}`,
-      recipient: recipientId,
-    });
-
-    // Create transaction for recipient
-    const recipientTransaction = await Transaction.create({
-      user: recipientId,
-      type: TransactionType.TRANSFER,
-      amount,
-      status: TransactionStatus.COMPLETED,
-      reference,
-      description:
-        note || `Transfer from ${req.user.firstName} ${req.user.lastName}`,
-      sender: senderId,
-    });
-
-    // Use a transaction to update both wallets atomically
+    // Use a transaction to ensure atomicity
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
+      // Create transaction for sender
+      const senderTransaction = await Transaction.create(
+        [
+          {
+            user: senderId, // Add user field
+            type: TransactionType.TRANSFER,
+            amount,
+            status: TransactionStatus.COMPLETED,
+            reference,
+            description:
+              note ||
+              `Transfer to ${recipient.firstName} ${recipient.lastName}`,
+            recipient: recipientId,
+          },
+        ],
+        { session }
+      );
+
+      // Create transaction for recipient
+      const recipientTransaction = await Transaction.create(
+        [
+          {
+            user: recipientId, // Add user field
+            type: TransactionType.TRANSFER,
+            amount,
+            status: TransactionStatus.COMPLETED,
+            reference,
+            description:
+              note ||
+              `Transfer from ${req.user.firstName} ${req.user.lastName}`,
+            sender: senderId,
+          },
+        ],
+        { session }
+      );
+
       // Update sender wallet
       senderWallet.balance -= amount;
       senderWallet.availableBalance -= amount;
@@ -396,46 +505,144 @@ export const transferMoney = asyncHandler(
       recipientWallet.availableBalance += amount;
       await recipientWallet.save({ session });
 
-      // Commit the transaction
+      // Create notification for sender
+      await notificationService.createNotification(
+        senderId.toString(),
+        "Transfer Successful",
+        `You have successfully transferred ₦${amount.toLocaleString()} to ${
+          recipient.firstName
+        } ${recipient.lastName}.`,
+        NotificationType.TRANSACTION,
+        "/dashboard/my-transactions",
+        { transactionId: senderTransaction[0]._id }
+      );
+
+      // Create notification for recipient
+      await notificationService.createNotification(
+        recipientId.toString(),
+        "Transfer Received",
+        `You have received ₦${amount.toLocaleString()} from ${
+          req.user.firstName
+        } ${req.user.lastName}.`,
+        NotificationType.TRANSACTION,
+        "/dashboard/my-transactions",
+        { transactionId: recipientTransaction[0]._id }
+      );
+
       await session.commitTransaction();
+
+      res.status(StatusCodes.OK).json({
+        success: true,
+        message: "Transfer completed successfully",
+        transaction: senderTransaction[0],
+        wallet: senderWallet,
+      });
     } catch (error) {
-      // Abort the transaction on error
       await session.abortTransaction();
-      throw error;
+      return next(
+        new AppError(
+          `Transfer failed: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          StatusCodes.INTERNAL_SERVER_ERROR
+        )
+      );
     } finally {
-      // End the session
       session.endSession();
     }
+  }
+);
 
-    // Create notification for sender
+/**
+ * @desc    Withdraw from wallet
+ * @route   POST /api/wallet/withdraw
+ * @access  Private
+ */
+export const withdrawFromWallet = asyncHandler(
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
+    }
+
+    const userId = req.user._id;
+    const { amount, bankAccountId, note } = req.body;
+
+    if (!amount || amount < 100) {
+      return next(
+        new AppError("Amount must be at least 100", StatusCodes.BAD_REQUEST)
+      );
+    }
+
+    // Find bank account
+    const bankAccount = await BankAccount.findOne({
+      _id: bankAccountId,
+      user: userId,
+    });
+
+    if (!bankAccount) {
+      return next(
+        new AppError("Bank account not found", StatusCodes.NOT_FOUND)
+      );
+    }
+
+    // Find wallet
+    const wallet = await Wallet.findOne({ user: userId });
+    if (!wallet) {
+      return next(new AppError("Wallet not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Check if wallet has sufficient balance
+    if (wallet.availableBalance < amount) {
+      return next(
+        new AppError("Insufficient balance", StatusCodes.BAD_REQUEST)
+      );
+    }
+
+    // Generate reference
+    const reference = `withdraw_${uuidv4()}`;
+
+    // Create transaction
+    const transaction = await Transaction.create({
+      user: userId, // Add user field
+      type: TransactionType.WITHDRAWAL,
+      amount,
+      status: TransactionStatus.PENDING,
+      reference,
+      description:
+        note ||
+        `Withdrawal to bank account: ${bankAccount.bankName} - ${bankAccount.accountNumber}`,
+      metadata: {
+        bankAccount: {
+          id: bankAccount._id,
+          bankName: bankAccount.bankName,
+          accountName: bankAccount.accountName,
+          accountNumber: bankAccount.accountNumber,
+        },
+      },
+    });
+
+    // Create notification
     await notificationService.createNotification(
-      senderId.toString(),
-      "Transfer Successful",
-      `You have successfully transferred ₦${amount.toLocaleString()} to ${
-        recipient.firstName
-      } ${recipient.lastName}.`,
+      userId.toString(),
+      "Withdrawal Request Submitted",
+      `Your withdrawal request for ₦${amount.toLocaleString()} has been submitted and is pending approval.`,
       NotificationType.TRANSACTION,
       "/dashboard/my-transactions",
-      { transactionId: senderTransaction._id }
+      { transactionId: transaction._id }
     );
 
-    // Create notification for recipient
-    await notificationService.createNotification(
-      recipientId.toString(),
-      "Transfer Received",
-      `You have received ₦${amount.toLocaleString()} from ${
-        req.user.firstName
-      } ${req.user.lastName}.`,
-      NotificationType.TRANSACTION,
-      "/dashboard/my-transactions",
-      { transactionId: recipientTransaction._id }
-    );
+    // Update wallet balance
+    wallet.availableBalance -= amount;
+    wallet.pendingBalance += amount;
+    await wallet.save();
 
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Transfer completed successfully",
-      transaction: senderTransaction,
-      wallet: senderWallet,
+      message: "Withdrawal request submitted successfully",
+      transaction,
+      wallet,
     });
   }
 );
@@ -446,7 +653,7 @@ export const transferMoney = asyncHandler(
  * @access  Private
  */
 export const getTransactionById = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
@@ -481,7 +688,7 @@ export const getTransactionById = asyncHandler(
  * @access  Private/Admin
  */
 export const getAllTransactions = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const {
       page = "1",
       limit = "10",
@@ -507,8 +714,8 @@ export const getAllTransactions = asyncHandler(
     }
 
     // Pagination
-    const pageNum = Number.parseInt(page as string, 10);
-    const limitNum = Number.parseInt(limit as string, 10);
+    const pageNum = parseInt(page as string, 10);
+    const limitNum = parseInt(limit as string, 10);
     const skip = (pageNum - 1) * limitNum;
 
     // Get transactions
@@ -541,17 +748,15 @@ export const getAllTransactions = asyncHandler(
  * @access  Private/Admin
  */
 export const updateTransactionStatus = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const { status, note } = req.body;
 
     if (!req.user) {
-      return res
-        .status(400)
-        .json({ status: "fail", message: "User not authenticated" });
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
     }
-
-    const userId = req.user?._id;
 
     if (
       !Object.values(TransactionStatus).includes(status as TransactionStatus)
@@ -579,8 +784,8 @@ export const updateTransactionStatus = asyncHandler(
 
     // Handle status change for different transaction types
     if (oldStatus !== status) {
-      const user = await User.findById(transaction.sender);
-      const wallet = await Wallet.findOne({ user: transaction.sender });
+      const user = await User.findById(transaction.user);
+      const wallet = await Wallet.findOne({ user: transaction.user });
 
       if (!wallet) {
         return next(new AppError("Wallet not found", StatusCodes.NOT_FOUND));
@@ -600,7 +805,7 @@ export const updateTransactionStatus = asyncHandler(
           // Send notification
           if (user) {
             await notificationService.createNotification(
-              transaction.sender?.toString() || "",
+              transaction.user.toString(),
               "Deposit Completed",
               `Your deposit of ₦${transaction.amount.toLocaleString()} has been completed.`,
               NotificationType.TRANSACTION,
@@ -615,7 +820,7 @@ export const updateTransactionStatus = asyncHandler(
           // Send notification
           if (user) {
             await notificationService.createNotification(
-              transaction.sender?.toString() ?? "",
+              transaction.user.toString(),
               "Deposit Failed",
               `Your deposit of ₦${transaction.amount.toLocaleString()} has failed.`,
               NotificationType.TRANSACTION,
@@ -640,7 +845,7 @@ export const updateTransactionStatus = asyncHandler(
           // Send notification
           if (user) {
             await notificationService.createNotification(
-              (transaction.sender?.toString() ?? ""),
+              transaction.user.toString(),
               "Withdrawal Completed",
               `Your withdrawal of ₦${transaction.amount.toLocaleString()} has been completed.`,
               NotificationType.TRANSACTION,
@@ -661,7 +866,7 @@ export const updateTransactionStatus = asyncHandler(
           // Send notification
           if (user) {
             await notificationService.createNotification(
-              transaction.sender ? transaction.sender.toString() : "",
+              transaction.user.toString(),
               `Withdrawal ${
                 status === TransactionStatus.FAILED ? "Failed" : "Cancelled"
               }`,
