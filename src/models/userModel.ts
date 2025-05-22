@@ -16,6 +16,12 @@ export enum AgentRank {
   PLATINUM = "Platinum",
 }
 
+export enum UserStatus {
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+  BLACKLISTED = "blacklisted",
+}
+
 export interface IUser extends Document {
   _id: string;
   firstName: string;
@@ -27,6 +33,7 @@ export interface IUser extends Document {
   avatar?: string;
   address?: string;
   role: UserRole;
+  status: UserStatus;
   isEmailVerified: boolean;
   onboardingCompleted: boolean;
   hasSeenSplash: boolean;
@@ -156,9 +163,17 @@ const userSchema = new Schema<IUser>(
       type: String,
       trim: true,
     },
+    
+      status: {
+        type: String,
+        enum: Object.values(UserStatus),
+      default: UserStatus.ACTIVE, 
+     },
+  
     passwordChangedAt: Date,
     lastLogin: Date,
   },
+  
   {
     timestamps: true,
   }

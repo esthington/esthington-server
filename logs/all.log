@@ -1529,3 +1529,61 @@
 2025-05-22 07:31:56:3156 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-05-22 07:31:56:3156 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-05-22 07:31:56:3156 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 07:52:18:5218 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-22 07:52:19:5219 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 08:07:53:753 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:07:54:754 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:07:54:754 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:07:54:754 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:07:54:754 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:41:01:411 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 08:41:01:411 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 08:41:01:411 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:41:01:411 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:41:02:412 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:41:02:412 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:41:02:412 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:45:56:4556 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-22 08:45:56:4556 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 08:48:45:4845 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-22 08:48:46:4846 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 08:50:28:5028 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:50:29:5029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:50:29:5029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:50:29:5029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:50:29:5029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:04:21:421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:04:21:421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:04:21:421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:04:21:421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:04:21:421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:12:19:1219 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:12:19:1219 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 09:17:29:1729 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:17:29:1729 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 09:21:08:218 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-22 09:21:08:218 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 09:22:15:2215 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-22 09:22:15:2215 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 09:22:17:2217 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-22 09:22:52:2252 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-22 09:22:52:2252 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 09:24:42:2442 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:24:42:2442 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:24:51:2451 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:24:51:2451 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:24:52:2452 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:31:27:3127 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-22 09:31:27:3127 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 09:34:10:3410 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-22 09:34:10:3410 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 09:36:48:3648 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-22 09:36:48:3648 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 09:37:27:3727 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-22 09:37:27:3727 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 09:38:05:385 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-22 09:38:05:385 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 09:40:17:4017 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:40:17:4017 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-22 10:25:48:2548 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-05-22 10:25:48:2548 [32minfo[39m: [32mServer running on port 8000[39m

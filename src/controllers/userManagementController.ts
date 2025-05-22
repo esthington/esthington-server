@@ -12,10 +12,8 @@ export const getAllUsers = asyncHandler(
     const limit = Number.parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
 
-    // Build query
     const query: any = {};
 
-    // Filter by role
     if (
       req.query.role &&
       ["buyer", "agent", "admin"].includes(req.query.role as string)
@@ -23,12 +21,10 @@ export const getAllUsers = asyncHandler(
       query.role = req.query.role;
     }
 
-    // Filter by active status
     if (req.query.active !== undefined) {
       query.active = req.query.active === "true";
     }
 
-    // Filter by verification status
     if (req.query.verified !== undefined) {
       query.verified = req.query.verified === "true";
     }

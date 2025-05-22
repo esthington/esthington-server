@@ -9,13 +9,13 @@ import {
   verifyUser,
   getUserStats,
 } from "../controllers/userManagementController"
-import { UserRole } from "../models/userModel"
+import User, { UserRole } from "../models/userModel"
 
 const router = express.Router()
 
 // Protect all routes
 router.use(protect)
-router.use(restrictTo(UserRole.ADMIN))
+router.use(restrictTo(UserRole.SUPER_ADMIN, UserRole.ADMIN))
 
 router.get("/stats", getUserStats)
 

@@ -348,3 +348,28 @@
 2025-05-22 07:31:56:3156 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-05-22 07:31:56:3156 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-05-22 07:31:56:3156 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:07:53:753 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:07:54:754 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:07:54:754 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:07:54:754 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:07:54:754 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:41:01:411 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:41:01:411 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:41:02:412 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:41:02:412 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:41:02:412 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:50:28:5028 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:50:29:5029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:50:29:5029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:50:29:5029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:50:29:5029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:04:21:421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:04:21:421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:04:21:421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:04:21:421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:04:21:421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:24:42:2442 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:24:42:2442 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:24:51:2451 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:24:51:2451 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 09:24:52:2452 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
