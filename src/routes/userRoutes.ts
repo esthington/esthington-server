@@ -7,57 +7,84 @@ import {
   getUserById,
   updateUser,
   deleteUser,
+  blacklistUser,
+  // activateUser,
+  resetUserPassword,
+  getUserStats,
 } from "../controllers/userController";
 import { protect, restrictTo } from "../middleware/authMiddleware";
 import upload from "../middleware/uploadMiddleware";
 import { UserRole } from "../models/userModel";
 import { validateWithJoi } from "../middleware/validationMiddleware";
-import {
-  updateProfileSchema,
-  changePasswordSchema,
-} from "../validators/authValidators";
+// import {
+//   userUpdateSchema,
+//   passwordChangeSchema,
+// } from "../validators/userValidators";
+
 import { RequestHandler } from "express";
 
 const router = express.Router();
 
-// User routes
+// User routes (accessible by the user themselves)
 router.put(
   "/profile",
   protect,
   upload.single("profileImage") as unknown as RequestHandler,
   updateProfile
 );
+
 router.put(
   "/change-password",
   protect,
   changePassword
 );
+
 router.delete("/", protect, deleteAccount);
 
-// Admin routes
+// Admin routes (accessible only by admins and super admins)
 router.get(
   "/",
   protect,
-  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   getUsers
 );
+
+router.get(
+  "/stats",
+  protect,
+  getUserStats
+);
+
 router.get(
   "/:id",
   protect,
-  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   getUserById
 );
+
 router.put(
   "/:id",
   protect,
-  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  upload.single("profileImage") as unknown as RequestHandler,
   updateUser
 );
-router.delete(
-  "/:id",
+
+router.delete("/:id", protect, restrictTo(UserRole.SUPER_ADMIN), deleteUser);
+
+router.put(
+  "/:id/blacklist",
   protect,
-  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  deleteUser
+  blacklistUser
+);
+
+// router.put(
+//   "/:id/activate",
+//   protect,
+//   activateUser
+// );
+
+router.post(
+  "/:id/reset-password",
+  protect,
+  resetUserPassword
 );
 
 export default router;

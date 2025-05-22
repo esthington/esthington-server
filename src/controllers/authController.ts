@@ -69,6 +69,7 @@ export const registerBuyer = asyncHandler(
     }
 
     const usernameExists = await User.findOne({ userName });
+    
     if (usernameExists) {
       return next(
         new AppError("Username is already taken", StatusCodes.BAD_REQUEST)
@@ -911,7 +912,6 @@ export const resetPassword = asyncHandler(
  */
 export const getCurrentUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-   
     const user = await User.findById(req.user?._id)
       .select("-password")
       .populate("referer", "userName email role"); // Populate the referer field

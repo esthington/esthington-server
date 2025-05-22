@@ -294,6 +294,8 @@ export const getAvailableProperties = asyncHandler(
 export const createInvestment = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
 
+   
+
 
 
     if (!req.user) {
@@ -313,7 +315,7 @@ export const createInvestment = asyncHandler(
       );
     }
 
- 
+   
 
     const {
       title,
@@ -360,6 +362,8 @@ export const createInvestment = asyncHandler(
         )
       );
     }
+
+    console.log("Creating investment...");
 
     if (
       returnType &&
@@ -415,6 +419,9 @@ export const createInvestment = asyncHandler(
       );
     }
 
+    console.log("files", req.files);
+    console.log("body", req.body);
+
     let documents: string[] = [];
 
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
@@ -456,35 +463,6 @@ export const createInvestment = asyncHandler(
       );
     }
 
-
-    console.log("data", {
-      title,
-      description,
-      propertyId,
-      minimumInvestment: Number(minimumInvestment),
-      targetAmount: Number(targetAmount),
-      raisedAmount: 0,
-      returnRate: Number(returnRate),
-      returnType,
-      investmentPeriod: Number(investmentPeriod),
-      payoutFrequency,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      status: status || InvestmentStatus.DRAFT,
-      type,
-      featured: featured === "true",
-      trending: trending === "true",
-      investors: [],
-      totalInvestors: 0,
-      documents,
-      riskLevel: riskLevel || "medium",
-      location,
-      createdBy: req.user.id,
-      maxInvestors: maxInvestors ? Number(maxInvestors) : undefined,
-      investmentPlans: parsedInvestmentPlans,
-      durations: parsedDurations,
-      amenities: parsedAmenities,
-    });
 
     const investment = await Investment.create({
       title,

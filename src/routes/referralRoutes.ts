@@ -1,4 +1,4 @@
-import express from "express"
+import express from "express";
 import {
   getUserReferrals,
   generateReferralLink,
@@ -7,31 +7,49 @@ import {
   getAgentRankInfo,
   processReferral,
   verifyReferralCode,
-  getReferralStats, // Added import for getReferralStats
-} from "../controllers/referralController"
-import { protect, restrictTo } from "../middleware/authMiddleware"
-import { processReferralValidator } from "../utils/validators"
-import { UserRole } from "../models/userModel"
-import { validate } from "../middleware/validationMiddleware" // Added import for validate
+  getReferralStats,
+  // Admin-specific functions
+  getAllReferrals,
+  getReferralById,
+  getRefereesByReferrerId,
+  getReferralCommissionHistory,
+  getReferralActivityLog,
+  updateReferralStatus,
+  deleteReferral,
+} from "../controllers/referralController";
+import { protect } from "../middleware/authMiddleware";
 
-const router = express.Router()
+const router = express.Router();
 
 // Public routes
-router.get("/verify/:code", verifyReferralCode)
+router.get("/verify/:code", verifyReferralCode);
 
-// Protected routes
-router.use(protect)
+// User referral routes - apply protect middleware to each route individually
+router.get("/", protect, getUserReferrals);
+router.get("/stats", protect, getReferralStats);
+router.post("/generate-link", protect, generateReferralLink);
+router.get("/earnings", protect, getReferralEarnings);
+router.get("/commission-rates", protect, getReferralCommissionRates);
 
-router.get("/", getUserReferrals)
-router.get("/stats", getReferralStats)
-router.post("/generate-link", generateReferralLink)
-router.get("/earnings", getReferralEarnings)
-router.get("/commission-rates", getReferralCommissionRates)
-router.get("/agent-rank", restrictTo(UserRole.AGENT), getAgentRankInfo)
-router.post(
-  "/process",
-  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  processReferral,
-)
+// Agent-specific routes
+router.get("/agent-rank", protect, getAgentRankInfo);
 
-export default router
+// Admin routes
+router.post("/process", protect, processReferral);
+
+// Admin-only routes
+router.get("/admin/referrals", protect, getAllReferrals);
+
+router.get("/:id", protect, getReferralById);
+
+router.get("/referrer/:id/referees", protect, getRefereesByReferrerId);
+
+router.get("/:id/commissions", protect, getReferralCommissionHistory);
+
+router.get("/:id/activity", protect, getReferralActivityLog);
+
+router.patch("/:id/status", protect, updateReferralStatus);
+
+router.delete("/:id", protect, deleteReferral);
+
+export default router;
