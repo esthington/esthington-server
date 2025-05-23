@@ -348,6 +348,7 @@
 2025-05-22 07:31:56:3156 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-05-22 07:31:56:3156 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-05-22 07:31:56:3156 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+<<<<<<< HEAD
 2025-05-22 08:07:53:753 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-05-22 08:07:54:754 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-05-22 08:07:54:754 [31merror[39m: [31mJWT verification error: jwt malformed[39m
@@ -373,3 +374,331 @@
 2025-05-22 09:24:51:2451 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
 2025-05-22 09:24:51:2451 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
 2025-05-22 09:24:52:2452 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+=======
+2025-05-22 07:37:43:3743 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-05-22 07:49:29:4929 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 07:49:29:4929 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 07:49:29:4929 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 07:49:29:4929 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 07:49:29:4929 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:14:46:1446 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:14:46:1446 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:14:46:1446 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:14:46:1446 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:14:46:1446 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:15:21:1521 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:15:21:1521 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:15:21:1521 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:15:22:1522 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:15:22:1522 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:15:48:1548 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:15:49:1549 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:15:49:1549 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:15:49:1549 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:15:49:1549 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:16:34:1634 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:16:34:1634 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:16:34:1634 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:16:35:1635 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:16:35:1635 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:10:1910 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:10:1910 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:10:1910 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:10:1910 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:10:1910 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:23:1923 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:23:1923 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:23:1923 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:23:1923 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:23:1923 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:48:1948 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:48:1948 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:48:1948 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:48:1948 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:19:48:1948 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:17:2017 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:17:2017 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:17:2017 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:18:2018 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:18:2018 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:24:2024 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:24:2024 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:24:2024 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:24:2024 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:24:2024 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:28:2028 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:28:2028 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:29:2029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:29:2029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:29:2029 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:33:2033 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:33:2033 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:33:2033 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:33:2033 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:33:2033 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:38:2038 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:38:2038 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:39:2039 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:39:2039 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:39:2039 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:55:2055 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:56:2056 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:56:2056 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:56:2056 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:20:56:2056 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:21:16:2116 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:21:16:2116 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:21:16:2116 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:21:16:2116 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:21:16:2116 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:21:34:2134 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:21:34:2134 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:21:34:2134 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:21:34:2134 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:21:34:2134 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:18:2518 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:18:2518 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:18:2518 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:19:2519 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:19:2519 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:25:2525 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:25:2525 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:25:2525 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:25:2525 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:25:2525 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:50:2550 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:50:2550 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:51:2551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:51:2551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:25:51:2551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:26:25:2625 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:26:25:2625 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:26:25:2625 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:26:25:2625 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:26:25:2625 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:26:44:2644 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:26:44:2644 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:26:44:2644 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:26:44:2644 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:26:44:2644 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:22:2822 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:22:2822 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:23:2823 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:23:2823 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:23:2823 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:30:2830 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:30:2830 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:30:2830 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:30:2830 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:30:2830 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:34:2834 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:34:2834 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:34:2834 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:35:2835 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:35:2835 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:50:2850 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:50:2850 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:50:2850 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:50:2850 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:28:50:2850 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:07:297 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:07:297 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:07:297 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:07:297 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:07:297 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:12:2912 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:12:2912 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:12:2912 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:12:2912 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:13:2913 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:14:2914 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:14:2914 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:14:2914 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:14:2914 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:29:15:2915 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:43:3043 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:43:3043 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:43:3043 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:43:3043 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:43:3043 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:50:3050 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:50:3050 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:50:3050 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:50:3050 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:50:3050 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:58:3058 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:58:3058 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:58:3058 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:59:3059 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:30:59:3059 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:06:316 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:06:316 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:06:316 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:06:316 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:06:316 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:12:3112 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:12:3112 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:12:3112 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:12:3112 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:12:3112 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:14:3114 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:14:3114 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:14:3114 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:14:3114 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:31:14:3114 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:32:36:3236 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:32:36:3236 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:32:36:3236 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:32:36:3236 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:32:36:3236 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:08:338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:08:338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:08:338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:08:338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:08:338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:13:3313 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:13:3313 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:13:3313 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:13:3313 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:13:3313 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:15:3315 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:15:3315 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:15:3315 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:15:3315 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:15:3315 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:25:3325 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:25:3325 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:25:3325 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:25:3325 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:25:3325 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:33:3333 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:33:3333 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:33:3333 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:33:3333 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:33:3333 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:37:3337 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:37:3337 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:37:3337 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:37:3337 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:37:3337 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:46:3346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:46:3346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:46:3346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:46:3346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:33:46:3346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:34:23:3423 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:34:23:3423 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:34:23:3423 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:34:23:3423 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:34:24:3424 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:34:35:3435 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:34:35:3435 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:34:35:3435 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:34:35:3435 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:34:35:3435 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:35:30:3530 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:35:30:3530 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:35:30:3530 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:35:30:3530 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:35:30:3530 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:37:14:3714 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:37:14:3714 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:37:14:3714 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:37:14:3714 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:37:14:3714 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:37:14:3714 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:37:15:3715 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:37:15:3715 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:37:15:3715 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 08:37:15:3715 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:15:21:1521 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:15:21:1521 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:15:21:1521 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:15:22:1522 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:15:22:1522 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 09:31:49:3149 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 09:31:49:3149 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 09:31:50:3150 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 09:31:50:3150 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 09:31:50:3150 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 09:31:50:3150 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 09:31:50:3150 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 09:31:50:3150 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 09:31:50:3150 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 09:31:50:3150 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 09:31:50:3150 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-22 11:15:25:1525 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 11:15:26:1526 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 11:15:28:1528 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 11:15:34:1534 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 11:15:34:1534 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 11:15:34:1534 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 11:15:34:1534 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 11:15:34:1534 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 11:15:34:1534 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 11:15:34:1534 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 11:15:34:1534 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 11:15:35:1535 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 11:15:35:1535 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 11:16:13:1613 [31merror[39m: [31mError connecting to MongoDB: querySrv ESERVFAIL _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-05-22 11:16:52:1652 [31merror[39m: [31mError connecting to MongoDB: querySrv ESERVFAIL _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-05-22 15:10:27:1027 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 15:10:29:1029 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 15:10:29:1029 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 15:10:44:1044 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 15:10:45:1045 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 15:10:45:1045 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 15:10:45:1045 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 15:11:09:119 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 15:11:09:119 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 15:11:09:119 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-22 16:17:00:170 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m
+2025-05-22 16:17:00:170 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m
+2025-05-22 16:17:00:170 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m
+2025-05-22 16:17:30:1730 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 32134ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:17:30:1730 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 32134ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:17:30:1730 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 32134ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:18:01:181 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30149ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:18:01:181 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30149ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:18:31:1831 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30155ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:18:31:1831 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30155ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:19:01:191 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 34272ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:30:27:3027 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30229ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:30:28:3028 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m
+2025-05-22 16:30:28:3028 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m
+2025-05-22 16:30:57:3057 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 32188ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:30:58:3058 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 32188ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:30:58:3058 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 32188ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:31:27:3127 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30168ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:31:28:3128 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30168ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:31:28:3128 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30168ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:31:29:3129 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30168ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:31:58:3158 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30153ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:31:59:3159 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30153ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:32:00:320 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30153ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:32:01:321 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30153ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:32:01:321 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30153ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:32:31:3231 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 35062ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:32:31:3231 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 35062ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:32:31:3231 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 35062ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:33:01:331 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30152ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:33:01:331 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30152ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:33:31:3331 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30173ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:33:31:3331 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30173ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:34:01:341 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 33241ms (connectTimeoutMS: 30000)[39m
+2025-05-22 16:40:34:4034 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 16:40:34:4034 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 16:40:34:4034 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 16:40:34:4034 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 16:40:34:4034 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 16:40:34:4034 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 16:40:34:4034 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 16:40:34:4034 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 16:40:35:4035 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-22 16:40:35:4035 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+>>>>>>> 091a044 (feat: update)
