@@ -29,7 +29,10 @@ const router = express.Router();
 router.put(
   "/profile",
   protect,
-  upload.single("profileImage") as unknown as RequestHandler,
+  upload.fields([
+    { name: 'profileImage', maxCount: 1 },
+    { name: 'validID', maxCount: 1 }
+  ]),
   updateProfile
 );
 

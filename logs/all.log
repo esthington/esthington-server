@@ -1958,3 +1958,34 @@
 2025-05-22 17:46:48:4648 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
 2025-05-22 17:46:48:4648 [32minfo[39m: [32mServer running on port 8000[39m
 >>>>>>> 091a044 (feat: update)
+2025-05-23 09:18:11:1811 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-23 09:18:11:1811 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 10:55:45:5545 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-23 10:55:45:5545 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 11:03:01:31 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-23 11:03:01:31 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 11:20:03:203 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-23 11:20:03:203 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 11:27:30:2730 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-23 11:27:30:2730 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 11:30:00:300 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-23 11:30:00:300 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 11:36:15:3615 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-23 11:36:15:3615 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 14:12:30:1230 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-23 14:12:30:1230 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 14:25:54:2554 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-23 14:25:54:2554 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 15:04:00:40 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30000ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:04:00:40 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30000ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:04:00:40 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30000ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:04:30:430 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 29999ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:04:30:430 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 29999ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:04:30:430 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 29999ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:13:36:1336 [31merror[39m: [31mError connecting to MongoDB: querySrv ETIMEOUT _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-05-23 15:15:47:1547 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-23 15:15:47:1547 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 15:17:20:1720 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-05-23 15:17:20:1720 [32minfo[39m: [32mServer running on port 8000[39m
+2025-05-23 15:30:45:3045 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-05-23 15:30:45:3045 [32minfo[39m: [32mServer running on port 8000[39m

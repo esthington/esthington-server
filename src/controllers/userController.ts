@@ -11,8 +11,24 @@ interface RequestWithFile extends Request {
 }
 
 // Update user profile
+// Update user profile
 export const updateProfile = asyncHandler(async (req: RequestWithFile, res: Response, next: NextFunction) => {
-  const { firstName, lastName, email, phone, address } = req.body
+  const { 
+    firstName, 
+    lastName, 
+    email, 
+    phone, 
+    address,
+    gender,
+    country,
+    stateOfOrigin,
+    city,
+    nextOfKinName,
+    nextOfKinAddress,
+    nextOfKinPhone
+  } = req.body
+
+  console.log("Request body:", req.body)
 
   if (!req.user) {
     return next(new AppError("User not authenticated", StatusCodes.UNAUTHORIZED))
@@ -28,24 +44,43 @@ export const updateProfile = asyncHandler(async (req: RequestWithFile, res: Resp
     }
   }
 
+  // Create update object with all fields
+  const updateData: any = {
+    firstName: firstName || req.user.firstName,
+    lastName: lastName || req.user.lastName,
+    email: email || req.user.email,
+    phone: phone || req.user.phone,
+    address: address || req.user.address,
+    gender: gender || req.user.gender,
+    country: country || req.user.country,
+    stateOfOrigin: stateOfOrigin || req.user.stateOfOrigin,
+    city: city || req.user.city,
+    nextOfKinName: nextOfKinName || req.user.nextOfKinName,
+    nextOfKinAddress: nextOfKinAddress || req.user.nextOfKinAddress,
+    nextOfKinPhone: nextOfKinPhone || req.user.nextOfKinPhone
+  }
+
+  // Handle file uploads
   // Upload profile image if provided
-  let profileImage = req.user.profileImage
-  if (req.file) {
-    const result = await uploadToCloudinary(req.file.path)
-    profileImage = result.secure_url
+  if (req.files && 'profileImage' in req.files) {
+    const profileImageFile = (req.files as any).profileImage[0]
+    const result = await uploadToCloudinary(profileImageFile.path)
+    updateData.profileImage = result.secure_url
+    // Also update avatar for consistency
+    updateData.avatar = result.secure_url
+  }
+
+  // Upload validID if provided
+  if (req.files && 'validID' in req.files) {
+    const validIDFile = (req.files as any).validID[0]
+    const result = await uploadToCloudinary(validIDFile.path)
+    updateData.validID = result.secure_url
   }
 
   // Update user
   const updatedUser = await User.findByIdAndUpdate(
     userId,
-    {
-      firstName: firstName || req.user.firstName,
-      lastName: lastName || req.user.lastName,
-      email: email || req.user.email,
-      phone: phone || req.user.phone,
-      address: address || req.user.address,
-      profileImage,
-    },
+    updateData,
     { new: true, runValidators: true },
   ).select("-password -refreshToken")
 

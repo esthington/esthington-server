@@ -22,6 +22,12 @@ export enum UserStatus {
   BLACKLISTED = "blacklisted",
 }
 
+export enum Gender {
+  MALE = "Male",
+  FEMALE = "Female",
+  OTHER = "Other",
+}
+
 export interface IUser extends Document {
   _id: string;
   firstName: string;
@@ -49,6 +55,14 @@ export interface IUser extends Document {
   referer?: mongoose.Types.ObjectId | string; // Added referer field
   agentRank?: AgentRank;
   businessName?: string;
+  city?: string;
+  gender?: Gender;
+  country?: string;
+  stateOfOrigin?: string;
+  validID?: string;
+  nextOfKinName?: string;
+  nextOfKinAddress?: string;
+  nextOfKinPhone?: string;
   passwordChangedAt: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -163,17 +177,45 @@ const userSchema = new Schema<IUser>(
       type: String,
       trim: true,
     },
-    
-      status: {
-        type: String,
-        enum: Object.values(UserStatus),
-      default: UserStatus.ACTIVE, 
-     },
-  
+    // New optional fields from the form
+    gender: {
+      type: String,
+      enum: Object.values(Gender),
+      trim: true,
+    },
+    country: {
+      type: String,
+      trim: true,
+    },
+    stateOfOrigin: {
+      type: String,
+      trim: true,
+    },
+    validID: {
+      type: String, // Store the file path or URL
+    },
+    nextOfKinName: {
+      type: String,
+      trim: true,
+    },
+    nextOfKinAddress: {
+      type: String,
+      trim: true,
+    },
+    nextOfKinPhone: {
+      type: String,
+      trim: true,
+    },
+    status: {
+      type: String,
+      enum: Object.values(UserStatus),
+      default: UserStatus.ACTIVE,
+    },
+
     passwordChangedAt: Date,
     lastLogin: Date,
   },
-  
+
   {
     timestamps: true,
   }

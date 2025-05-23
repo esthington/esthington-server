@@ -702,3 +702,10 @@
 2025-05-22 16:40:35:4035 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-05-22 16:40:35:4035 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 >>>>>>> 091a044 (feat: update)
+2025-05-23 15:04:00:40 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30000ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:04:00:40 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30000ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:04:00:40 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30000ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:04:30:430 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 29999ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:04:30:430 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 29999ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:04:30:430 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 29999ms (connectTimeoutMS: 30000)[39m
+2025-05-23 15:13:36:1336 [31merror[39m: [31mError connecting to MongoDB: querySrv ETIMEOUT _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
