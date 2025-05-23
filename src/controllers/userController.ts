@@ -28,8 +28,6 @@ export const updateProfile = asyncHandler(async (req: RequestWithFile, res: Resp
     nextOfKinPhone
   } = req.body
 
-  console.log("Request body:", req.body)
-
   if (!req.user) {
     return next(new AppError("User not authenticated", StatusCodes.UNAUTHORIZED))
   }
