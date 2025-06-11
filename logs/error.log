@@ -709,3 +709,458 @@
 2025-05-23 15:04:30:430 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 29999ms (connectTimeoutMS: 30000)[39m
 2025-05-23 15:04:30:430 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 29999ms (connectTimeoutMS: 30000)[39m
 2025-05-23 15:13:36:1336 [31merror[39m: [31mError connecting to MongoDB: querySrv ETIMEOUT _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-05-24 17:31:27:3127 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-24 17:31:28:3128 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-24 17:31:28:3128 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-24 17:31:28:3128 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-24 17:31:28:3128 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-24 17:31:28:3128 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-24 17:31:28:3128 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-24 17:31:28:3128 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-24 17:31:28:3128 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-24 17:31:28:3128 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 11:55:00:550 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 11:55:00:550 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 11:55:02:552 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 11:55:02:552 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 11:55:02:552 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 11:55:02:552 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 11:55:02:552 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 11:55:02:552 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 11:55:02:552 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 11:55:02:552 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:01:39:139 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-26 12:01:39:139 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-26 12:01:39:139 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-26 12:01:39:139 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-26 12:01:40:140 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-26 12:01:41:141 [31merror[39m: [31mJWT verification error: jwt expired[39m
+2025-05-26 12:12:39:1239 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:12:39:1239 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:12:39:1239 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:12:39:1239 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:12:39:1239 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:12:47:1247 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:12:47:1247 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:12:47:1247 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:12:47:1247 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:12:47:1247 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:26:28:2628 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:26:28:2628 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:26:28:2628 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:26:28:2628 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 12:26:28:2628 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:19:1619 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:19:1619 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:19:1619 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:19:1619 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:20:1620 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:20:1620 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:20:1620 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:20:1620 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:20:1620 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:20:1620 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:23:1623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:23:1623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:23:1623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:23:1623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:23:1623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:23:1623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:23:1623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:23:1623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:23:1623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:16:23:1623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:21:02:212 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:21:02:212 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:21:02:212 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:21:03:213 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:21:03:213 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:21:23:2123 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:21:23:2123 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:21:23:2123 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:21:23:2123 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 13:21:23:2123 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 14:20:42:2042 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30150ms (connectTimeoutMS: 30000)[39m
+2025-05-26 14:20:42:2042 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30150ms (connectTimeoutMS: 30000)[39m
+2025-05-26 14:20:42:2042 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30150ms (connectTimeoutMS: 30000)[39m
+2025-05-26 14:21:12:2112 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30141ms (connectTimeoutMS: 30000)[39m
+2025-05-26 14:21:12:2112 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30141ms (connectTimeoutMS: 30000)[39m
+2025-05-26 14:21:12:2112 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30141ms (connectTimeoutMS: 30000)[39m
+2025-05-26 14:21:42:2142 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30157ms (connectTimeoutMS: 30000)[39m
+2025-05-26 14:21:42:2142 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30157ms (connectTimeoutMS: 30000)[39m
+2025-05-26 14:22:12:2212 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30164ms (connectTimeoutMS: 30000)[39m
+2025-05-26 14:22:12:2212 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30164ms (connectTimeoutMS: 30000)[39m
+2025-05-26 14:22:42:2242 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30227ms (connectTimeoutMS: 30000)[39m
+2025-05-26 15:58:17:5817 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-05-26 16:58:31:5831 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 16:58:31:5831 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 16:58:31:5831 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 16:58:31:5831 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 16:58:31:5831 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 16:58:36:5836 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 16:58:36:5836 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 16:58:36:5836 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 16:58:36:5836 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 16:58:36:5836 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 17:02:46:246 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 17:02:46:246 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 17:02:46:246 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 17:02:46:246 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 17:02:46:246 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 17:02:52:252 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 17:02:52:252 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 17:02:52:252 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 17:02:52:252 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-26 17:02:52:252 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:46:43:4643 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:46:43:4643 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:46:43:4643 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:46:43:4643 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:46:43:4643 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:48:03:483 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:48:03:483 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:48:03:483 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:48:03:483 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:48:03:483 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:48:04:484 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:48:04:484 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:48:04:484 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:48:04:484 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 11:48:04:484 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-05-28 13:44:38:4438 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30000ms (connectTimeoutMS: 30000)[39m
+2025-05-28 13:44:39:4439 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30000ms (connectTimeoutMS: 30000)[39m
+2025-05-28 13:44:39:4439 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30000ms (connectTimeoutMS: 30000)[39m
+2025-06-01 16:50:59:5059 [31merror[39m: [31mError connecting to MongoDB: querySrv ESERVFAIL _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-01 16:52:59:5259 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:52:59:5259 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:52:59:5259 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:52:59:5259 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:52:59:5259 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:06:536 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:07:537 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:07:537 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:07:537 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:07:537 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:43:5343 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:43:5343 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:43:5343 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:43:5343 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:43:5343 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:52:5352 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:52:5352 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:52:5352 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:52:5352 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:52:5352 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:58:5358 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:58:5358 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:58:5358 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:58:5358 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:53:58:5358 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:21:5421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:21:5421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:21:5421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:21:5421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:21:5421 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:35:5435 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:35:5435 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:35:5435 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:35:5435 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:35:5435 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:46:5446 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:46:5446 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:46:5446 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:46:5446 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:46:5446 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:50:5450 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:50:5450 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:50:5450 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:50:5450 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:54:50:5450 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:01:561 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:01:561 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:01:561 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:01:561 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:01:561 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:26:5626 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:26:5626 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:26:5626 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:26:5626 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:26:5626 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:51:5651 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:51:5651 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:51:5651 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:51:5651 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:56:52:5652 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:20:5720 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:20:5720 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:20:5720 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:20:5720 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:20:5720 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:49:5749 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:49:5749 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:49:5749 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:49:5749 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:49:5749 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:59:5759 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:59:5759 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:59:5759 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:59:5759 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:57:59:5759 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:01:581 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:01:581 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:01:581 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:01:581 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:01:581 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:19:5819 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:19:5819 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:19:5819 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:19:5819 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:19:5819 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:38:5838 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:38:5838 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:38:5838 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:38:5838 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:38:5838 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:44:5844 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:44:5844 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:44:5844 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:44:5844 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:44:5844 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:52:5852 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:52:5852 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:52:5852 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:52:5852 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:52:5852 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:56:5856 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:56:5856 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:56:5856 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:56:5856 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:58:56:5856 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:59:21:5921 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:59:21:5921 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:59:21:5921 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:59:21:5921 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 16:59:21:5921 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 17:03:45:345 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 17:03:46:346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 17:03:46:346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 17:03:46:346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 17:03:46:346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 19:15:15:1515 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-01 19:16:26:1626 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-01 19:19:10:1910 [31merror[39m: [31mError connecting to MongoDB: querySrv ESERVFAIL _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-01 21:06:00:60 [31merror[39m: [31mError connecting to MongoDB: querySrv ESERVFAIL _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-01 21:27:09:279 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:27:11:2711 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:27:11:2711 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:27:41:2741 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:27:41:2741 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:27:41:2741 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:28:11:2811 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:28:11:2811 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:28:41:2841 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:28:41:2841 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:29:11:2911 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-01 21:36:27:3627 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 21:36:27:3627 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 21:36:27:3627 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 21:36:27:3627 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-01 21:36:27:3627 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 00:07:10:710 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 00:07:10:710 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 00:07:10:710 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 00:07:10:710 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 00:07:10:710 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 07:59:21:5921 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 07:59:21:5921 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 07:59:21:5921 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 07:59:21:5921 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 07:59:21:5921 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 10:58:45:5845 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-06-02 11:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 11:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 11:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 11:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 11:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 11:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 11:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 11:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 11:31:01:311 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-02 11:31:02:312 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:49:27:4927 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:49:27:4927 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:49:27:4927 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:49:27:4927 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:49:27:4927 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:51:40:5140 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:51:40:5140 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:51:40:5140 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:51:40:5140 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:51:40:5140 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 20:55:49:5549 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-03 21:12:43:1243 [31merror[39m: [31mPayment verification failed: Payment verification failed[39m
+2025-06-03 22:28:17:2817 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 22:28:18:2818 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 22:28:18:2818 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 22:28:18:2818 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 22:28:18:2818 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 22:55:15:5515 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 22:55:15:5515 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 22:55:15:5515 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 22:55:15:5515 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-03 22:55:15:5515 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-04 06:59:17:5917 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-04 06:59:17:5917 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-04 06:59:17:5917 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-04 06:59:17:5917 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-04 06:59:17:5917 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-04 06:59:17:5917 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-04 06:59:17:5917 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-04 06:59:17:5917 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-04 06:59:17:5917 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-04 06:59:17:5917 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-05 11:10:12:1012 [31merror[39m: [31mError connecting to MongoDB: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-06-06 05:04:15:415 [31merror[39m: [31mAuth middleware error: read ETIMEDOUT[39m
+2025-06-06 05:04:19:419 [31merror[39m: [31mAuth middleware error: read ETIMEDOUT[39m
+2025-06-06 05:14:22:1422 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:14:25:1425 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:14:25:1425 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:14:25:1425 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:14:26:1426 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:14:26:1426 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:14:26:1426 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:14:26:1426 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:14:26:1426 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:14:26:1426 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:17:28:1728 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:17:28:1728 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:17:29:1729 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:17:30:1730 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:17:31:1731 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:39:05:395 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m
+2025-06-06 05:46:46:4646 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:46:47:4647 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:46:47:4647 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:46:48:4648 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-06 05:46:48:4648 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 07:12:11:1211 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-06-09 09:48:50:4850 [31merror[39m: [31mError connecting to MongoDB: querySrv ETIMEOUT _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-09 10:22:26:2226 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 10:22:26:2226 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 10:22:26:2226 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 10:22:26:2226 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 10:22:26:2226 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 10:22:26:2226 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 10:22:26:2226 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 10:22:26:2226 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 10:22:26:2226 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 10:22:26:2226 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 12:45:07:457 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-09 12:45:07:457 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-09 12:45:07:457 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-09 12:45:37:4537 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-09 12:45:37:4537 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-09 12:45:37:4537 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-09 12:46:07:467 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-09 12:46:07:467 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-09 12:46:37:4637 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-09 12:46:37:4637 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-09 12:57:42:5742 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 12:57:42:5742 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 12:57:42:5742 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 12:57:42:5742 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 12:57:42:5742 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 12:58:12:5812 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 32899ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:58:12:5812 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 32899ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:58:12:5812 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 32899ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:58:34:5834 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30158ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:58:34:5834 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30158ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:58:34:5834 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30158ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:58:34:5834 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30158ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:59:14:5914 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30157ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:59:14:5914 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30157ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:59:14:5914 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30157ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:59:44:5944 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30168ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:59:44:5944 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30168ms (connectTimeoutMS: 30000)[39m
+2025-06-09 12:59:44:5944 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30168ms (connectTimeoutMS: 30000)[39m
+2025-06-09 13:00:14:014 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30164ms (connectTimeoutMS: 30000)[39m
+2025-06-09 13:00:14:014 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30164ms (connectTimeoutMS: 30000)[39m
+2025-06-09 13:00:44:044 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30160ms (connectTimeoutMS: 30000)[39m
+2025-06-09 13:00:44:044 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30160ms (connectTimeoutMS: 30000)[39m
+2025-06-09 13:01:14:114 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30139ms (connectTimeoutMS: 30000)[39m
+2025-06-09 13:03:27:327 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:27:327 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:27:327 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:27:327 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:27:327 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:27:327 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:27:327 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:27:327 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:27:327 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:27:327 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:28:328 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:28:328 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:28:328 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:28:328 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:28:328 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:38:338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:38:338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:38:338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:38:338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 13:03:38:338 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 14:26:01:261 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m
+2025-06-09 14:26:01:261 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m
+2025-06-09 14:26:01:261 [31merror[39m: [31mAuth middleware error: connection <monitor> to 65.62.2.180:27017 timed out[39m
+2025-06-09 14:26:25:2625 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 31383ms (connectTimeoutMS: 30000)[39m
+2025-06-09 14:26:28:2628 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 31383ms (connectTimeoutMS: 30000)[39m
+2025-06-09 14:26:28:2628 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 31383ms (connectTimeoutMS: 30000)[39m
+2025-06-09 14:26:28:2628 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 31383ms (connectTimeoutMS: 30000)[39m
+2025-06-09 14:26:58:2658 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30152ms (connectTimeoutMS: 30000)[39m
+2025-06-09 14:26:58:2658 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30152ms (connectTimeoutMS: 30000)[39m
+2025-06-09 14:26:58:2658 [31merror[39m: [31mAuth middleware error: Socket 'secureConnect' timed out after 30152ms (connectTimeoutMS: 30000)[39m
+2025-06-09 14:27:01:271 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 14:27:01:271 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 14:27:01:271 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 14:27:02:272 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 14:27:02:272 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-09 14:28:35:2835 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-06-09 14:29:34:2934 [31merror[39m: [31mError connecting to MongoDB: Could not connect to any servers in your MongoDB Atlas cluster. One common reason is that you're trying to access the database from an IP that isn't whitelisted. Make sure your current IP address is on your Atlas cluster's IP whitelist: https://www.mongodb.com/docs/atlas/security-whitelist/[39m
+2025-06-09 14:38:37:3837 [31merror[39m: [31mError connecting to MongoDB: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-09 14:40:20:4020 [31merror[39m: [31mError connecting to MongoDB: querySrv ESERVFAIL _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-10 16:42:59:4259 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:42:59:4259 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:42:59:4259 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:42:59:4259 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:43:00:430 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:57:54:5754 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 16:58:08:588 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 16:58:08:588 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 16:58:08:588 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 16:58:38:5838 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 16:58:38:5838 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 16:58:38:5838 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 16:58:40:5840 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:58:40:5840 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:58:40:5840 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:58:40:5840 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:58:40:5840 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:58:40:5840 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:58:40:5840 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:58:40:5840 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:58:41:5841 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 16:58:41:5841 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-10 18:45:59:4559 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 18:46:03:463 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 18:46:16:4616 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 18:46:17:4617 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 18:46:17:4617 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 18:46:17:4617 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 18:46:43:4643 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 18:46:44:4644 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 18:46:44:4644 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-10 18:46:44:4644 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
+2025-06-11 00:21:01:211 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-11 00:21:02:212 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-11 00:21:02:212 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-11 00:21:02:212 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-11 00:21:02:212 [31merror[39m: [31mJWT verification error: jwt malformed[39m

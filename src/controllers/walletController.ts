@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import { v4 as uuidv4 } from "uuid";
 import mongoose from "mongoose";
@@ -8,7 +8,6 @@ import {
   TransactionType,
   TransactionStatus,
   PaymentMethod,
-  type ITransaction,
 } from "../models/walletModel";
 import crypto from "crypto";
 import User from "../models/userModel";
@@ -37,6 +36,7 @@ export const getWallet = asyncHandler(
       );
     }
 
+
     const userId = req.user._id;
 
     // Find or create wallet
@@ -63,49 +63,67 @@ export const getWallet = asyncHandler(
  * @route   POST /api/wallet/webhook/paystack
  * @access  Public
  */
-export const handlePaystackWebhook = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  console.log("Received Paystack webhook")
+export const handlePaystackWebhook = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    console.log("Received Paystack webhook");
 
-  // Validate webhook signature (optional but recommended)
-  const hash = crypto
-    .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY || "")
-    .update(JSON.stringify(req.body))
-    .digest("hex")
+    // Validate webhook signature (optional but recommended)
+    const hash = crypto
+      .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY || "")
+      .update(JSON.stringify(req.body))
+      .digest("hex");
 
-  const signature = req.headers["x-paystack-signature"]
+    const signature = req.headers["x-paystack-signature"];
 
-  if (signature !== hash) {
-    console.error("Invalid webhook signature")
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      success: false,
-      message: "Invalid signature",
-    })
+    if (signature !== hash) {
+      console.error("Invalid webhook signature");
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: "Invalid signature",
+      });
+    }
+
+    try {
+      const reference = req.body.data?.reference;
+      console.log("Processing webhook payload", {
+        event: req.body.event,
+        reference: reference,
+      });
+
+      // Check if transaction already exists
+      if (reference) {
+        const existingTransaction = await Transaction.findOne({ reference });
+        if (
+          existingTransaction &&
+          existingTransaction.status === TransactionStatus.COMPLETED
+        ) {
+          console.log("Transaction already processed:", existingTransaction);
+          return res.status(StatusCodes.OK).json({
+            success: true,
+            message: "Transaction already processed",
+          });
+        }
+      }
+
+      const result = await paymentService.processPaystackWebhook(req.body);
+
+      // Always return 200 to Paystack, even if there's an error
+      // This prevents Paystack from retrying the webhook
+      return res.status(StatusCodes.OK).json({
+        success: result.success,
+        message: result.message,
+      });
+    } catch (error) {
+      console.error("Webhook processing error:", error);
+
+      // Always return 200 to Paystack
+      return res.status(StatusCodes.OK).json({
+        success: false,
+        message: "Webhook processing failed",
+      });
+    }
   }
-
-  try {
-    console.log("Processing webhook payload", {
-      event: req.body.event,
-      reference: req.body.data?.reference,
-    })
-
-    const result = await paymentService.processPaystackWebhook(req.body)
-
-    // Always return 200 to Paystack, even if there's an error
-    // This prevents Paystack from retrying the webhook
-    return res.status(StatusCodes.OK).json({
-      success: result.success,
-      message: result.message,
-    })
-  } catch (error) {
-    console.error("Webhook processing error:", error)
-
-    // Always return 200 to Paystack
-    return res.status(StatusCodes.OK).json({
-      success: false,
-      message: "Webhook processing failed",
-    })
-  }
-})
+);
 
 /**
  * @desc    Get user transactions
@@ -119,6 +137,7 @@ export const getTransactions = asyncHandler(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
       );
     }
+    
 
     const userId = req.user._id;
 
@@ -146,8 +165,8 @@ export const getTransactions = asyncHandler(
     }
 
     // Pagination
-    const pageNum = parseInt(page as string, 10);
-    const limitNum = parseInt(limit as string, 10);
+    const pageNum = Number.parseInt(page as string, 10);
+    const limitNum = Number.parseInt(limit as string, 10);
     const skip = (pageNum - 1) * limitNum;
 
     // Fetch transactions
@@ -162,6 +181,8 @@ export const getTransactions = asyncHandler(
 
     // Count total matching documents
     const total = await Transaction.countDocuments(query);
+
+    console.log("Total transactions found:", transactions);
 
     res.status(StatusCodes.OK).json({
       success: true,
@@ -316,10 +337,21 @@ export const verifyWalletFunding = asyncHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
     const { reference } = req.params;
 
-    
+    // Check if transaction already exists in our database
+    const existingTransaction = await Transaction.findOne({ reference });
+
+    if (existingTransaction) {
+      console.log("Transaction already processed:", existingTransaction);
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        message: "Transaction already processed",
+        transaction: existingTransaction,
+      });
+    }
+
     try {
       const result = await paymentService.verifyPayment(reference);
-      
+
       console.log("Verifying payment with reference:", result);
 
       res.status(StatusCodes.OK).json({
@@ -327,7 +359,6 @@ export const verifyWalletFunding = asyncHandler(
         message: result.message,
         transaction: result.transaction,
       });
-      
     } catch (error) {
       return next(
         new AppError(
@@ -340,7 +371,6 @@ export const verifyWalletFunding = asyncHandler(
     }
   }
 );
-
 
 /**
  * @desc    Search users by username, email, or name
@@ -356,8 +386,8 @@ export const searchWalletUsers = asyncHandler(
     }
 
     const { query } = req.query;
-    
-    if (!query || typeof query !== 'string') {
+
+    if (!query || typeof query !== "string") {
       return next(
         new AppError("Search query is required", StatusCodes.BAD_REQUEST)
       );
@@ -365,10 +395,10 @@ export const searchWalletUsers = asyncHandler(
 
     // Don't include the current user in search results
     const currentUserId = req.user._id;
-    
+
     // Create a regex for case-insensitive search
-    const searchRegex = new RegExp(query, 'i');
-    
+    const searchRegex = new RegExp(query, "i");
+
     // Search by username, email, firstName, or lastName
     const users = await User.find({
       _id: { $ne: currentUserId }, // Exclude current user
@@ -376,20 +406,19 @@ export const searchWalletUsers = asyncHandler(
         { userName: searchRegex },
         { email: searchRegex },
         { firstName: searchRegex },
-        { lastName: searchRegex }
-      ]
+        { lastName: searchRegex },
+      ],
     })
-    .select('_id firstName lastName userName email avatar')
-    .limit(10); // Limit results for performance
+      .select("_id firstName lastName userName email avatar")
+      .limit(10); // Limit results for performance
 
     res.status(StatusCodes.OK).json({
       success: true,
       count: users.length,
-      users
+      users,
     });
   }
 );
-
 
 /**
  * @desc    Transfer money to another user
@@ -714,8 +743,8 @@ export const getAllTransactions = asyncHandler(
     }
 
     // Pagination
-    const pageNum = parseInt(page as string, 10);
-    const limitNum = parseInt(limit as string, 10);
+    const pageNum = Number.parseInt(page as string, 10);
+    const limitNum = Number.parseInt(limit as string, 10);
     const skip = (pageNum - 1) * limitNum;
 
     // Get transactions

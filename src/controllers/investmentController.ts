@@ -4,7 +4,7 @@ import mongoose, { SortOrder } from "mongoose";
 
 import { AppError } from "../utils/appError";
 import { asyncHandler } from "../utils/asyncHandler";
-
+import { v4 as uuidv4 } from "uuid";
 import {
   uploadToCloudinary,
   deleteFromCloudinary,
@@ -19,6 +19,15 @@ import {
   calculateExpectedReturns,
   generatePayoutSchedule,
 } from "../utils/investmentUtils";
+import {
+  PaymentMethod,
+  Transaction,
+  TransactionStatus,
+  TransactionType,
+  Wallet,
+} from "../models/walletModel";
+import notificationService from "../services/notificationService";
+import { NotificationType } from "../models/notificationModel";
 
 // Server-side enums
 enum InvestmentStatus {
@@ -293,18 +302,11 @@ export const getAvailableProperties = asyncHandler(
 
 export const createInvestment = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-
-   
-
-
-
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
       );
     }
-
- 
 
     if (!["admin", "super_admin"].includes(req.user.role)) {
       return next(
@@ -314,8 +316,6 @@ export const createInvestment = asyncHandler(
         )
       );
     }
-
-   
 
     const {
       title,
@@ -399,16 +399,11 @@ export const createInvestment = asyncHandler(
       );
     }
 
-
-
     const property = await Property.findById(propertyId);
-
 
     if (!property) {
       return next(new AppError("Property not found", StatusCodes.NOT_FOUND));
     }
-
-   
 
     if (property.investmentId) {
       return next(
@@ -463,7 +458,6 @@ export const createInvestment = asyncHandler(
       );
     }
 
-
     const investment = await Investment.create({
       title,
       description,
@@ -504,7 +498,6 @@ export const createInvestment = asyncHandler(
     });
   }
 );
-
 
 // @desc    Update investment
 // @route   PUT /api/investments/:id
@@ -632,7 +625,6 @@ export const updateInvestment = asyncHandler(
         documents = [...documents, ...newDocuments];
 
         console.log("Uploaded documents:", documents);
-
       } catch (error) {
         return next(
           new AppError(
@@ -986,84 +978,258 @@ export const changeInvestmentStatus = asyncHandler(
   }
 );
 
+
 // @desc    Invest in property
 // @route   POST /api/investments/:id/invest
 // @access  Private
-export const investInProperty = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const { amount } = req.body;
+export const investInProperty = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params
+  const { userId, amount, selectedPlan, selectedDuration, notes, calculatedReturns } = req.body
 
-    if (!req.user) {
-      return next(
-        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
-      );
-    }
+  console.log("Investment request body:", req.body)
 
-    const userId = req.user.id;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return next(
-        new AppError("Invalid investment ID", StatusCodes.BAD_REQUEST)
-      );
-    }
-
-    const investment = await Investment.findById(id);
-    if (!investment) {
-      return next(new AppError("Investment not found", StatusCodes.NOT_FOUND));
-    }
-
-    // Check if investment is active
-    if (investment.status !== InvestmentStatus.ACTIVE) {
-      return next(
-        new AppError(
-          "This investment is not currently active",
-          StatusCodes.BAD_REQUEST
-        )
-      );
-    }
-
-    // Check minimum investment amount
-    if (amount < investment.minimumInvestment) {
-      return next(
-        new AppError(
-          `Minimum investment amount is ${investment.minimumInvestment}`,
-          StatusCodes.BAD_REQUEST
-        )
-      );
-    }
-
-    // Check if user exists
-    const user = await User.findById(userId);
-    if (!user) {
-      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
-    }
-
-    // Initialize payment
-    try {
-      const paymentService = require("../services/paymentService");
-      const paymentResponse = await paymentService.initializeInvestment(
-        userId,
-        investment._id.toString(),
-        amount,
-        user.email
-      );
-
-      res.status(StatusCodes.OK).json({
-        success: true,
-        message: "Investment payment initiated",
-        data: paymentResponse,
-      });
-    } catch (error) {
-      return next(
-        new AppError(
-          "Failed to initialize payment",
-          StatusCodes.INTERNAL_SERVER_ERROR
-        )
-      );
-    }
+  if (!req.user) {
+    return next(new AppError("User not authenticated", StatusCodes.UNAUTHORIZED))
   }
-);
+
+  // Validate input
+  if (!amount || amount < 100) {
+    return next(new AppError("Amount must be at least 100", StatusCodes.BAD_REQUEST))
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new AppError("Invalid investment ID", StatusCodes.BAD_REQUEST))
+  }
+
+  // Find the investment
+  const investment = await Investment.findById(id)
+  if (!investment) {
+    return next(new AppError("Investment not found", StatusCodes.NOT_FOUND))
+  }
+
+  // Check if investment is active
+  if (investment.status !== InvestmentStatus.ACTIVE) {
+    return next(new AppError("This investment is not currently active", StatusCodes.BAD_REQUEST))
+  }
+
+  // Check minimum investment amount
+  if (amount < investment.minimumInvestment) {
+    return next(new AppError(`Minimum investment amount is ${investment.minimumInvestment}`, StatusCodes.BAD_REQUEST))
+  }
+
+  // Find the user
+  const user = await User.findById(userId)
+  if (!user) {
+    return next(new AppError("User not found", StatusCodes.NOT_FOUND))
+  }
+
+  // Find user's wallet
+  const userWallet = await Wallet.findOne({ user: userId })
+  if (!userWallet) {
+    return next(new AppError("User wallet not found", StatusCodes.NOT_FOUND))
+  }
+
+  // Check if user has sufficient balance
+  if (userWallet.availableBalance < amount) {
+    return next(new AppError("Insufficient wallet balance", StatusCodes.BAD_REQUEST))
+  }
+
+  // Find system/admin user (recipient)
+  const systemUser = await User.findOne({ email: "esthington@gmail.com" })
+  if (!systemUser) {
+    return next(new AppError("System user not found", StatusCodes.NOT_FOUND))
+  }
+
+  // Find or create system wallet
+  let systemWallet = await Wallet.findOne({ user: systemUser._id })
+  if (!systemWallet) {
+    systemWallet = await Wallet.create({
+      user: systemUser._id,
+      balance: 0,
+      availableBalance: 0,
+      pendingBalance: 0,
+    })
+  }
+
+  // Use database transaction for atomicity
+  const session = await mongoose.startSession()
+  session.startTransaction()
+
+  try {
+    // Generate unique reference
+    const reference = `INV-${investment._id}-${Date.now()}-${uuidv4().substring(0, 8)}`
+
+    // 1. Create debit transaction for user (investment payment)
+    const userTransaction = await Transaction.create(
+      [
+        {
+          user: userId,
+          type: TransactionType.INVESTMENT,
+          amount: amount,
+          status: TransactionStatus.COMPLETED,
+          reference: reference,
+          description: `Investment in ${investment.title} - ${selectedPlan} for ${selectedDuration}`,
+          paymentMethod: PaymentMethod.WALLET,
+          recipient: systemUser._id,
+          investment: investment._id,
+          metadata: {
+            investmentTitle: investment.title,
+            selectedPlan: selectedPlan,
+            selectedDuration: selectedDuration,
+            calculatedReturns: calculatedReturns,
+            notes: notes,
+          },
+        },
+      ],
+      { session },
+    )
+
+    // 2. Create credit transaction for system (investment received)
+    const systemTransaction = await Transaction.create(
+      [
+        {
+          user: systemUser._id,
+          type: TransactionType.INVESTMENT,
+          amount: amount,
+          status: TransactionStatus.COMPLETED,
+          reference: reference,
+          description: `Investment received from ${user.firstName} ${user.lastName} for ${investment.title}`,
+          paymentMethod: PaymentMethod.WALLET,
+          sender: userId,
+          investment: investment._id,
+          metadata: {
+            investmentTitle: investment.title,
+            selectedPlan: selectedPlan,
+            selectedDuration: selectedDuration,
+            investorName: `${user.firstName} ${user.lastName}`,
+            calculatedReturns: calculatedReturns,
+          },
+        },
+      ],
+      { session },
+    )
+
+    // 3. Update user wallet (debit)
+    userWallet.balance -= amount
+    userWallet.availableBalance -= amount
+    userWallet.pendingBalance += calculatedReturns?.totalAmount; // Optional: if you want to track pending investments
+    await userWallet.save({ session })
+
+    // 4. Update system wallet (credit)
+    systemWallet.balance += amount
+    systemWallet.availableBalance += amount
+    await systemWallet.save({ session })
+
+    // 5. Create user investment record
+    const userInvestment = await UserInvestment.create(
+      [
+        {
+          userId: userId,
+          investmentId: id,
+          amount: amount,
+          status: InvestmentStatus.ACTIVE,
+          startDate: new Date(),
+          endDate: new Date(Date.now() + (calculatedReturns.durationMonths || 12) * 30 * 24 * 60 * 60 * 1000),
+          expectedReturn: calculatedReturns.totalReturn,
+          actualReturn: 0,
+          paymentReference: reference,
+          selectedPlan: selectedPlan,
+          selectedDuration: selectedDuration,
+          notes: notes,
+          calculatedReturns: calculatedReturns,
+        },
+      ],
+      { session },
+    )
+
+    // 6. Update investment with new investor
+    const investorData = {
+      userId: userId,
+      amount: amount,
+      date: new Date(),
+      planName: selectedPlan,
+      selectedDuration: selectedDuration,
+      durationMonths: calculatedReturns.durationMonths || 12,
+      payoutDate: new Date(Date.now() + (calculatedReturns.durationMonths || 12) * 30 * 24 * 60 * 60 * 1000),
+      isPaid: false,
+      amountPaid: 0,
+      transactionRef: reference,
+      notes: notes,
+    }
+
+    await Investment.findByIdAndUpdate(
+      id,
+      {
+        $push: { investors: investorData },
+        $inc: {
+          raisedAmount: amount,
+          totalInvestors: 1,
+        },
+      },
+      { session },
+    )
+
+    // 7. Create notifications
+    await notificationService.createNotification(
+      userId.toString(),
+      "Investment Successful",
+      `Your investment of ₦${amount.toLocaleString()} in ${investment.title} has been processed successfully.`,
+      NotificationType.TRANSACTION,
+      "/dashboard/investments/my-investments",
+      {
+        transactionId: userTransaction[0]._id,
+        investmentId: investment._id,
+      },
+    )
+
+    await notificationService.createNotification(
+      systemUser._id.toString(),
+      "New Investment Received",
+      `New investment of ₦${amount.toLocaleString()} received from ${user.firstName} ${user.lastName} for ${investment.title}.`,
+      NotificationType.TRANSACTION,
+      "/admin/investments",
+      {
+        transactionId: systemTransaction[0]._id,
+        investmentId: investment._id,
+        investorId: userId,
+      },
+    )
+
+    // Commit the transaction
+    await session.commitTransaction()
+
+    res.status(StatusCodes.CREATED).json({
+      success: true,
+      message: "Investment successful! Your funds have been processed.",
+      data: {
+        userInvestment: userInvestment[0],
+        transaction: userTransaction[0],
+        updatedWalletBalance: userWallet.availableBalance,
+        investmentDetails: {
+          title: investment.title,
+          amount: amount,
+          selectedPlan: selectedPlan,
+          selectedDuration: selectedDuration,
+          expectedReturns: calculatedReturns,
+          reference: reference,
+        },
+      },
+    })
+  } catch (error) {
+    // Rollback the transaction on error
+    await session.abortTransaction()
+    console.error("Investment transaction failed:", error)
+
+    return next(
+      new AppError(
+        `Investment failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      ),
+    )
+  } finally {
+    session.endSession()
+  }
+})
 
 // @desc    Verify investment payment
 // @route   POST /api/investments/:id/verify-payment

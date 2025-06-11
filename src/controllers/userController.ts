@@ -28,6 +28,8 @@ export const updateProfile = asyncHandler(async (req: RequestWithFile, res: Resp
     nextOfKinPhone
   } = req.body
 
+
+
   if (!req.user) {
     return next(new AppError("User not authenticated", StatusCodes.UNAUTHORIZED))
   }
@@ -57,6 +59,8 @@ export const updateProfile = asyncHandler(async (req: RequestWithFile, res: Resp
     nextOfKinAddress: nextOfKinAddress || req.user.nextOfKinAddress,
     nextOfKinPhone: nextOfKinPhone || req.user.nextOfKinPhone
   }
+
+  console.log("Request body:", updateData);
 
   // Handle file uploads
   // Upload profile image if provided

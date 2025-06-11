@@ -11,6 +11,7 @@ import notificationService from "./notificationService";
 import { NotificationType } from "../models/notificationModel";
 import logger from "../utils/logger";
 import emailService from "./emailService";
+import mongoose from "mongoose";
 
 class PaymentService {
   private paystackSecretKey: string;
@@ -68,122 +69,189 @@ class PaymentService {
         reference
       );
 
-      // Check if transaction already exists in our database
+      // Check if transaction already exists in our database (both standalone and embedded)
       console.log("📦 Checking if transaction already exists in DB...");
-      const existingTransaction = await Transaction.findOne({ reference });
 
-      if (existingTransaction) {
-        console.log("✅ Transaction already processed:", existingTransaction);
+      // Check standalone transaction collection
+      const existingStandaloneTransaction = await Transaction.findOne({
+        reference,
+      });
+
+      // Check embedded transactions in wallets
+      const walletWithTransaction = await Wallet.findOne({
+        "transactions.reference": reference,
+      });
+
+      if (existingStandaloneTransaction || walletWithTransaction) {
+        console.log("✅ Transaction already processed");
         return {
           success: true,
           message: "Transaction already processed",
-          transaction: existingTransaction,
+          transaction:
+            existingStandaloneTransaction ||
+            walletWithTransaction?.transactions.find(
+              (t) => t.reference === reference
+            ),
         };
       }
 
       // Verify with Paystack
       console.log("📡 Verifying transaction with Paystack...");
-      const response = await axios.get(
-        `${this.paystackBaseUrl}/transaction/verify/${reference}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.paystackSecretKey}`,
-            "Content-Type": "application/json",
-          },
+      try {
+        const response = await axios.get(
+          `${this.paystackBaseUrl}/transaction/verify/${reference}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.paystackSecretKey}`,
+              "Content-Type": "application/json",
+            },
+            timeout: 10000,
+          }
+        );
+
+        const { data } = response.data;
+        console.log("📬 Paystack response received:", data);
+
+        if (data.status !== "success") {
+          console.log("❌ Payment verification failed from Paystack.");
+          return {
+            success: false,
+            message: "Payment verification failed",
+            transaction: null,
+          };
         }
-      );
 
-      const { data } = response.data;
-      console.log("📬 Paystack response received:", data);
+        // Double-check if transaction was created while we were verifying
+        const transactionCreatedDuringVerification =
+          (await Transaction.findOne({ reference })) ||
+          (await Wallet.findOne({ "transactions.reference": reference }));
 
-      if (data.status !== "success") {
-        console.log("❌ Payment verification failed from Paystack.");
+        if (transactionCreatedDuringVerification) {
+          console.log("⚠️ Transaction was created during verification");
+          return {
+            success: true,
+            message: "Transaction already processed",
+            transaction: transactionCreatedDuringVerification,
+          };
+        }
+
+        // Find user by email
+        if (!data.customer?.email) {
+          console.error("🚫 Customer email not found in payment data");
+          return {
+            success: false,
+            message: "Customer email not found in payment data",
+            transaction: null,
+          };
+        }
+
+        console.log("🔍 Finding user by email:", data.customer.email);
+        const user = await User.findOne({ email: data.customer.email });
+
+        if (!user) {
+          console.error("🚫 No user found with email:", data.customer.email);
+          return {
+            success: false,
+            message: `No user found with email: ${data.customer.email}`,
+            transaction: null,
+          };
+        }
+
+        console.log("✅ Found user:", user._id);
+
+        // Find or create wallet
+        let wallet = await Wallet.findOne({ user: user._id });
+        if (!wallet) {
+          console.log("🆕 Creating new wallet for user...");
+          wallet = await Wallet.create({
+            user: user._id,
+            balance: 0,
+            availableBalance: 0,
+            pendingBalance: 0,
+            transactions: [],
+          });
+        }
+
+        // const amount = data.amount / 100; // Convert from kobo to naira
+
+        // // Create transaction object
+        // const transactionData = {
+        //   user: user._id,
+        //   type: TransactionType.DEPOSIT,
+        //   amount,
+        //   status: TransactionStatus.COMPLETED,
+        //   reference: data.reference,
+        //   description: `Wallet funding via Paystack`,
+        //   paymentMethod: PaymentMethod.CARD,
+        //   date: new Date(),
+        //   metadata: {
+        //     paystackData: data,
+        //     verificationProcessed: true,
+        //     processedAt: new Date(),
+        //   },
+        // };
+
+        // // Create standalone transaction
+        // const standaloneTransaction = await Transaction.create(transactionData);
+
+        // // Add transaction to wallet's embedded transactions array
+        // wallet.transactions.push(transactionData as any);
+
+        // // Update wallet balance
+        // wallet.balance += amount;
+        // wallet.availableBalance += amount;
+        // await wallet.save();
+
+        // console.log(
+        //   "💾 Transaction saved to both standalone collection and wallet"
+        // );
+
+        // // Create notification
+        // await notificationService.createNotification(
+        //   user._id,
+        //   "Wallet Funded",
+        //   `Your wallet has been credited with ₦${amount.toLocaleString()}.`,
+        //   NotificationType.TRANSACTION,
+        //   "/dashboard/my-transactions",
+        //   { transactionId: standaloneTransaction._id }
+        // );
+
+        console.log("🎉 Payment verified and processed successfully.");
+        return {
+          success: true,
+          message: "Payment verified successfully",
+          // transaction: standaloneTransaction,
+        };
+      } catch (axiosError) {
+        console.error("💥 Paystack API error:", axiosError);
+
+        // If we can't reach Paystack, check if the transaction was already created by webhook
+        const webhookCreatedTransaction =
+          (await Transaction.findOne({
+            reference,
+            status: TransactionStatus.COMPLETED,
+          })) ||
+          (await Wallet.findOne({
+            "transactions.reference": reference,
+            "transactions.status": TransactionStatus.COMPLETED,
+          }));
+
+        if (webhookCreatedTransaction) {
+          console.log("✅ Transaction was already processed by webhook");
+          return {
+            success: true,
+            message: "Transaction already processed by webhook",
+            transaction: webhookCreatedTransaction,
+          };
+        }
+
         return {
           success: false,
-          message: "Payment verification failed",
+          message:
+            "Payment verification failed: Unable to connect to payment provider",
           transaction: null,
         };
       }
-
-      // Find user by email only
-      if (!data.customer?.email) {
-        console.error("🚫 Customer email not found in payment data");
-        return {
-          success: false,
-          message: "Customer email not found in payment data",
-          transaction: null,
-        };
-      }
-
-      console.log("🔍 Finding user by email:", data.customer.email);
-      const user = await User.findOne({ email: data.customer.email });
-
-      if (!user) {
-        console.error("🚫 No user found with email:", data.customer.email);
-        return {
-          success: false,
-          message: `No user found with email: ${data.customer.email}`,
-          transaction: null,
-        };
-      }
-
-      console.log("✅ Found user:", user._id);
-
-      // Check wallet for user
-      console.log("👛 Checking wallet for user...");
-      let wallet = await Wallet.findOne({ user: user._id });
-      if (!wallet) {
-        console.log("🆕 Creating new wallet for user...");
-        wallet = await Wallet.create({
-          user: user._id,
-          balance: 0,
-          availableBalance: 0,
-          pendingBalance: 0,
-        });
-      }
-
-      // Create transaction
-      const amount = data.amount / 100; // Convert from kobo to naira
-      console.log(`💰 Creating transaction for amount ₦${amount}`);
-      const transaction = await Transaction.create({
-        user: user._id,
-        type: TransactionType.DEPOSIT,
-        amount,
-        status: TransactionStatus.COMPLETED,
-        reference: data.reference,
-        description: `Wallet funding via Paystack`,
-        paymentMethod: PaymentMethod.CARD,
-        metadata: {
-          paystackData: data,
-          verificationProcessed: true,
-          processedAt: new Date(),
-        },
-      });
-
-      // Update wallet balance
-      console.log("💼 Updating wallet balances...");
-      wallet.balance += amount;
-      wallet.availableBalance += amount;
-      await wallet.save();
-      console.log("✅ Wallet updated:", wallet);
-
-      // Create notification
-      console.log("📣 Sending notification to user...");
-      await notificationService.createNotification(
-        user._id,
-        "Wallet Funded",
-        `Your wallet has been credited with ₦${amount.toLocaleString()}.`,
-        NotificationType.TRANSACTION,
-        "/dashboard/my-transactions",
-        { transactionId: transaction._id }
-      );
-
-      console.log("🎉 Payment verified and processed successfully.");
-      return {
-        success: true,
-        message: "Payment verified successfully",
-        transaction,
-      };
     } catch (error) {
       console.error("💥 Payment verification error:", error);
       return {
@@ -194,10 +262,8 @@ class PaymentService {
     }
   }
 
-  
   /**
    * Process Paystack webhook
-   * @param payload Webhook payload from Paystack
    */
   async processPaystackWebhook(payload: any) {
     logger.info("Processing Paystack webhook:", {
@@ -209,46 +275,30 @@ class PaymentService {
       const { event, data } = payload;
       const reference = data?.reference;
 
-      // First check if we already have a transaction with this reference
+      // Check if transaction already exists (both standalone and embedded)
       if (reference) {
-        const existingTransaction = await Transaction.findOne({ reference });
+        const existingStandaloneTransaction = await Transaction.findOne({
+          reference,
+        });
+        const walletWithTransaction = await Wallet.findOne({
+          "transactions.reference": reference,
+        });
 
-        if (existingTransaction) {
-          // If transaction exists but webhook hasn't been processed yet
-          if (!existingTransaction.metadata?.webhookProcessed) {
-            // Update the transaction to mark webhook as processed
-            existingTransaction.metadata = {
-              ...existingTransaction.metadata,
-              webhookProcessed: true,
-              webhookEvent: event,
-              webhookData: data,
-              processedAt: new Date(),
-            };
-            await existingTransaction.save();
-
-            logger.info(
-              `Updated existing transaction ${reference} with webhook data`
-            );
-            return {
-              success: true,
-              message: "Transaction updated with webhook data",
-              transaction: existingTransaction,
-            };
-          } else {
-            // Webhook already processed for this transaction
-            logger.info(
-              `Webhook already processed for transaction ${reference}`
-            );
-            return {
-              success: true,
-              message: "Webhook already processed for this transaction",
-              transaction: existingTransaction,
-            };
-          }
+        if (existingStandaloneTransaction || walletWithTransaction) {
+          logger.info(`Transaction already exists for reference: ${reference}`);
+          return {
+            success: true,
+            message: "Transaction already processed",
+            transaction:
+              existingStandaloneTransaction ||
+              walletWithTransaction?.transactions.find(
+                (t) => t.reference === reference
+              ),
+          };
         }
       }
 
-      // If no transaction exists yet, handle different event types
+      // Handle different event types
       switch (event) {
         case "charge.success":
           return this.handleSuccessfulCharge(data);
@@ -296,28 +346,6 @@ class PaymentService {
       }
     }
 
-    // If still not found, try to extract from custom_fields if available
-    if (!userId && data.metadata?.custom_fields) {
-      const paymentForField = data.metadata.custom_fields.find(
-        (field: any) =>
-          field.variable_name === "payment_for" &&
-          field.value === "Wallet Funding"
-      );
-
-      if (paymentForField) {
-        // Try to find the transaction by reference in your database
-        const pendingTransaction = await Transaction.findOne({
-          reference: data.reference,
-          status: TransactionStatus.PENDING,
-        });
-
-        if (pendingTransaction) {
-          userId = pendingTransaction.user.toString();
-          logger.info(`Found pending transaction with userId: ${userId}`);
-        }
-      }
-    }
-
     return userId;
   }
 
@@ -325,17 +353,27 @@ class PaymentService {
    * Handle successful charge event
    */
   private async handleSuccessfulCharge(data: any) {
-    // Check if transaction already exists
-    const existingTransaction = await Transaction.findOne({
+    console.log("Processing successful charge:", data.reference);
+
+    // Check if transaction already exists (both standalone and embedded)
+    const existingStandaloneTransaction = await Transaction.findOne({
       reference: data.reference,
     });
 
-    if (existingTransaction) {
-      logger.info(`Transaction already processed: ${data.reference}`);
+    const walletWithTransaction = await Wallet.findOne({
+      "transactions.reference": data.reference,
+    });
+
+    if (existingStandaloneTransaction || walletWithTransaction) {
+      logger.info(`Transaction already exists: ${data.reference}`);
       return {
         success: true,
         message: "Transaction already processed",
-        transaction: existingTransaction,
+        transaction:
+          existingStandaloneTransaction ||
+          walletWithTransaction?.transactions.find(
+            (t) => t.reference === data.reference
+          ),
       };
     }
 
@@ -344,27 +382,9 @@ class PaymentService {
 
     if (!userId) {
       logger.error("User ID not found in payment metadata", data.metadata);
-
-      // Store the webhook data for manual processing later
-      await Transaction.create({
-        type: TransactionType.DEPOSIT,
-        amount: data.amount / 100, // Convert from kobo to naira
-        status: TransactionStatus.PENDING,
-        reference: data.reference,
-        description: `Unprocessed Paystack webhook - missing userId`,
-        paymentMethod: PaymentMethod.CARD,
-        metadata: {
-          paystackData: data,
-          webhookProcessed: false,
-          requiresManualProcessing: true,
-          processedAt: new Date(),
-        },
-      });
-
       return {
         success: false,
-        message:
-          "User ID not found in payment metadata, stored for manual processing",
+        message: "User ID not found in payment metadata",
       };
     }
 
@@ -380,86 +400,198 @@ class PaymentService {
 
     logger.info(`Processing payment for user: ${user.email || userId}`);
 
-    // Find or create wallet
-    let wallet = await Wallet.findOne({ user: userId });
-    if (!wallet) {
+    // Find system/admin user (parent wallet)
+    const systemUser = await User.findOne({ email: "esthington@gmail.com" });
+    if (!systemUser) {
+      logger.error("System user not found");
+      return {
+        success: false,
+        message: "System user not found",
+      };
+    }
+
+    // Find or create user wallet
+    let userWallet = await Wallet.findOne({ user: userId });
+    if (!userWallet) {
       logger.info(`Creating new wallet for user: ${userId}`);
-      wallet = await Wallet.create({
+      userWallet = await Wallet.create({
         user: userId,
         balance: 0,
         availableBalance: 0,
         pendingBalance: 0,
+        transactions: [],
       });
     }
 
-    // Create transaction
-    const amount = data.amount / 100; // Convert from kobo to naira
-    logger.info(`Creating transaction for amount: ₦${amount}`);
-
-    const transaction = await Transaction.create({
-      user: userId,
-      type: TransactionType.DEPOSIT,
-      amount,
-      status: TransactionStatus.COMPLETED,
-      reference: data.reference,
-      description: `Wallet funding via Paystack`,
-      paymentMethod: PaymentMethod.CARD,
-      metadata: {
-        paystackData: data,
-        webhookProcessed: true,
-        processedAt: new Date(),
-      },
-    });
-
-    // Update wallet balance
-    logger.info(`Updating wallet balance: +₦${amount}`);
-    wallet.balance += amount;
-    wallet.availableBalance += amount;
-    await wallet.save();
-
-    // Create notification
-    await notificationService.createNotification(
-      userId,
-      "Wallet Funded",
-      `Your wallet has been credited with ₦${amount.toLocaleString()}.`,
-      NotificationType.TRANSACTION,
-      "/dashboard/my-transactions",
-      { transactionId: transaction._id }
-    );
-
-    // Send wallet funding confirmation email
-    if (user.email) {
-      try {
-        // Get card details if available
-        const cardLastFour = data.authorization?.last4 || "****";
-
-        // Send transaction status email
-        await emailService.sendTransactionStatusEmail(
-          user.email,
-          user.firstName || user.userName || "Valued Customer",
-          amount,
-          data.reference,
-          TransactionStatus.COMPLETED,
-          new Date(),
-          cardLastFour,
-          transaction._id.toString()
-        );
-
-        logger.info(`Wallet funding confirmation email sent to: ${user.email}`);
-      } catch (emailError) {
-        // Log the error but don't fail the webhook processing
-        logger.error("Failed to send wallet funding email:", emailError);
-      }
+    // Find or create system wallet
+    let systemWallet = await Wallet.findOne({ user: systemUser._id });
+    if (!systemWallet) {
+      logger.info(`Creating new system wallet for admin: ${systemUser._id}`);
+      systemWallet = await Wallet.create({
+        user: systemUser._id,
+        balance: 0,
+        availableBalance: 0,
+        pendingBalance: 0,
+        transactions: [],
+      });
     }
 
-    logger.info(
-      `Webhook processing completed successfully for reference: ${data.reference}`
-    );
-    return {
-      success: true,
-      message: "Webhook processed successfully",
-      transaction,
-    };
+    const amount = data.amount / 100; // Convert from kobo to naira
+    logger.info(`Creating new transaction for amount: ₦${amount}`);
+
+    // Use database transaction for atomicity
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Create user transaction data
+      const userTransactionData = {
+        user: userId,
+        type: TransactionType.DEPOSIT,
+        amount,
+        status: TransactionStatus.COMPLETED,
+        reference: data.reference,
+        description: `Wallet funding via Paystack`,
+        paymentMethod: PaymentMethod.CARD,
+        date: new Date(),
+        metadata: {
+          paystackData: data,
+          webhookProcessed: true,
+          processedAt: new Date(),
+        },
+      };
+
+      // Create system transaction data
+      const systemTransactionData = {
+        user: systemUser._id,
+        type: TransactionType.DEPOSIT,
+        amount,
+        status: TransactionStatus.COMPLETED,
+        reference: `SYS-${data.reference}`, // Prefix to distinguish system transaction
+        description: `System credit from ${
+          user.firstName || user.userName || "User"
+        } wallet funding`,
+        paymentMethod: PaymentMethod.CARD,
+        date: new Date(),
+        sender: userId, // Track who funded the wallet
+        metadata: {
+          originalReference: data.reference,
+          sourceUser: userId,
+          sourceUserName:
+            `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+            user.userName,
+          paystackData: data,
+          webhookProcessed: true,
+          processedAt: new Date(),
+        },
+      };
+
+      // Create standalone transactions
+      const [userStandaloneTransaction] = await Transaction.create(
+        [userTransactionData],
+        { session }
+      );
+      const [systemStandaloneTransaction] = await Transaction.create(
+        [systemTransactionData],
+        { session }
+      );
+
+      // Add transactions to wallets' embedded transactions arrays
+      userWallet.transactions.push(userTransactionData as any);
+      systemWallet.transactions.push(systemTransactionData as any);
+
+      // Update user wallet balance
+      logger.info(`Updating user wallet balance: +₦${amount}`);
+      userWallet.balance += amount;
+      userWallet.availableBalance += amount;
+      await userWallet.save({ session });
+
+      // Update system wallet balance
+      logger.info(`Updating system wallet balance: +₦${amount}`);
+      systemWallet.balance += amount;
+      systemWallet.availableBalance += amount;
+      await systemWallet.save({ session });
+
+      // Commit the transaction
+      await session.commitTransaction();
+
+      console.log("💾 Transactions saved to both user and system wallets");
+
+      // Create notification for user
+      await notificationService.createNotification(
+        userId,
+        "Wallet Funded",
+        `Your wallet has been credited with ₦${amount.toLocaleString()}.`,
+        NotificationType.TRANSACTION,
+        "/dashboard/my-transactions",
+        { transactionId: userStandaloneTransaction._id }
+      );
+
+      // Create notification for system/admin
+      await notificationService.createNotification(
+        systemUser._id.toString(),
+        "System Wallet Credit",
+        `System wallet credited with ₦${amount.toLocaleString()} from ${
+          user.firstName || user.userName || "User"
+        } wallet funding.`,
+        NotificationType.TRANSACTION,
+        "/dashboard/transactions",
+        {
+          transactionId: systemStandaloneTransaction._id,
+          sourceUserId: userId,
+          originalReference: data.reference,
+        }
+      );
+
+      // Send wallet funding confirmation email to user
+      if (user.email) {
+        try {
+          const cardLastFour = data.authorization?.last4 || "****";
+
+          await emailService.sendTransactionStatusEmail(
+            user.email,
+            user.firstName || user.userName || "Valued Customer",
+            amount,
+            data.reference,
+            TransactionStatus.COMPLETED,
+            new Date(),
+            cardLastFour,
+            userStandaloneTransaction._id.toString()
+          );
+
+          logger.info(
+            `Wallet funding confirmation email sent to: ${user.email}`
+          );
+        } catch (emailError) {
+          logger.error("Failed to send wallet funding email:", emailError);
+        }
+      }
+
+      logger.info(
+        `Webhook processing completed successfully for reference: ${data.reference}`
+      );
+      return {
+        success: true,
+        message: "Webhook processed successfully",
+        transaction: userStandaloneTransaction,
+        systemTransaction: systemStandaloneTransaction,
+        userWalletBalance: userWallet.availableBalance,
+        systemWalletBalance: systemWallet.availableBalance,
+      };
+    } catch (error) {
+      // Rollback the transaction on error
+      await session.abortTransaction();
+      logger.error("Wallet funding transaction failed:", error);
+
+      return {
+        success: false,
+        message: `Wallet funding failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      };
+    } finally {
+      session.endSession();
+    }
   }
 
   /**
@@ -490,27 +622,9 @@ class PaymentService {
 
     if (!userId) {
       logger.error("User ID not found in payment metadata", data.metadata);
-
-      // Store the webhook data for manual processing later
-      await Transaction.create({
-        type: TransactionType.DEPOSIT,
-        amount: data.amount / 100, // Convert from kobo to naira
-        status: TransactionStatus.FAILED,
-        reference: data.reference,
-        description: `Failed Paystack charge - missing userId`,
-        paymentMethod: PaymentMethod.CARD,
-        metadata: {
-          paystackData: data,
-          webhookProcessed: true,
-          requiresManualProcessing: true,
-          processedAt: new Date(),
-        },
-      });
-
       return {
         success: false,
-        message:
-          "User ID not found in payment metadata, stored for manual processing",
+        message: "User ID not found in payment metadata",
       };
     }
 
@@ -524,36 +638,40 @@ class PaymentService {
       };
     }
 
-    // Create or update transaction
     const amount = data.amount / 100; // Convert from kobo to naira
 
-    let transaction;
-    if (existingTransaction) {
-      existingTransaction.status = TransactionStatus.FAILED;
-      existingTransaction.metadata = {
-        ...existingTransaction.metadata,
+    // Create transaction object
+    const transactionData = {
+      user: userId,
+      type: TransactionType.DEPOSIT,
+      amount,
+      status: TransactionStatus.FAILED,
+      reference: data.reference,
+      description: `Failed wallet funding via Paystack`,
+      paymentMethod: PaymentMethod.CARD,
+      date: new Date(),
+      metadata: {
         paystackData: data,
         webhookProcessed: true,
         processedAt: new Date(),
         failureReason: data.gateway_response || "Payment failed",
-      };
+      },
+    };
+
+    let transaction;
+    if (existingTransaction) {
+      existingTransaction.status = TransactionStatus.FAILED;
+      existingTransaction.metadata = transactionData.metadata;
       transaction = await existingTransaction.save();
     } else {
-      transaction = await Transaction.create({
-        user: userId,
-        type: TransactionType.DEPOSIT,
-        amount,
-        status: TransactionStatus.FAILED,
-        reference: data.reference,
-        description: `Failed wallet funding via Paystack`,
-        paymentMethod: PaymentMethod.CARD,
-        metadata: {
-          paystackData: data,
-          webhookProcessed: true,
-          processedAt: new Date(),
-          failureReason: data.gateway_response || "Payment failed",
-        },
-      });
+      transaction = await Transaction.create(transactionData);
+
+      // Also add to wallet's embedded transactions
+      const wallet = await Wallet.findOne({ user: userId });
+      if (wallet) {
+        wallet.transactions.push(transactionData as any);
+        await wallet.save();
+      }
     }
 
     // Create notification
@@ -565,34 +683,6 @@ class PaymentService {
       "/dashboard/my-transactions",
       { transactionId: transaction._id }
     );
-
-    // Send failed transaction email
-    if (user.email) {
-      try {
-        // Get card details if available
-        const cardLastFour = data.authorization?.last4 || "****";
-        const failureReason =
-          data.gateway_response || "Payment could not be processed";
-
-        // Send transaction status email
-        await emailService.sendTransactionStatusEmail(
-          user.email,
-          user.firstName || user.userName || "Valued Customer",
-          amount,
-          data.reference,
-          TransactionStatus.FAILED,
-          new Date(),
-          cardLastFour,
-          transaction._id.toString(),
-          failureReason
-        );
-
-        logger.info(`Failed transaction email sent to: ${user.email}`);
-      } catch (emailError) {
-        // Log the error but don't fail the webhook processing
-        logger.error("Failed to send transaction failed email:", emailError);
-      }
-    }
 
     logger.info(
       `Failed charge webhook processed for reference: ${data.reference}`
@@ -610,7 +700,6 @@ class PaymentService {
   private async handleFailedTransfer(data: any) {
     logger.info(`Processing failed transfer for reference: ${data.reference}`);
 
-    // Find the transaction by reference
     const transaction = await Transaction.findOne({
       reference: data.reference,
     });
@@ -623,7 +712,6 @@ class PaymentService {
       };
     }
 
-    // Update transaction status
     transaction.status = TransactionStatus.FAILED;
     transaction.metadata = {
       ...transaction.metadata,
@@ -635,7 +723,6 @@ class PaymentService {
 
     await transaction.save();
 
-    // Find user
     const user = await User.findById(transaction.user);
     if (!user) {
       logger.error(`User not found: ${transaction.user}`);
@@ -645,7 +732,6 @@ class PaymentService {
       };
     }
 
-    // Create notification
     await notificationService.createNotification(
       transaction.user.toString(),
       "Transfer Failed",
@@ -654,29 +740,6 @@ class PaymentService {
       "/dashboard/my-transactions",
       { transactionId: transaction._id }
     );
-
-    // Send failed transaction email
-    if (user.email) {
-      try {
-        // Send transaction status email
-        await emailService.sendTransactionStatusEmail(
-          user.email,
-          user.firstName || user.userName || "Valued Customer",
-          transaction.amount,
-          data.reference,
-          TransactionStatus.FAILED,
-          new Date(),
-          undefined,
-          transaction._id.toString(),
-          data.reason || "Transfer could not be completed"
-        );
-
-        logger.info(`Failed transfer email sent to: ${user.email}`);
-      } catch (emailError) {
-        // Log the error but don't fail the webhook processing
-        logger.error("Failed to send transfer failed email:", emailError);
-      }
-    }
 
     logger.info(
       `Failed transfer webhook processed for reference: ${data.reference}`
@@ -696,7 +759,6 @@ class PaymentService {
       `Processing reversed transfer for reference: ${data.reference}`
     );
 
-    // Find the transaction by reference
     const transaction = await Transaction.findOne({
       reference: data.reference,
     });
@@ -709,7 +771,6 @@ class PaymentService {
       };
     }
 
-    // Update transaction status
     transaction.status = TransactionStatus.DECLINED;
     transaction.metadata = {
       ...transaction.metadata,
@@ -721,7 +782,6 @@ class PaymentService {
 
     await transaction.save();
 
-    // Find user
     const user = await User.findById(transaction.user);
     if (!user) {
       logger.error(`User not found: ${transaction.user}`);
@@ -731,7 +791,6 @@ class PaymentService {
       };
     }
 
-    // If this was a withdrawal, we need to credit the wallet back
     if (transaction.type === TransactionType.WITHDRAWAL) {
       const wallet = await Wallet.findOne({ user: transaction.user });
       if (wallet) {
@@ -745,7 +804,6 @@ class PaymentService {
       }
     }
 
-    // Create notification
     await notificationService.createNotification(
       transaction.user.toString(),
       "Transfer Reversed",
@@ -754,29 +812,6 @@ class PaymentService {
       "/dashboard/my-transactions",
       { transactionId: transaction._id }
     );
-
-    // Send declined transaction email
-    if (user.email) {
-      try {
-        // Send transaction status email
-        await emailService.sendTransactionStatusEmail(
-          user.email,
-          user.firstName || user.userName || "Valued Customer",
-          transaction.amount,
-          data.reference,
-          TransactionStatus.DECLINED,
-          new Date(),
-          undefined,
-          transaction._id.toString(),
-          data.reason || "Transfer was reversed"
-        );
-
-        logger.info(`Transfer reversed email sent to: ${user.email}`);
-      } catch (emailError) {
-        // Log the error but don't fail the webhook processing
-        logger.error("Failed to send transfer reversed email:", emailError);
-      }
-    }
 
     logger.info(
       `Reversed transfer webhook processed for reference: ${data.reference}`

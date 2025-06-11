@@ -6,7 +6,6 @@ import { asyncHandler } from "../utils/asyncHandler";
 import crypto from "crypto";
 import emailService from "../services/emailService";
 
-
 // Generate a random 6-digit OTP
 const generateOTP = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -148,7 +147,10 @@ export const verifyOTP = asyncHandler(
     await User.findByIdAndUpdate(userId, {
       securityOTP: "",
       securityOTPExpiry: new Date(0),
+      securityOTPValidPeriod: new Date().getTime() + 60 * 60 * 1000, // 1 hour = 3600000 ms
     });
+
+    
 
     console.log("🧹 OTP data cleared from user record");
 
@@ -156,5 +158,66 @@ export const verifyOTP = asyncHandler(
       success: true,
       message: "OTP verified successfully",
     });
+  }
+);
+
+// Check if user is within OTP validity period
+export const checkOTPValidity = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    console.log("➡️ checkOTPValidity called");
+
+    if (!req.user) {
+      console.log("❌ User not authenticated");
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
+    }
+
+    const userId = req.user._id;
+    console.log("👤 Checking validity period for User ID:", userId);
+
+    // Get user with OTP validity details
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log("❌ User not found in DB");
+      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
+    }
+
+    console.log("✅ User found:", user.email || user._id);
+
+    // Check if user has a valid OTP validity period
+    const now = new Date();
+    const isWithinValidityPeriod = user.securityOTPValidPeriod
+      ? now < new Date(user.securityOTPValidPeriod)
+      : false;
+
+    if (isWithinValidityPeriod) {
+      console.log("✅ User is within OTP validity period");
+      // Calculate remaining time in seconds
+      const remainingTime = user.securityOTPValidPeriod
+        ? Math.floor(
+            (new Date(user.securityOTPValidPeriod).getTime() - now.getTime()) /
+              1000
+          )
+        : 0;
+
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        isValid: true,
+        message: "User is within OTP validity period",
+        validUntil: user.securityOTPValidPeriod,
+        remainingSeconds: remainingTime,
+      });
+    } else {
+      console.log(
+        "❌ User is not within OTP validity period or no validity period set"
+      );
+      return res.status(StatusCodes.OK).json({
+        success: true,
+        isValid: false,
+        message:
+          "User is not within OTP validity period or no validity period set",
+      });
+    }
   }
 );

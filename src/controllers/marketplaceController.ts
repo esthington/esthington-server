@@ -740,6 +740,8 @@ export const initiateMarketplacePurchase = asyncHandler(
     const { id } = req.params;
     const { quantity = 1 } = req.body;
 
+    console.log("req.body", req.body)
+
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
@@ -784,20 +786,20 @@ export const initiateMarketplacePurchase = asyncHandler(
     const totalPrice = price * quantity;
 
     // Initialize payment
-    const paymentService = require("../services/paymentService").default;
-    const paymentResponse = await paymentService.initializeMarketplacePurchase(
-      userId,
-      // listing?._id.toString(),
-      totalPrice,
-      user.email,
-      quantity
-    );
+    // const paymentService = require("../services/paymentService").default;
+    // const paymentResponse = await paymentService.initializeMarketplacePurchase(
+    //   userId,
+    //   // listing?._id.toString(),
+    //   totalPrice,
+    //   user.email,
+    //   quantity
+    // );
 
-    res.status(StatusCodes.OK).json({
-      success: true,
-      message: "Marketplace purchase initiated",
-      data: paymentResponse,
-    });
+    // res.status(StatusCodes.OK).json({
+    //   success: true,
+    //   message: "Marketplace purchase initiated",
+    //   data: paymentResponse,
+    // });
   }
 );
 

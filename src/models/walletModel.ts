@@ -44,63 +44,68 @@ export interface ITransaction extends Omit<Document, "_id"> {
   investment?: mongoose.Types.ObjectId;
 }
 
-const transactionSchema = new Schema<ITransaction>({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+const transactionSchema = new Schema<ITransaction>(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: Object.values(TransactionType),
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+      min: [0, "Amount cannot be negative"],
+    },
+    status: {
+      type: String,
+      enum: Object.values(TransactionStatus),
+      default: TransactionStatus.PENDING,
+    },
+    reference: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
+    },
+    paymentMethod: {
+      type: String,
+      enum: Object.values(PaymentMethod),
+    },
+    metadata: {
+      type: Schema.Types.Mixed,
+    },
+    recipient: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    property: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Property",
+    },
+    investment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Investment",
+    },
   },
-  type: {
-    type: String,
-    enum: Object.values(TransactionType),
-    required: true,
-  },
-  amount: {
-    type: Number,
-    required: true,
-    min: [0, "Amount cannot be negative"],
-  },
-  status: {
-    type: String,
-    enum: Object.values(TransactionStatus),
-    default: TransactionStatus.PENDING,
-  },
-  reference: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-  paymentMethod: {
-    type: String,
-    enum: Object.values(PaymentMethod),
-  },
-  metadata: {
-    type: Schema.Types.Mixed,
-  },
-  recipient: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  sender: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  property: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Property",
-  },
-  investment: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Investment",
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 // Extend Document but omit _id to avoid conflicts
 export interface IWallet extends Omit<Document, "_id"> {
@@ -136,6 +141,12 @@ const walletSchema = new Schema<IWallet>(
       type: Number,
       default: 0,
       min: [0, "Pending balance cannot be negative"],
+      pendingTransactions: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Transaction",
+        },
+      ],
     },
     transactions: [transactionSchema],
   },

@@ -51,6 +51,14 @@ export interface IInvestment extends Document {
     userId: mongoose.Types.ObjectId;
     amount: number;
     date: Date;
+    planName?: string;
+    selectedDuration?: string;
+    durationMonths?: number;
+    payoutDate?: Date;
+    isPaid?: boolean;
+    amountPaid?: number;
+    transactionRef?: string;
+    notes?: string;
   }[];
   totalInvestors: number;
   documents: string[];
@@ -164,8 +172,35 @@ const investmentSchema = new Schema<IInvestment>(
           type: Date,
           default: Date.now,
         },
+        planName: {
+          type: String,
+        },
+        selectedDuration: {
+          type: String,
+        },
+        durationMonths: {
+          type: Number,
+        },
+        payoutDate: {
+          type: Date, // When the payout is due or was paid
+        },
+        isPaid: {
+          type: Boolean,
+          default: false, // If the payout has been made
+        },
+        amountPaid: {
+          type: Number,
+          default: 0, // Can reflect actual amount paid
+        },
+        transactionRef: {
+          type: String, // Optional: Track payout reference
+        },
+        notes: {
+          type: String, // Optional notes for internal tracking
+        },
       },
     ],
+
     totalInvestors: {
       type: Number,
       default: 0,

@@ -1,12 +1,15 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware";
-import { requestOTP, verifyOTP } from "../controllers/otpController";
+import {
+  requestOTP,
+  verifyOTP,
+  checkOTPValidity,
+} from "../controllers/otpController";
 import {
   updateProfile,
   changePassword,
   deleteAccount,
 } from "../controllers/userController";
-
 
 const router = express.Router();
 
@@ -16,6 +19,7 @@ const router = express.Router();
 // OTP routes
 router.post("/request-otp", protect, requestOTP);
 router.post("/verify-otp", protect, verifyOTP);
+router.get("/check-validity-period", protect, checkOTPValidity);
 
 // Profile security routes
 router.put("/update-profile", updateProfile);

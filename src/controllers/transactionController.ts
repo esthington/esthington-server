@@ -67,6 +67,8 @@ export const getAllTransactions = asyncHandler(
     // Count total matching documents
     const total = await Transaction.countDocuments(query);
 
+    console.log("Total transactions found 2:", transactions);
+
 
     res.status(StatusCodes.OK).json({
       success: true,
