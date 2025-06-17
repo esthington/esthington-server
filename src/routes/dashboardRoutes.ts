@@ -1,23 +1,51 @@
-import express from "express";
-import { protect, restrictTo } from "../middleware/authMiddleware";
-import {
-  getUserDashboard,
-  getAgentDashboard,
-  getAdminDashboard,
-} from "../controllers/dashboardController";
-import { UserRole } from "../models/userModel";
+import { Router, Request, Response } from "express";
+import {  protect } from "../middleware/authMiddleware";
+import { DashboardController } from "../controllers/dashboardController";
 
-const router = express.Router();
+const router = Router();
 
-// Protect all routes
+// Apply authentication middleware to all dashboard routes
 router.use(protect);
 
-router.get("/user", getUserDashboard);
+// Dashboard statistics (admin only)
+router.get("/stats", DashboardController.getDashboardStats);
+
+// Recent activity (admin only)
+router.get("/activity", DashboardController.getRecentActivity);
+
+// Dashboard analytics (admin only)
 router.get(
-  "/agent",
-  restrictTo(UserRole.AGENT, UserRole.ADMIN),
-  getAgentDashboard
+  "/analytics",
+  DashboardController.getDashboardAnalytics
 );
-router.get("/admin", restrictTo(UserRole.ADMIN), getAdminDashboard);
+
+// Export dashboard data (admin only)
+// router.get("/export/:format", async (req: Request, res: Response) => {
+//   try {
+//     const { format } = req.params;
+
+//     if (!["csv", "pdf", "excel"].includes(format)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid export format. Supported formats: csv, pdf, excel",
+//       });
+//     }
+
+//     // Implementation would depend on your export library
+//     // For now, return a success message
+//     res.status(200).json({
+//       success: true,
+//       message: `Export in ${format} format initiated`,
+//       data: { format, timestamp: new Date().toISOString() },
+//     });
+//   } catch (error) {
+//     console.error("Error exporting dashboard data:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to export dashboard data",
+//       error: error instanceof Error ? error.message : "Unknown error",
+//     });
+//   }
+// });
 
 export default router;

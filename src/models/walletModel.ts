@@ -9,6 +9,7 @@ export enum TransactionType {
   REFERRAL = "referral",
   INVESTMENT = "investment",
   PROPERTY_PURCHASE = "property_purchase",
+  MARKETPLACE_PURCHASE = "marketplace_purchase",
 }
 
 export enum TransactionStatus {

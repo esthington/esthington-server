@@ -9,9 +9,20 @@ import {
 import { asyncHandler } from "../utils/asyncHandler";
 import mongoose from "mongoose";
 import User from "../models/userModel";
+import {
+  PaymentMethod,
+  Transaction,
+  TransactionStatus,
+  TransactionType,
+  Wallet,
+} from "../models/walletModel";
+import notificationService from "../services/notificationService";
+import { NotificationType } from "../models/notificationModel";
+import { processReferralCommissions } from "../services/referralService";
+import { v4 as uuidv4 } from "uuid";
 
 // @desc    Get all marketplace listings
-// @route   GET /api/marketplace/listings
+// @route   GET /api/marketplace/listingsx
 // @access  Public
 export const getMarketplaceListings = asyncHandler(
   async (req: Request, res: Response) => {
@@ -138,7 +149,7 @@ export const getMarketplaceListingById = asyncHandler(
       return next(new AppError("Listing not found", StatusCodes.NOT_FOUND));
     }
 
-    await listing.save();
+
 
     // Transform data to match client expectations
     const listingObj = listing.toObject();
@@ -147,9 +158,10 @@ export const getMarketplaceListingById = asyncHandler(
       id: listingObj._id,
     };
 
+
     res.status(StatusCodes.OK).json({
       success: true,
-      data: transformedListing,
+      data: listing,
     });
   }
 );
@@ -732,76 +744,288 @@ export const setTrendingStatus = asyncHandler(
   }
 );
 
-// @desc    Initiate marketplace listing purchase
-// @route   POST /api/marketplace/listings/:id/purchase/initiate
+
+
+// @desc    Purchase marketplace item
+// @route   POST /api/marketplace/:id/purchase
 // @access  Private
-export const initiateMarketplacePurchase = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const { quantity = 1 } = req.body;
+export const initiateMarketplacePurchase = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  console.log("[INIT] Initiating marketplace purchase process...")
 
-    console.log("req.body", req.body)
+  const { id } = req.params
+  const { quantity = 1, notes = "", deliveryAddress = "" } = req.body
 
-    if (!req.user) {
-      return next(
-        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
-      );
-    }
-
-    const userId = req.user.id;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return next(new AppError("Invalid listing ID", StatusCodes.BAD_REQUEST));
-    }
-
-    const listing = await MarketplaceListing.findById(id);
-    if (!listing) {
-      return next(new AppError("Listing not found", StatusCodes.NOT_FOUND));
-    }
-
-    if (listing.status !== "available") {
-      return next(
-        new AppError(
-          "Listing is not available for purchase",
-          StatusCodes.BAD_REQUEST
-        )
-      );
-    }
-
-    // Check if there's enough quantity
-    if ((listing.quantity ?? 0) < quantity) {
-      return next(
-        new AppError("Not enough quantity available", StatusCodes.BAD_REQUEST)
-      );
-    }
-
-    // Get user email for payment
-    const user = await User.findById(userId);
-    if (!user) {
-      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
-    }
-
-    // Calculate price
-    const price = listing.discountedPrice || listing.price;
-    const totalPrice = price * quantity;
-
-    // Initialize payment
-    // const paymentService = require("../services/paymentService").default;
-    // const paymentResponse = await paymentService.initializeMarketplacePurchase(
-    //   userId,
-    //   // listing?._id.toString(),
-    //   totalPrice,
-    //   user.email,
-    //   quantity
-    // );
-
-    // res.status(StatusCodes.OK).json({
-    //   success: true,
-    //   message: "Marketplace purchase initiated",
-    //   data: paymentResponse,
-    // });
+  console.log("[AUTH] Verifying user authentication...")
+  if (!req.user) {
+    return next(new AppError("User not authenticated", StatusCodes.UNAUTHORIZED))
   }
-);
+
+  const userId = req.user._id
+
+  console.log("[VALIDATION] Validating input parameters...")
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new AppError("Invalid marketplace item ID", StatusCodes.BAD_REQUEST))
+  }
+
+  if (quantity <= 0) {
+    return next(new AppError("Quantity must be greater than 0", StatusCodes.BAD_REQUEST))
+  }
+
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error("Purchase operation timed out")), 30000)
+  })
+
+  try {
+    const purchasePromise = async () => {
+      console.log("[DB] Fetching marketplace item...")
+      const marketplaceItem = await MarketplaceListing.findById(id)
+
+      if (!marketplaceItem) {
+        return next(new AppError("Marketplace item not found", StatusCodes.NOT_FOUND))
+      }
+
+      console.log("[CHECK] Checking item availability...")
+      if (marketplaceItem.status !== ListingStatus.AVAILABLE) {
+        return next(new AppError("This item is no longer available", StatusCodes.BAD_REQUEST))
+      }
+
+      if (!marketplaceItem.isQuantityAvailable(quantity)) {
+        return next(
+          new AppError(`Insufficient stock. Only ${marketplaceItem.quantity} items available`, StatusCodes.BAD_REQUEST),
+        )
+      }
+
+      const unitPrice = marketplaceItem.discountedPrice || marketplaceItem.price
+      const totalAmount = unitPrice * quantity
+
+      console.log("[DB] Fetching buyer and wallet info...")
+      const buyer = await User.findById(userId)
+      if (!buyer) {
+        return next(new AppError("Buyer not found", StatusCodes.NOT_FOUND))
+      }
+
+      const buyerWallet = await Wallet.findOne({ user: userId })
+      if (!buyerWallet) {
+        return next(new AppError("Buyer wallet not found", StatusCodes.NOT_FOUND))
+      }
+
+      console.log("[CHECK] Verifying wallet balance...")
+      if (buyerWallet.availableBalance < totalAmount) {
+        return next(new AppError("Insufficient wallet balance", StatusCodes.BAD_REQUEST))
+      }
+
+      console.log("[DB] Fetching system user and wallet...")
+      const systemUser = await User.findOne({ email: "esthington@gmail.com" })
+      if (!systemUser) {
+        return next(new AppError("System user not found", StatusCodes.NOT_FOUND))
+      }
+
+      let systemWallet = await Wallet.findOne({ user: systemUser._id })
+      if (!systemWallet) {
+        console.log("[DB] Creating system wallet...")
+        systemWallet = await Wallet.create({
+          user: systemUser._id,
+          balance: 0,
+          availableBalance: 0,
+          pendingBalance: 0,
+        })
+      }
+
+      console.log("[TRANSACTION] Starting MongoDB session...")
+      const session = await mongoose.startSession()
+      session.startTransaction()
+
+      try {
+        const reference = `MKT-${id}-${Date.now()}-${uuidv4().substring(0, 8)}`
+        const purchaseId = `PUR-${Date.now()}-${uuidv4().substring(0, 8)}`
+        console.log(`[TRANSACTION] Generated reference: ${reference}`)
+
+        console.log("[TRANSACTION] Creating buyer transaction...")
+        const buyerTransaction = await Transaction.create(
+          [
+            {
+              user: userId,
+              type: TransactionType.MARKETPLACE_PURCHASE,
+              amount: totalAmount,
+              status: TransactionStatus.COMPLETED,
+              reference: reference,
+              description: `Marketplace purchase: ${marketplaceItem.title} (Qty: ${quantity})`,
+              paymentMethod: PaymentMethod.WALLET,
+              recipient: systemUser._id,
+              metadata: {
+                marketplaceItemId: id,
+                itemTitle: marketplaceItem.title,
+                quantity: quantity,
+                unitPrice: unitPrice,
+                notes: notes,
+                purchaseId: purchaseId,
+                deliveryAddress: deliveryAddress,
+              },
+            },
+          ],
+          { session },
+        )
+
+        console.log("[TRANSACTION] Creating system (credit) transaction...")
+        const systemTransaction = await Transaction.create(
+          [
+            {
+              user: systemUser._id,
+              type: TransactionType.MARKETPLACE_PURCHASE,
+              amount: totalAmount,
+              status: TransactionStatus.COMPLETED,
+              reference: reference,
+              description: `Marketplace sale received from ${buyer.firstName} ${buyer.lastName} for ${marketplaceItem.title}`,
+              paymentMethod: PaymentMethod.WALLET,
+              sender: userId,
+              metadata: {
+                marketplaceItemId: id,
+                itemTitle: marketplaceItem.title,
+                quantity: quantity,
+                buyerName: `${buyer.firstName} ${buyer.lastName}`,
+                unitPrice: unitPrice,
+                purchaseId: purchaseId,
+              },
+            },
+          ],
+          { session },
+        )
+
+        console.log("[WALLET] Updating buyer wallet...")
+        buyerWallet.balance -= totalAmount
+        buyerWallet.availableBalance -= totalAmount
+        await buyerWallet.save({ session })
+
+        console.log("[WALLET] Updating system wallet...")
+        systemWallet.balance += totalAmount
+        systemWallet.availableBalance += totalAmount
+        await systemWallet.save({ session })
+
+        console.log("[ITEM] Updating marketplace item with purchase...")
+        // Create purchase data
+        const purchaseData = {
+          purchaseId: purchaseId,
+          buyerId: userId,
+          buyerName: `${buyer.firstName} ${buyer.lastName}`,
+          buyerEmail: buyer.email,
+          quantity: quantity,
+          unitPrice: unitPrice,
+          totalAmount: totalAmount,
+          purchaseDate: new Date(),
+          transactionRef: reference,
+          notes: notes,
+          deliveryAddress: deliveryAddress,
+          deliveryStatus: "pending",
+        }
+
+        // Add purchase to the item
+        marketplaceItem.purchases.push(purchaseData)
+
+        // Update quantities directly
+        marketplaceItem.soldQuantity = (marketplaceItem.soldQuantity || 0) + quantity
+        marketplaceItem.quantity = Math.max(0, marketplaceItem.quantity - quantity)
+
+        // Update status if needed
+        if (marketplaceItem.quantity <= 0) {
+          marketplaceItem.status = ListingStatus.SOLD
+        }
+
+        // Save the marketplace item
+        await marketplaceItem.save({ session })
+
+        console.log("[REFERRAL] Processing referral commissions...")
+        await processReferralCommissions(userId, "marketplace", totalAmount, session, undefined, reference)
+
+        console.log("[NOTIFICATION] Creating purchase and sale notifications...")
+        const notificationPromises = [
+          notificationService.createNotification(
+            userId.toString(),
+            "Purchase Successful",
+            `Your purchase of ${marketplaceItem.title} (Qty: ${quantity}) for ₦${totalAmount.toLocaleString()} has been completed successfully.`,
+            NotificationType.TRANSACTION,
+            "/dashboard/my-purchases",
+            {
+              transactionId: buyerTransaction[0]._id,
+              marketplaceItemId: id,
+              purchaseId: purchaseId,
+            },
+          ),
+          notificationService.createNotification(
+            systemUser._id.toString(),
+            "New Marketplace Sale",
+            `New sale of ₦${totalAmount.toLocaleString()} received from ${buyer.firstName} ${buyer.lastName} for ${marketplaceItem.title} (Qty: ${quantity}).`,
+            NotificationType.TRANSACTION,
+            "/admin/marketplace",
+            {
+              transactionId: systemTransaction[0]._id,
+              marketplaceItemId: id,
+              buyerId: userId,
+              purchaseId: purchaseId,
+            },
+          ),
+        ]
+        await Promise.all(notificationPromises)
+
+        console.log("[TRANSACTION] Committing transaction...")
+        await session.commitTransaction()
+        console.log("[SUCCESS] Marketplace purchase completed.")
+
+        return res.status(StatusCodes.CREATED).json({
+          success: true,
+          message: "Purchase completed successfully! Your payment has been processed.",
+          data: {
+            transaction: buyerTransaction[0],
+            updatedWalletBalance: buyerWallet.availableBalance,
+            purchaseDetails: {
+              purchaseId: purchaseId,
+              itemTitle: marketplaceItem.title,
+              quantity: quantity,
+              unitPrice: unitPrice,
+              totalAmount: totalAmount,
+              reference: reference,
+              deliveryStatus: "pending",
+            },
+            itemStatus: {
+              quantity: marketplaceItem.quantity,
+              soldQuantity: marketplaceItem.soldQuantity,
+              status: marketplaceItem.status,
+            },
+          },
+        })
+      } catch (error) {
+        console.error("[ERROR] Transaction failed, aborting...", error)
+        await session.abortTransaction()
+        return next(
+          new AppError(
+            `Purchase failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+            StatusCodes.INTERNAL_SERVER_ERROR,
+          ),
+        )
+      } finally {
+        session.endSession()
+        console.log("[SESSION] Session closed.")
+      }
+    }
+
+    await Promise.race([purchasePromise(), timeoutPromise])
+  } catch (error) {
+    console.error("[FAILURE] Purchase failed or timed out:", error)
+
+    if (error instanceof Error && error.message === "Purchase operation timed out") {
+      return next(new AppError("Purchase operation timed out. Please try again.", StatusCodes.REQUEST_TIMEOUT))
+    }
+
+    return next(
+      new AppError(
+        `Purchase failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      ),
+    )
+  }
+})
+
+
+
 
 // @desc    Get listings for the current agent/creator
 // @route   GET /api/marketplace/listings/agent
@@ -992,11 +1216,11 @@ export const deleteGalleryImage = asyncHandler(
     await deleteFromCloudinary(imageUrl);
 
     // Update listing
-    listing.gallery = listing.gallery.filter((url) => url !== imageUrl);
+    listing.gallery = listing.gallery.filter((url: any) => url !== imageUrl);
 
     // Also update images array for backward compatibility
     if (listing.images) {
-      listing.images = listing.images.filter((url) => url !== imageUrl);
+      listing.images = listing.images.filter((url: any) => url !== imageUrl);
     }
 
     await listing.save();
@@ -1063,7 +1287,7 @@ export const deleteDocument = asyncHandler(
     await deleteFromCloudinary(documentUrl);
 
     // Update listing
-    listing.documents = listing.documents.filter((url) => url !== documentUrl);
+    listing.documents = listing.documents.filter((url: any) => url !== documentUrl);
     await listing.save();
 
     // Transform data to match client expectations
@@ -1080,3 +1304,81 @@ export const deleteDocument = asyncHandler(
     });
   }
 );
+
+
+// @desc    Get user's marketplace purchases
+// @route   GET /api/marketplace/purchases
+// @access  Private
+export const getUserMarketplacePurchases = asyncHandler(async (req: Request, res: Response) => {
+  console.log("Fetching user marketplace purchases")
+
+  if (!req.user?._id) {
+    throw new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+  }
+
+  const userId = req.user._id
+
+  // Find all marketplace listings where the user has made purchases
+  const listingsWithPurchases = await MarketplaceListing.find({
+    "purchases.buyerId": userId,
+  })
+    .select("-__v")
+    .populate("companyId", "name logo")
+    .lean()
+
+  // Transform the data to include only user's purchases
+  const userPurchases = listingsWithPurchases.map((listing) => {
+    // Filter to only the purchases made by this user
+    const userPurchasesForListing = listing.purchases.filter(
+      (purchase: any) => purchase.buyerId && purchase.buyerId.toString() === userId.toString(),
+    )
+
+    // Calculate user's total investment in this listing
+    const totalAmount = userPurchasesForListing.reduce(
+      (sum: any, purchase: any) => sum + Number(purchase.totalAmount),
+      0,
+    )
+
+    // Get company details
+    const companyData = listing.companyId as any
+
+    // Transform purchases to match expected format
+    const purchasedPlots = userPurchasesForListing.map((purchase: any) => ({
+      _id: purchase._id,
+      plotId: purchase.purchaseId, // Using purchaseId as plotId for marketplace items
+      price: purchase.unitPrice,
+      soldDate: purchase.purchaseDate,
+      quantity: purchase.quantity,
+      deliveryStatus: purchase.deliveryStatus,
+      trackingNumber: purchase.trackingNumber,
+    }))
+
+    return {
+      _id: listing._id,
+      property: {
+        _id: listing._id,
+        title: listing.title,
+        description: listing.description,
+        location: listing.location,
+        type: listing.type,
+        status: listing.status,
+        thumbnail: listing.thumbnail,
+        planFile: listing.documents?.[0] || null, // Use first document as plan file
+        documents: listing.documents || [],
+        plotSize: listing.size || "N/A", // Use size field for plot size
+      },
+      purchasedPlots,
+      totalAmount,
+      companyName: companyData?.name || "",
+      companyLogo: companyData?.logo || "",
+    }
+  })
+
+  console.log("User marketplace purchases:", userPurchases.length)
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    data: userPurchases,
+    message: "User marketplace purchases fetched successfully",
+  })
+})

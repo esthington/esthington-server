@@ -7,6 +7,7 @@ export enum NotificationType {
   SECURITY = "security",
   SYSTEM = "system",
   MARKETING = "marketing",
+  REFERRAL = "referral",
 }
 
 export interface INotification extends Document {

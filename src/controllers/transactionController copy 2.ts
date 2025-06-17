@@ -12,8 +12,8 @@ import mongoose from "mongoose";
 import { StatusCodes } from "http-status-codes";
 
 /**
- * @desc    Get user's own transactions
- * @route   GET /api/transactions/user
+ * @desc    Get user transactions
+ * @route   GET /api/wallet/transactions
  * @access  Private
  */
 export const getAllTransactions = asyncHandler(
@@ -50,8 +50,8 @@ export const getAllTransactions = asyncHandler(
     }
 
     // Pagination
-    const pageNum = Number.parseInt(page as string, 10);
-    const limitNum = Number.parseInt(limit as string, 10);
+    const pageNum = parseInt(page as string, 10);
+    const limitNum = parseInt(limit as string, 10);
     const skip = (pageNum - 1) * limitNum;
 
     // Fetch transactions
@@ -67,92 +67,6 @@ export const getAllTransactions = asyncHandler(
     // Count total matching documents
     const total = await Transaction.countDocuments(query);
 
-    res.status(StatusCodes.OK).json({
-      success: true,
-      count: transactions.length,
-      total,
-      totalPages: Math.ceil(total / limitNum),
-      currentPage: pageNum,
-      data: transactions,
-    });
-  }
-);
-
-/**
- * @desc    Get all transactions (Admin only)
- * @route   GET /api/transactions
- * @access  Private/Admin
- */
-export const getAllTransactionsAdmin = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      return next(
-        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
-      );
-    }
-
-    // Extract query parameters with default values
-    const {
-      page = "1",
-      limit = "10",
-      type,
-      status,
-      startDate,
-      endDate,
-      search,
-      sortBy = "createdAt",
-      sortOrder = "desc",
-    } = req.query;
-
-    // Build query object
-    const query: any = {};
-
-    if (type && type !== "all") query.type = type;
-    if (status && status !== "all") query.status = status;
-
-    if (startDate && endDate) {
-      query.createdAt = {
-        $gte: new Date(startDate as string),
-        $lte: new Date(endDate as string),
-      };
-    }
-
-    // Search functionality
-    if (search) {
-      const searchRegex = new RegExp(search as string, "i");
-      query.$or = [
-        { reference: searchRegex },
-        { description: searchRegex },
-        {
-          _id: mongoose.Types.ObjectId.isValid(search as string)
-            ? search
-            : null,
-        },
-      ].filter(Boolean);
-    }
-
-    // Pagination
-    const pageNum = Number.parseInt(page as string, 10);
-    const limitNum = Number.parseInt(limit as string, 10);
-    const skip = (pageNum - 1) * limitNum;
-
-    // Sort options
-    const sortOptions: any = {};
-    sortOptions[sortBy as string] = sortOrder === "desc" ? -1 : 1;
-
-    // Fetch transactions with user population
-    const transactions = await Transaction.find(query)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limitNum)
-      .populate("user", "firstName lastName email avatar")
-      .populate(
-        "recipient sender property investment",
-        "firstName lastName email title"
-      );
-
-    // Count total matching documents
-    const total = await Transaction.countDocuments(query);
 
     res.status(StatusCodes.OK).json({
       success: true,
@@ -165,13 +79,13 @@ export const getAllTransactionsAdmin = asyncHandler(
   }
 );
 
-/**
- * @desc    Get transaction details
- * @route   GET /api/transactions/:id
- * @access  Private
- */
+
+// Get transaction details
 export const getTransactionById = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+
+    console.log("New update");
+    
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
@@ -179,26 +93,14 @@ export const getTransactionById = asyncHandler(
     }
 
     const { id } = req.params;
-    const userId = req.user._id;
 
-    // Get user to check role
-    const user = await User.findById(userId);
-    if (!user) {
-      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
-    }
-
-    // Build query - admins can see all transactions, users only their own
-    const query: any = { _id: id };
-    if (user.role !== "admin" && user.role !== "super_admin") {
-      query.user = userId;
-    }
-
-    const transaction = await Transaction.findOne(query)
-      .populate("user", "firstName lastName email avatar")
-      .populate(
-        "recipient sender property investment",
-        "firstName lastName email title"
-      );
+    const transaction = await Transaction.findOne({
+      _id: id,
+      user: req.user._id, // Optional: Only show user’s own transactions
+    }).populate(
+      "recipient sender property investment",
+      "firstName lastName email title"
+    );
 
     if (!transaction) {
       return next(new AppError("Transaction not found", StatusCodes.NOT_FOUND));
@@ -211,13 +113,11 @@ export const getTransactionById = asyncHandler(
   }
 );
 
-/**
- * @desc    Approve a transaction (Admin only)
- * @route   PATCH /api/transactions/:id/approve
- * @access  Private/Admin
- */
+
+// Approve a transaction
 export const approveTransaction = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    // Always check authentication first
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
@@ -225,91 +125,97 @@ export const approveTransaction = asyncHandler(
     }
 
     const userId = req.user._id;
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Check if user is admin
+    if (user.role !== "admin") {
+      return next(
+        new AppError(
+          "Not authorized to approve transactions",
+          StatusCodes.FORBIDDEN
+        )
+      );
+    }
+
     const { id } = req.params;
     const { notes } = req.body;
 
-    // Find the transaction
-    const transaction = await Transaction.findOne({
-      _id: id,
-      status: TransactionStatus.PENDING,
-    }).populate("user", "firstName lastName email");
+    // Find the wallet containing this transaction
+    const wallet = await Wallet.findOne({ "transactions._id": id });
 
-    if (!transaction) {
+    if (!wallet) {
+      return next(new AppError("Transaction not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Find the transaction in the wallet
+    const transactionIndex = wallet.transactions.findIndex(
+      (t) => t._id.toString() === id && t.status === TransactionStatus.PENDING
+    );
+
+    if (transactionIndex === -1) {
       return next(
         new AppError("Pending transaction not found", StatusCodes.NOT_FOUND)
       );
     }
 
-    // Find the user's wallet
-    const wallet = await Wallet.findOne({ user: transaction.user._id });
-    if (!wallet) {
-      return next(new AppError("User wallet not found", StatusCodes.NOT_FOUND));
-    }
+    const transaction = wallet.transactions[transactionIndex];
 
     // Update transaction status
-    transaction.status = TransactionStatus.COMPLETED;
+    wallet.transactions[transactionIndex].status = TransactionStatus.COMPLETED;
     if (notes) {
-      transaction.description += ` - Admin notes: ${notes}`;
+      wallet.transactions[
+        transactionIndex
+      ].description += ` - Admin notes: ${notes}`;
     }
 
     // Add audit trail
-    transaction.metadata = {
-      ...transaction.metadata,
+    wallet.transactions[transactionIndex].metadata = {
+      ...wallet.transactions[transactionIndex].metadata,
       approvedBy: userId,
       approvedAt: new Date(),
-      approvalNotes: notes,
     };
 
     // Update balances based on transaction type
     if (transaction.type === TransactionType.DEPOSIT) {
       // For deposits, move from pendingBalance to availableBalance
-      wallet.pendingBalance = Math.max(
-        0,
-        wallet.pendingBalance - transaction.amount
-      );
+      wallet.pendingBalance -= transaction.amount;
       wallet.availableBalance += transaction.amount;
       wallet.balance += transaction.amount;
     } else if (transaction.type === TransactionType.WITHDRAWAL) {
       // For withdrawals, the amount was already deducted from availableBalance
       // Just update the pendingBalance
-      wallet.pendingBalance = Math.max(
-        0,
-        wallet.pendingBalance - transaction.amount
-      );
+      wallet.pendingBalance -= transaction.amount;
     } else if (
       transaction.type === TransactionType.INVESTMENT ||
       transaction.type === TransactionType.PROPERTY_PURCHASE
     ) {
       // For investments and property purchases, move from pendingBalance
-      wallet.pendingBalance = Math.max(
-        0,
-        wallet.pendingBalance - transaction.amount
-      );
+      wallet.pendingBalance -= transaction.amount;
     }
 
-    // Save both transaction and wallet
-    await Promise.all([transaction.save(), wallet.save()]);
+    await wallet.save();
 
     // Log the admin action for audit purposes
     console.log(
       `Transaction ${id} approved by admin ${userId} at ${new Date().toISOString()}`
     );
 
-    res.status(StatusCodes.OK).json({
+    res.status(200).json({
       status: "success",
-      message: "Transaction approved successfully",
-      data: transaction,
+      data: wallet.transactions[transactionIndex],
     });
   }
 );
 
-/**
- * @desc    Reject a transaction (Admin only)
- * @route   PATCH /api/transactions/:id/reject
- * @access  Private/Admin
- */
+// Reject a transaction
 export const rejectTransaction = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    // Always check authentication first
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
@@ -317,6 +223,23 @@ export const rejectTransaction = asyncHandler(
     }
 
     const userId = req.user._id;
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Check if user is admin
+    if (user.role !== "admin") {
+      return next(
+        new AppError(
+          "Not authorized to reject transactions",
+          StatusCodes.FORBIDDEN
+        )
+      );
+    }
+
     const { id } = req.params;
     const { reason } = req.body;
 
@@ -326,31 +249,35 @@ export const rejectTransaction = asyncHandler(
       );
     }
 
-    // Find the transaction
-    const transaction = await Transaction.findOne({
-      _id: id,
-      status: TransactionStatus.PENDING,
-    }).populate("user", "firstName lastName email");
+    // Find the wallet containing this transaction
+    const wallet = await Wallet.findOne({ "transactions._id": id });
 
-    if (!transaction) {
+    if (!wallet) {
+      return next(new AppError("Transaction not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Find the transaction in the wallet
+    const transactionIndex = wallet.transactions.findIndex(
+      (t) => t._id.toString() === id && t.status === TransactionStatus.PENDING
+    );
+
+    if (transactionIndex === -1) {
       return next(
         new AppError("Pending transaction not found", StatusCodes.NOT_FOUND)
       );
     }
 
-    // Find the user's wallet
-    const wallet = await Wallet.findOne({ user: transaction.user._id });
-    if (!wallet) {
-      return next(new AppError("User wallet not found", StatusCodes.NOT_FOUND));
-    }
+    const transaction = wallet.transactions[transactionIndex];
 
     // Update transaction status
-    transaction.status = TransactionStatus.FAILED;
-    transaction.description += ` - Rejected: ${reason}`;
+    wallet.transactions[transactionIndex].status = TransactionStatus.FAILED;
+    wallet.transactions[
+      transactionIndex
+    ].description += ` - Rejected: ${reason}`;
 
     // Add audit trail
-    transaction.metadata = {
-      ...transaction.metadata,
+    wallet.transactions[transactionIndex].metadata = {
+      ...wallet.transactions[transactionIndex].metadata,
       rejectedBy: userId,
       rejectedAt: new Date(),
       rejectionReason: reason,
@@ -359,55 +286,59 @@ export const rejectTransaction = asyncHandler(
     // Update balances based on transaction type
     if (transaction.type === TransactionType.DEPOSIT) {
       // For deposits, just reduce pendingBalance
-      wallet.pendingBalance = Math.max(
-        0,
-        wallet.pendingBalance - transaction.amount
-      );
+      wallet.pendingBalance -= transaction.amount;
     } else if (transaction.type === TransactionType.WITHDRAWAL) {
       // For withdrawals, restore the amount to availableBalance and reduce pendingBalance
       wallet.availableBalance += transaction.amount;
-      wallet.pendingBalance = Math.max(
-        0,
-        wallet.pendingBalance - transaction.amount
-      );
+      wallet.pendingBalance -= transaction.amount;
     } else if (
       transaction.type === TransactionType.INVESTMENT ||
       transaction.type === TransactionType.PROPERTY_PURCHASE
     ) {
       // For investments and property purchases, restore to availableBalance
       wallet.availableBalance += transaction.amount;
-      wallet.pendingBalance = Math.max(
-        0,
-        wallet.pendingBalance - transaction.amount
-      );
+      wallet.pendingBalance -= transaction.amount;
     }
 
-    // Save both transaction and wallet
-    await Promise.all([transaction.save(), wallet.save()]);
+    await wallet.save();
 
     // Log the admin action for audit purposes
     console.log(
       `Transaction ${id} rejected by admin ${userId} at ${new Date().toISOString()}: ${reason}`
     );
 
-    res.status(StatusCodes.OK).json({
+    res.status(200).json({
       status: "success",
-      message: "Transaction rejected successfully",
-      data: transaction,
+      data: wallet.transactions[transactionIndex],
     });
   }
 );
 
-/**
- * @desc    Get transaction statistics (Admin only)
- * @route   GET /api/transactions/stats
- * @access  Private/Admin
- */
+// Get transaction statistics
 export const getTransactionStats = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
+    // Always check authentication first
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
+    }
+
+    const userId = req.user._id;
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Check if user is admin
+    if (user.role !== "admin") {
+      return next(
+        new AppError(
+          "Not authorized to access transaction statistics",
+          StatusCodes.FORBIDDEN
+        )
       );
     }
 
@@ -443,17 +374,17 @@ export const getTransactionStats = asyncHandler(
       );
     }
 
-    // Get statistics by type
-    const typeStats = await Transaction.aggregate([
-      { $match: { createdAt: dateFilter } },
+    const stats = await Wallet.aggregate([
+      { $unwind: "$transactions" },
+      { $match: { "transactions.date": dateFilter } },
       {
         $group: {
-          _id: "$type",
+          _id: "$transactions.type",
           count: { $sum: 1 },
-          totalAmount: { $sum: "$amount" },
-          avgAmount: { $avg: "$amount" },
-          minAmount: { $min: "$amount" },
-          maxAmount: { $max: "$amount" },
+          totalAmount: { $sum: "$transactions.amount" },
+          avgAmount: { $avg: "$transactions.amount" },
+          minAmount: { $min: "$transactions.amount" },
+          maxAmount: { $max: "$transactions.amount" },
         },
       },
       {
@@ -469,14 +400,15 @@ export const getTransactionStats = asyncHandler(
       },
     ]);
 
-    // Get statistics by status
-    const statusStats = await Transaction.aggregate([
-      { $match: { createdAt: dateFilter } },
+    // Get status statistics
+    const statusStats = await Wallet.aggregate([
+      { $unwind: "$transactions" },
+      { $match: { "transactions.date": dateFilter } },
       {
         $group: {
-          _id: "$status",
+          _id: "$transactions.status",
           count: { $sum: 1 },
-          totalAmount: { $sum: "$amount" },
+          totalAmount: { $sum: "$transactions.amount" },
         },
       },
       {
@@ -489,48 +421,24 @@ export const getTransactionStats = asyncHandler(
       },
     ]);
 
-    // Get statistics by payment method
-    const paymentMethodStats = await Transaction.aggregate([
-      {
-        $match: {
-          createdAt: dateFilter,
-          paymentMethod: { $exists: true },
-        },
-      },
-      {
-        $group: {
-          _id: "$paymentMethod",
-          count: { $sum: 1 },
-          totalAmount: { $sum: "$amount" },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          paymentMethod: "$_id",
-          count: 1,
-          totalAmount: 1,
-        },
-      },
-    ]);
-
     // Get time series data
-    const timeSeriesData = await Transaction.aggregate([
-      { $match: { createdAt: dateFilter } },
+    const timeSeriesData = await Wallet.aggregate([
+      { $unwind: "$transactions" },
+      { $match: { "transactions.date": dateFilter } },
       {
         $group: {
           _id: {
-            year: { $year: "$createdAt" },
-            month: { $month: "$createdAt" },
-            day: { $dayOfMonth: "$createdAt" },
+            year: { $year: "$transactions.date" },
+            month: { $month: "$transactions.date" },
+            day: { $dayOfMonth: "$transactions.date" },
           },
           count: { $sum: 1 },
-          totalAmount: { $sum: "$amount" },
+          totalAmount: { $sum: "$transactions.amount" },
           depositAmount: {
             $sum: {
               $cond: [
-                { $eq: ["$type", TransactionType.DEPOSIT] },
-                "$amount",
+                { $eq: ["$transactions.type", TransactionType.DEPOSIT] },
+                "$transactions.amount",
                 0,
               ],
             },
@@ -538,8 +446,8 @@ export const getTransactionStats = asyncHandler(
           withdrawalAmount: {
             $sum: {
               $cond: [
-                { $eq: ["$type", TransactionType.WITHDRAWAL] },
-                "$amount",
+                { $eq: ["$transactions.type", TransactionType.WITHDRAWAL] },
+                "$transactions.amount",
                 0,
               ],
             },
@@ -547,8 +455,8 @@ export const getTransactionStats = asyncHandler(
           investmentAmount: {
             $sum: {
               $cond: [
-                { $eq: ["$type", TransactionType.INVESTMENT] },
-                "$amount",
+                { $eq: ["$transactions.type", TransactionType.INVESTMENT] },
+                "$transactions.amount",
                 0,
               ],
             },
@@ -557,9 +465,12 @@ export const getTransactionStats = asyncHandler(
             $sum: {
               $cond: [
                 {
-                  $eq: ["$type", TransactionType.PROPERTY_PURCHASE],
+                  $eq: [
+                    "$transactions.type",
+                    TransactionType.PROPERTY_PURCHASE,
+                  ],
                 },
-                "$amount",
+                "$transactions.amount",
                 0,
               ],
             },
@@ -587,10 +498,36 @@ export const getTransactionStats = asyncHandler(
       },
     ]);
 
-    res.status(StatusCodes.OK).json({
+    // Get payment method statistics
+    const paymentMethodStats = await Wallet.aggregate([
+      { $unwind: "$transactions" },
+      {
+        $match: {
+          "transactions.date": dateFilter,
+          "transactions.paymentMethod": { $exists: true },
+        },
+      },
+      {
+        $group: {
+          _id: "$transactions.paymentMethod",
+          count: { $sum: 1 },
+          totalAmount: { $sum: "$transactions.amount" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          paymentMethod: "$_id",
+          count: 1,
+          totalAmount: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
       status: "success",
       data: {
-        byType: typeStats,
+        byType: stats,
         byStatus: statusStats,
         byPaymentMethod: paymentMethodStats,
         timeSeries: timeSeriesData,

@@ -11,12 +11,14 @@ import propertyRoutes from "./routes/propertyRoutes";
 import investmentRoutes from "./routes/investmentRoutes";
 import referralRoutes from "./routes/referralRoutes";
 import notificationRoutes from "./routes/notificationRoutes";
+import withdrawalRoutes from "./routes/withdrawalRoutes";
 import reportRoutes from "./routes/reportRoutes";
 import approvalRoutes from "./routes/approvalRoutes";
 import dashboardRoutes from "./routes/dashboardRoutes";
 import adminManagementRoutes from "./routes/adminManagementRoutes";
 import userManagementRoutes from "./routes/userManagementRoutes";
 import companiesRoutes from "./routes/companyRoutes";
+import investmentDueRoutes from "./routes/investmentDueRoutes";
 import marketplaceRoutes from "./routes/marketplaceRoutes";
 
 // Import the new routes
@@ -91,6 +93,8 @@ app.use("/api/v1/companies", companiesRoutes);
 app.use("/api/v1/reports", reportRoutes);
 app.use("/api/v1/approvals", approvalRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/v1/process-withdrawal", withdrawalRoutes);
+app.use("/api/v1/investment-dues", investmentDueRoutes);
 app.use("/api/v1/admin-management", adminManagementRoutes);
 app.use("/api/v1/user-management", userManagementRoutes);
 

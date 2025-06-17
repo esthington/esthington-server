@@ -14,6 +14,8 @@ export enum AgentRank {
   SILVER = "Silver",
   GOLD = "Gold",
   PLATINUM = "Platinum",
+  DIAMOND = "Diamond",
+  MASTER = "Master",
 }
 
 export enum UserStatus {

@@ -1,5 +1,5 @@
-import express from "express"
-import { protect, restrictTo } from "../middleware/authMiddleware"
+import express from "express";
+import { protect, restrictTo } from "../middleware/authMiddleware";
 import {
   getAllAdmins,
   getAdminById,
@@ -8,20 +8,22 @@ import {
   deleteAdmin,
   updateAdminPermissions,
   resetAdminPassword,
-} from "../controllers/adminManagementController"
-import { UserRole } from "../models/userModel"
+} from "../controllers/adminManagementController";
+import { UserRole } from "../models/userModel";
 
-const router = express.Router()
+const router = express.Router();
 
 // Protect all routes
-router.use(protect)
-router.use(restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN))
+router.use(protect);
+router.use(restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN));
 
-router.route("/").get(getAllAdmins).post(createAdmin)
+// Admin CRUD routes
+router.route("/").get(getAllAdmins).post(createAdmin);
 
-router.route("/:id").get(getAdminById).patch(updateAdmin).delete(deleteAdmin)
+router.route("/:id").get(getAdminById).patch(updateAdmin).delete(deleteAdmin);
 
-router.patch("/:id/permissions", updateAdminPermissions)
-router.patch("/:id/reset-password", resetAdminPassword)
+// Special admin operations
+router.patch("/:id/permissions", updateAdminPermissions);
+router.patch("/:id/reset-password", resetAdminPassword);
 
-export default router
+export default router;

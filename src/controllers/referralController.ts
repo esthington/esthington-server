@@ -224,14 +224,16 @@ export const getAgentRankInfo = asyncHandler(
     const totalReferrals = await Referral.countDocuments({ referrer: id });
 
     // Define rank thresholds
-    const rankThresholds = {
+    const rankThresholds: Record<AgentRank, { min: number; max: number; next: AgentRank }> = {
       [AgentRank.BRONZE]: { min: 0, max: 9, next: AgentRank.SILVER },
       [AgentRank.SILVER]: { min: 10, max: 24, next: AgentRank.GOLD },
       [AgentRank.GOLD]: { min: 25, max: 49, next: AgentRank.PLATINUM },
-      [AgentRank.PLATINUM]: {
-        min: 50,
+      [AgentRank.PLATINUM]: { min: 50, max: 99, next: AgentRank.DIAMOND },
+      [AgentRank.DIAMOND]: { min: 100, max: 199, next: AgentRank.MASTER },
+      [AgentRank.MASTER]: {
+        min: 200,
         max: Number.POSITIVE_INFINITY,
-        next: AgentRank.PLATINUM,
+        next: AgentRank.MASTER,
       },
     };
 

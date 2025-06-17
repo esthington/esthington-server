@@ -17,7 +17,9 @@ import {
   getPropertyTypes,
   getPropertyLocations,
   getAmenities,
+  downloadPropertyDocument,
   initiatePropertyPurchase,
+  getUserProperties,
 } from "../controllers/propertyController";
 import { protect, restrictTo } from "../middleware/authMiddleware";
 import { upload } from "../middleware/uploadMiddleware";
@@ -31,6 +33,18 @@ router.get("/", getProperties);
 router.get("/types", getPropertyTypes);
 router.get("/locations", getPropertyLocations);
 router.get("/amenities", getAmenities);
+
+// IMPORTANT: Put specific routes BEFORE parameterized routes
+// Get user's properties - MOVED BEFORE /:id route
+router.get("/myproperties", protect, getUserProperties);
+
+// Download property document - MOVED BEFORE /:id route
+router.get("/myproperties/download", protect, downloadPropertyDocument);
+
+// Purchase route - MOVED BEFORE /:id route
+router.post("/:id/purchase/initiate", protect, initiatePropertyPurchase);
+
+// Parameterized route - MOVED AFTER specific routes
 router.get("/:id", getPropertyById);
 
 // Admin routes
@@ -106,26 +120,26 @@ router.delete(
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   deleteThumbnail
 );
+
 router.delete(
   "/:id/gallery",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   deleteGalleryImage
 );
+
 router.delete(
   "/:id/plan",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   deletePlanFile
 );
+
 router.delete(
   "/:id/documents",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   deleteDocument
 );
-
-// Purchase route
-router.post("/:id/purchase/initiate", protect, initiatePropertyPurchase);
 
 export default router;

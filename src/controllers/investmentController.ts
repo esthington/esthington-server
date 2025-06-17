@@ -162,27 +162,16 @@ export const getInvestments = asyncHandler(
 // @access  Private
 export const getUserInvestments = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { userId } = req.params;
     const { status, sort, limit = 10, page = 1 } = req.query;
-
+    
     if (!req.user) {
       return next(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
       );
     }
-
-    // Only allow users to view their own investments unless admin
-    if (
-      req.user.id !== userId &&
-      !["admin", "super_admin"].includes(req.user.role)
-    ) {
-      return next(
-        new AppError(
-          "Not authorized to access these investments",
-          StatusCodes.FORBIDDEN
-        )
-      );
-    }
+    
+    const userId = req.user.id;
+    console.log("hit invest user")
 
     // Build query
     const query: any = { userId };
@@ -224,6 +213,8 @@ export const getUserInvestments = asyncHandler(
 
     // Get total count
     const total = await UserInvestment.countDocuments(query);
+
+    console.log("all user invest", userInvestments);
 
     res.status(StatusCodes.OK).json({
       success: true,

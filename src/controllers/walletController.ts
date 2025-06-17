@@ -182,8 +182,6 @@ export const getTransactions = asyncHandler(
     // Count total matching documents
     const total = await Transaction.countDocuments(query);
 
-    console.log("Total transactions found:", transactions);
-
     res.status(StatusCodes.OK).json({
       success: true,
       count: transactions.length,
@@ -594,6 +592,8 @@ export const withdrawFromWallet = asyncHandler(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
       );
     }
+
+    console.log("hit withdrawal endpoint 2");
 
     const userId = req.user._id;
     const { amount, bankAccountId, note } = req.body;

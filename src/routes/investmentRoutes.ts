@@ -17,45 +17,94 @@ import {
   processInvestmentPayouts,
 } from "../controllers/investmentController";
 import { protect, restrictTo } from "../middleware/authMiddleware";
-import {
-  investmentPlanValidator,
-  userInvestmentValidator,
-} from "../utils/validators";
 import { UserRole } from "../models/userModel";
-import { validate } from "../middleware/validationMiddleware";
 import { upload } from "../middleware/uploadMiddleware";
 
 const router = express.Router();
 
-// Public routes
+// IMPORTANT: Put specific routes BEFORE parameterized routes
+
+// Public routes - specific routes first
 router.get("/", getInvestments);
+
+// Analytics routes - BEFORE parameterized routes
+router.get(
+  "/analytics/platform",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  getInvestmentAnalytics
+);
+
+// Properties routes - BEFORE parameterized routes
+router.get(
+  "/properties/available",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  getAvailableProperties
+);
+
+// Process payouts - BEFORE parameterized routes
+router.post(
+  "/process-payouts",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  processInvestmentPayouts
+);
+
+// Verify payment - BEFORE parameterized routes
+router.post("/verify-payment", protect, verifyInvestmentPayment);
+
+// User-specific routes - BEFORE parameterized routes
+router.get("/user/my-investments", protect, getUserInvestments);
+router.get("/user/analytics", protect, getUserInvestmentAnalytics);
+
+// Parameterized routes - AFTER all specific routes
 router.get("/:id", getInvestmentById);
-
-// Protected routes (user)
-router.get("/", protect, getUserInvestments);
-router.get("/analytics", protect, getUserInvestmentAnalytics);
 router.post("/:id/invest", protect, investInProperty);
-router.post("/verify-payment", verifyInvestmentPayment);
 
-// Admin routes
-router.get("/analytics/platform", getInvestmentAnalytics);
-router.get("/properties/available", getAvailableProperties);
+// Admin routes with parameterized IDs
 router.post(
   "/",
   upload.array("documents", 5),
   protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   createInvestment
 );
+
 router.put(
   "/:id",
   upload.array("documents", 5),
   protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   updateInvestment
 );
-router.delete("/:id", protect, deleteInvestment);
-router.patch("/:id/featured", protect, toggleFeatured);
-router.patch("/:id/trending", protect, toggleTrending);
-router.patch("/:id/status", protect, changeInvestmentStatus);
-router.post("/process-payouts", protect, processInvestmentPayouts);
+
+router.delete(
+  "/:id",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  deleteInvestment
+);
+
+router.patch(
+  "/:id/featured",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  toggleFeatured
+);
+
+router.patch(
+  "/:id/trending",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  toggleTrending
+);
+
+router.patch(
+  "/:id/status",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  changeInvestmentStatus
+);
 
 export default router;

@@ -1,9 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 import asyncHandler from "../utils/asyncHandler";
 import AppError from "../utils/appError";
-import User from "../models/userModel";
+import User, { UserRole, UserStatus } from "../models/userModel";
 import { Wallet } from "../models/walletModel";
 import emailService from "../services/emailService";
+import type { UserStats } from "../types/user-management";
 
 // Get all users with filtering, sorting, and pagination
 export const getAllUsers = asyncHandler(
@@ -14,33 +15,50 @@ export const getAllUsers = asyncHandler(
 
     const query: any = {};
 
+    // Role filter
     if (
       req.query.role &&
-      ["buyer", "agent", "admin"].includes(req.query.role as string)
+      Object.values(UserRole).includes(req.query.role as UserRole)
     ) {
       query.role = req.query.role;
     }
 
-    if (req.query.active !== undefined) {
-      query.active = req.query.active === "true";
+    // Status filter
+    if (
+      req.query.status &&
+      Object.values(UserStatus).includes(req.query.status as UserStatus)
+    ) {
+      query.status = req.query.status;
     }
 
+    // Active filter
+    if (req.query.active !== undefined) {
+      query.isActive = req.query.active === "true";
+    }
+
+    // Verified filter
     if (req.query.verified !== undefined) {
-      query.verified = req.query.verified === "true";
+      query.isEmailVerified = req.query.verified === "true";
     }
 
     // Search by name or email
     if (req.query.search) {
       const searchRegex = new RegExp(req.query.search as string, "i");
-      query.$or = [{ name: searchRegex }, { email: searchRegex }];
+      query.$or = [
+        { firstName: searchRegex },
+        { lastName: searchRegex },
+        { email: searchRegex },
+        { userName: searchRegex },
+      ];
     }
 
     // Execute query with pagination
     const users = await User.find(query)
-      .select("name email phone role active verified createdAt lastLogin")
+      .select("-password -resetPasswordToken -verificationToken -refreshToken")
       .sort((req.query.sort as string) || "-createdAt")
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
     // Get total count for pagination
     const total = await User.countDocuments(query);
@@ -64,7 +82,9 @@ export const getAllUsers = asyncHandler(
 // Get user by ID with detailed information
 export const getUserById = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const user = await User.findById(req.params.id).select("-password");
+    const user = await User.findById(req.params.id)
+      .select("-password -resetPasswordToken -verificationToken -refreshToken")
+      .lean();
 
     if (!user) {
       return next(new AppError("User not found", 404));
@@ -76,8 +96,10 @@ export const getUserById = asyncHandler(
     res.status(200).json({
       status: "success",
       data: {
-        user,
-        walletBalance: wallet ? wallet.balance : 0,
+        user: {
+          ...user,
+          walletBalance: wallet ? wallet.balance : 0,
+        },
       },
     });
   }
@@ -86,8 +108,19 @@ export const getUserById = asyncHandler(
 // Update user
 export const updateUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { firstName, lastName, email, phone, role, active, verified } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      role,
+      isActive,
+      isEmailVerified,
+      address,
+      businessName,
+      city,
+      country,
+    } = req.body;
 
     // Find user
     const user = await User.findById(req.params.id);
@@ -106,23 +139,34 @@ export const updateUser = asyncHandler(
     }
 
     // Update fields
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
-    if (phone) user.phone = phone;
-    if (role && ["buyer", "agent", "admin"].includes(role)) user.role = role;
-    if (active !== undefined) user.isActive = active;
-    if (verified !== undefined) user.isEmailVerified = verified;
+    if (firstName !== undefined) user.firstName = firstName;
+    if (lastName !== undefined) user.lastName = lastName;
+    if (phone !== undefined) user.phone = phone;
+    if (address !== undefined) user.address = address;
+    if (businessName !== undefined) user.businessName = businessName;
+    if (city !== undefined) user.city = city;
+    if (country !== undefined) user.country = country;
+
+    if (role && Object.values(UserRole).includes(role)) {
+      user.role = role;
+    }
+
+    if (isActive !== undefined) user.isActive = isActive;
+    if (isEmailVerified !== undefined) user.isEmailVerified = isEmailVerified;
 
     await user.save();
 
-    // Convert to plain object and remove password
+    // Convert to plain object and remove sensitive fields
     const userObject = user.toObject();
-    delete (userObject as { password?: string }).password;
+    delete (userObject as any).password;
+    delete (userObject as any).resetPasswordToken;
+    delete (userObject as any).verificationToken;
+    delete (userObject as any).refreshToken;
 
     res.status(200).json({
       status: "success",
       data: {
-        userObject,
+        user: userObject,
       },
     });
   }
@@ -150,32 +194,38 @@ export const deleteUser = asyncHandler(
 // Reset user password
 export const resetUserPassword = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { newPassword } = req.body;
-
-    if (!newPassword || newPassword.length < 8) {
-      return next(new AppError("Password must be at least 8 characters", 400));
-    }
-
     const user = await User.findById(req.params.id);
 
     if (!user) {
       return next(new AppError("User not found", 404));
     }
 
-    user.password = newPassword;
+    // Generate temporary password
+    const tempPassword =
+      Math.random().toString(36).slice(-8) +
+      Math.random().toString(36).slice(-8);
+
+    user.password = tempPassword;
     user.passwordChangedAt = new Date();
     await user.save();
 
     // Send password reset notification
-    await emailService.sendEmail(
-      user.email,
-      "Your Password Has Been Reset",
-      `Hello ${user.firstName},\n\nYour password has been reset by an administrator. Please login with your new password.`
-    );
+    try {
+      await emailService.sendEmail(
+        user.email,
+        "Your Password Has Been Reset",
+        `Hello ${user.firstName},\n\nYour password has been reset by an administrator. Your temporary password is: ${tempPassword}\n\nPlease login and change your password immediately.`
+      );
+    } catch (error) {
+      console.error("Failed to send password reset email:", error);
+    }
 
     res.status(200).json({
       status: "success",
       message: "Password reset successfully",
+      data: {
+        tempPassword,
+      },
     });
   }
 );
@@ -193,20 +243,25 @@ export const verifyUser = asyncHandler(
     await user.save();
 
     // Send verification notification
-    await emailService.sendEmail(
-      user.email,
-      "Your Account Has Been Verified",
-      `Hello ${user.firstName},\n\nYour account has been verified by an administrator. You now have full access to all features.`
-    );
+    try {
+      await emailService.sendEmail(
+        user.email,
+        "Your Account Has Been Verified",
+        `Hello ${user.firstName},\n\nYour account has been verified by an administrator. You now have full access to all features.`
+      );
+    } catch (error) {
+      console.error("Failed to send verification email:", error);
+    }
 
     res.status(200).json({
       status: "success",
       data: {
         user: {
-          id: user._id,
-          name: user.firstName,
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
-          verified: user.isEmailVerified,
+          isEmailVerified: user.isEmailVerified,
         },
       },
     });
@@ -217,17 +272,21 @@ export const verifyUser = asyncHandler(
 export const getUserStats = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     // Get counts by role
-    const buyerCount = await User.countDocuments({ role: "buyer" });
-    const agentCount = await User.countDocuments({ role: "agent" });
-    const adminCount = await User.countDocuments({ role: "admin" });
+    const buyerCount = await User.countDocuments({ role: UserRole.BUYER });
+    const agentCount = await User.countDocuments({ role: UserRole.AGENT });
+    const adminCount = await User.countDocuments({
+      role: { $in: [UserRole.ADMIN, UserRole.SUPER_ADMIN] },
+    });
 
     // Get counts by verification status
-    const verifiedCount = await User.countDocuments({ verified: true });
-    const unverifiedCount = await User.countDocuments({ verified: false });
+    const verifiedCount = await User.countDocuments({ isEmailVerified: true });
+    const unverifiedCount = await User.countDocuments({
+      isEmailVerified: false,
+    });
 
     // Get counts by active status
-    const activeCount = await User.countDocuments({ active: true });
-    const inactiveCount = await User.countDocuments({ active: false });
+    const activeCount = await User.countDocuments({ isActive: true });
+    const inactiveCount = await User.countDocuments({ isActive: false });
 
     // Get new users in last 30 days
     const thirtyDaysAgo = new Date();
@@ -256,26 +315,28 @@ export const getUserStats = asyncHandler(
       monthlyRegistrations[item._id - 1] = item.count;
     });
 
+    const stats: UserStats = {
+      total: buyerCount + agentCount + adminCount,
+      byRole: {
+        buyers: buyerCount,
+        agents: agentCount,
+        admins: adminCount,
+      },
+      byVerification: {
+        verified: verifiedCount,
+        unverified: unverifiedCount,
+      },
+      byStatus: {
+        active: activeCount,
+        inactive: inactiveCount,
+      },
+      newUsersLast30Days: newUsersCount,
+      monthlyRegistrations,
+    };
+
     res.status(200).json({
       status: "success",
-      data: {
-        total: buyerCount + agentCount + adminCount,
-        byRole: {
-          buyers: buyerCount,
-          agents: agentCount,
-          admins: adminCount,
-        },
-        byVerification: {
-          verified: verifiedCount,
-          unverified: unverifiedCount,
-        },
-        byStatus: {
-          active: activeCount,
-          inactive: inactiveCount,
-        },
-        newUsersLast30Days: newUsersCount,
-        monthlyRegistrations,
-      },
+      data: stats,
     });
   }
 );
