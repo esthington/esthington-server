@@ -1556,3 +1556,114 @@
 2025-06-16 17:46:44:4644 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-06-16 17:46:44:4644 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-06-16 17:46:44:4644 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:50:050 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:50:050 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:00:51:051 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:05:26:526 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:05:26:526 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:05:26:526 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:05:26:526 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:05:26:526 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 18:05:26:526 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 19:13:55:1355 [31merror[39m: [31mError connecting to MongoDB: querySrv ESERVFAIL _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:05:51:551 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-22 22:19:30:1930 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-22 23:34:52:3452 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-22 23:42:37:4237 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:10:05:105 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:13:46:1346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:13:46:1346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:13:46:1346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:13:46:1346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:13:46:1346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:13:46:1346 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:15:43:1543 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:15:43:1543 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:15:43:1543 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:15:43:1543 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:15:43:1543 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:15:43:1543 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:21:46:2146 [31merror[39m: [31mReferral error: E11000 duplicate key error collection: test.referrals index: referrer_1 dup key: { referrer: ObjectId('685879dc2522809ddc7e4d81') }[39m
+2025-06-23 00:30:14:3014 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:30:14:3014 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:30:14:3014 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:30:14:3014 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:30:14:3014 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:30:14:3014 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 00:32:24:3224 [31merror[39m: [31mReferral error: E11000 duplicate key error collection: test.referrals index: referrer_1 dup key: { referrer: ObjectId('685879dc2522809ddc7e4d81') }[39m
+2025-06-23 07:27:47:2747 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-23 07:41:50:4150 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-23 08:22:41:2241 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-23 08:30:51:3051 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-23 08:50:32:5032 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-23 08:51:35:5135 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-23 08:55:47:5547 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:55:47:5547 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:55:47:5547 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:55:47:5547 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:55:47:5547 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:55:47:5547 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:56:18:5618 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:56:18:5618 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:56:18:5618 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:56:18:5618 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:56:18:5618 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 08:56:18:5618 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-23 09:11:15:1115 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-23 11:27:56:2756 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-06-23 11:28:27:2827 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-06-23 11:29:45:2945 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-06-23 11:29:45:2945 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-06-23 11:29:46:2946 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-01.evqiglv.mongodb.net[39m
+2025-06-23 11:30:33:3033 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-23 11:33:35:3335 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-23 11:34:37:3437 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-23 11:36:14:3614 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-23 11:37:50:3750 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-06-25 07:27:50:2750 [31merror[39m: [31mError connecting to MongoDB: queryTxt ESERVFAIL cluster0.evqiglv.mongodb.net[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:28:57:2857 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-25 07:57:45:5745 [31merror[39m: [31mError connecting to MongoDB: querySrv ESERVFAIL _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m

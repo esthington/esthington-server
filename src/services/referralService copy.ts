@@ -47,7 +47,9 @@ export const processReferralCommissions = async (
       `Processing referral commissions for user ${userId}, type: ${transactionType}, amount: ${amount}, paymentId: ${paymentId}`
     );
 
+    // Find the user's referral chain (3 levels deep)
     const referralChain = await getReferralChain(userId, 3);
+
     if (referralChain.length === 0) {
       logger.info("No referral chain found for user");
       return [];
@@ -56,37 +58,24 @@ export const processReferralCommissions = async (
     const commissions = [];
     const commissionRecords = [];
 
-    // Get system user and wallet
-    const systemUser = await User.findOne({ email: "esthington@gmail.com" });
-    if (!systemUser) throw new Error("System user not found");
-
-    let systemWallet = await Wallet.findOne({ user: systemUser._id });
-    if (!systemWallet) {
-      logger.info(`Creating new system wallet for admin: ${systemUser._id}`);
-      systemWallet = await Wallet.create({
-        user: systemUser._id,
-        balance: 0,
-        availableBalance: 0,
-        pendingBalance: 0,
-      });
-    }
-
+    // Process each level of the referral chain
     for (let level = 0; level < referralChain.length; level++) {
       const referrer = referralChain[level];
       let commissionRate = 0;
 
+      // Determine commission rate based on level
       switch (level) {
         case 0:
-          commissionRate = COMMISSION_RATES.LEVEL_1;
+          commissionRate = COMMISSION_RATES.LEVEL_1; // 10%
           break;
         case 1:
-          commissionRate = COMMISSION_RATES.LEVEL_2;
+          commissionRate = COMMISSION_RATES.LEVEL_2; // 3%
           break;
         case 2:
-          commissionRate = COMMISSION_RATES.LEVEL_3;
+          commissionRate = COMMISSION_RATES.LEVEL_3; // 1%
           break;
         default:
-          continue;
+          continue; // Skip levels beyond 3
       }
 
       const commissionAmount = amount * commissionRate;
@@ -94,10 +83,12 @@ export const processReferralCommissions = async (
         level === 0 ? "Direct" : level === 1 ? "Indirect" : "Network";
 
       try {
+        // Find or create referrer's wallet with verification
         let referrerWallet = await Wallet.findOne({ user: referrer._id });
+
         if (!referrerWallet) {
           logger.warn(
-            `Wallet not found for referrer ${referrer._id}, creating`
+            `Wallet not found for referrer ${referrer._id}, creating new wallet`
           );
           referrerWallet = new Wallet({
             user: referrer._id,
@@ -108,94 +99,102 @@ export const processReferralCommissions = async (
           await referrerWallet.save({ session });
         }
 
-        // Create INCOMING transaction for referrer
-        const [commissionTransaction] = await Transaction.create(
-          [
-            {
-              user: referrer._id,
-              type: TransactionType.REFERRAL,
-              amount: commissionAmount,
-              status: TransactionStatus.COMPLETED,
-              check: TransactionCheck.INCOMING,
-              reference: `REF-${level + 1}-${Date.now()}-${userId}`,
-              description: `${levelName} referral commission (Level ${
-                level + 1
-              }) from ${transactionType} transaction`,
-              paymentMethod: PaymentMethod.WALLET,
-              sender: userId,
-              metadata: {
-                referralLevel: level + 1,
-                sourceUserId: userId,
-                transactionType,
-                originalAmount: amount,
-                commissionRate,
-                levelName,
-                originalTransactionRef: transactionRef,
-                paymentId,
-              },
-            },
-          ],
-          { session }
-        );
+        // Create commission transaction with retry logic
+        let commissionTransaction;
+        let retryCount = 0;
+        const maxRetries = 3;
 
-        // Update referrer's wallet
-        referrerWallet.balance += commissionAmount;
-        referrerWallet.availableBalance += commissionAmount;
-        await referrerWallet.save({ session });
+        while (retryCount < maxRetries) {
+          try {
+            commissionTransaction = await Transaction.create(
+              [
+                {
+                  user: referrer._id,
+                  type: TransactionType.REFERRAL,
+                  amount: commissionAmount,
+                  status: TransactionStatus.COMPLETED,
+                  check: TransactionCheck.INCOMING,
+                  reference: `REF-${level + 1}-${Date.now()}-${userId}`,
+                  description: `${levelName} referral commission (Level ${
+                    level + 1
+                  }) from ${transactionType} transaction`,
+                  paymentMethod: PaymentMethod.WALLET,
+                  sender: userId,
+                  metadata: {
+                    referralLevel: level + 1,
+                    sourceUserId: userId,
+                    transactionType: transactionType,
+                    originalAmount: amount,
+                    commissionRate: commissionRate,
+                    levelName: levelName,
+                    originalTransactionRef: transactionRef,
+                    paymentId: paymentId,
+                  },
+                },
+              ],
+              { session }
+            );
+            break; // Success, exit retry loop
+          } catch (transactionError) {
+            retryCount++;
+            logger.error(
+              `Error creating commission transaction (attempt ${retryCount}):`,
+              transactionError
+            );
+            if (retryCount >= maxRetries) throw transactionError;
+            await new Promise((resolve) => setTimeout(resolve, 500)); // Wait before retry
+          }
+        }
 
-        // SYSTEM DEBIT: Create OUTGOING transaction and update system wallet
-        await Transaction.create(
-          [
-            {
-              user: systemUser._id,
-              type: TransactionType.REFERRAL,
-              amount: commissionAmount,
-              status: TransactionStatus.COMPLETED,
-              check: TransactionCheck.OUTGOING,
-              reference: transactionRef || `SYS-REF-${Date.now()}-${userId}`,
-              description: `Referral commission paid to ${referrer.firstName} ${
-                referrer.lastName
-              } (Level ${level + 1})`,
-              paymentMethod: PaymentMethod.WALLET,
-              recipient: referrer._id,
-              metadata: {
-                referralLevel: level + 1,
-                recipientUserId: referrer._id,
-                transactionType,
-                originalAmount: amount,
-                commissionRate,
-                levelName,
-                originalTransactionRef: transactionRef,
-                paymentId,
-              },
-            },
-          ],
-          { session }
-        );
+        // Update referrer's wallet with verification and retry logic
+        retryCount = 0;
+        while (retryCount < maxRetries) {
+          try {
+            // Double-check wallet exists and is valid
+            if (!referrerWallet) {
+              throw new Error(`Wallet not found for referrer ${referrer._id}`);
+            }
 
-        systemWallet.balance -= commissionAmount;
-        systemWallet.availableBalance -= commissionAmount;
-        await systemWallet.save({ session });
+            // Update wallet balances
+            const previousBalance = referrerWallet.balance;
+            const previousAvailableBalance = referrerWallet.availableBalance;
 
-        // Update referral record
-        const levelField =
-          level === 0
-            ? "level1Earnings"
-            : level === 1
-            ? "level2Earnings"
-            : "level3Earnings";
+            referrerWallet.balance += commissionAmount;
+            referrerWallet.availableBalance += commissionAmount;
 
+            await referrerWallet.save({ session });
+
+            logger.info(
+              `Updated wallet for referrer ${referrer._id}: Balance ${previousBalance} -> ${referrerWallet.balance}, Available ${previousAvailableBalance} -> ${referrerWallet.availableBalance}`
+            );
+            break; // Success, exit retry loop
+          } catch (walletError) {
+            retryCount++;
+            logger.error(
+              `Error updating referrer wallet (attempt ${retryCount}):`,
+              walletError
+            );
+            if (retryCount >= maxRetries) throw walletError;
+
+            // Re-fetch wallet before retry
+            referrerWallet = await Wallet.findOne({ user: referrer._id });
+            if (!referrerWallet) {
+              referrerWallet = new Wallet({
+                user: referrer._id,
+                balance: 0,
+                availableBalance: 0,
+                pendingBalance: 0,
+              });
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 500)); // Wait before retry
+          }
+        }
+
+        // Update referral earnings
         await Referral.findOneAndUpdate(
           { referrer: referrer._id, referred: userId },
-          {
-            $inc: {
-              earnings: commissionAmount,
-              [levelField]: commissionAmount,
-            },
-            $set: {
-              lastActivityDate: new Date(),
-            },
-          },
+          { $inc: { earnings: commissionAmount } },
           { session }
         );
 
@@ -209,39 +208,60 @@ export const processReferralCommissions = async (
           NotificationType.TRANSACTION,
           "/dashboard/referrals",
           {
-            transactionId: commissionTransaction._id,
+            transactionId:
+              commissionTransaction && commissionTransaction.length > 0
+                ? commissionTransaction[0]._id
+                : undefined,
             level: level + 1,
-            commissionAmount,
-            paymentId,
+            commissionAmount: commissionAmount,
+            paymentId: paymentId,
           }
         );
 
-        // Collect records
-        commissions.push({
+        const commission = {
           referrer: referrer._id,
           referrerName: `${referrer.firstName} ${referrer.lastName}`,
           level: level + 1,
           amount: commissionAmount,
           rate: commissionRate,
-          transaction: commissionTransaction,
-        });
+          transaction:
+            commissionTransaction && commissionTransaction.length > 0
+              ? commissionTransaction[0]
+              : undefined,
+        };
 
+        commissions.push(commission);
+
+        // Add to commission records for property payment
         commissionRecords.push({
           referrerId: referrer._id,
           referrerName: `${referrer.firstName} ${referrer.lastName}`,
           referrerEmail: referrer.email,
           level: level + 1,
           amount: commissionAmount,
-          transactionId: commissionTransaction._id,
+          transactionId:
+            commissionTransaction && commissionTransaction.length > 0
+              ? commissionTransaction[0]._id
+              : undefined,
           status: "paid",
           paidAt: new Date(),
         });
-      } catch (err) {
+
+        logger.info(
+          `Level ${
+            level + 1
+          } commission of ₦${commissionAmount} awarded to referrer ${
+            referrer._id
+          } for payment ${paymentId}`
+        );
+      } catch (levelError) {
         logger.error(
           `Error processing commission for level ${level + 1}:`,
-          err
+          levelError
         );
+        // Continue with next level rather than failing entire process
 
+        // Add failed commission record if we have a payment ID
         if (paymentId) {
           commissionRecords.push({
             referrerId: referrer._id,
@@ -255,7 +275,7 @@ export const processReferralCommissions = async (
       }
     }
 
-    // Update payment record with commissions
+    // Update property payment record if applicable
     if (paymentId && commissionRecords.length > 0) {
       try {
         await PropertyPayment.findByIdAndUpdate(
@@ -263,17 +283,22 @@ export const processReferralCommissions = async (
           { $set: { commissions: commissionRecords } },
           { session }
         );
-        logger.info(`Updated payment ${paymentId} with commissions`);
-      } catch (error) {
-        logger.error("Error updating payment commissions:", error);
+        logger.info(
+          `Updated payment ${paymentId} with ${commissionRecords.length} commission records`
+        );
+      } catch (paymentUpdateError) {
+        logger.error(
+          `Error updating property payment with commissions:`,
+          paymentUpdateError
+        );
       }
     }
 
-    // Update referrer ranks
+    // Update ranks for all referrers in the chain
     try {
       await updateReferrerRanks(referralChain, session);
     } catch (rankError) {
-      logger.error("Error updating ranks:", rankError);
+      logger.error("Error updating referrer ranks:", rankError);
     }
 
     return commissions;

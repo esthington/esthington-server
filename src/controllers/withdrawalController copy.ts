@@ -16,8 +16,6 @@ import notificationService from "../services/notificationService";
 import { v4 as uuidv4 } from "uuid";
 import { NotificationType } from "../models/notificationModel";
 
-const SYSTEM_EMAIL = "esthington@gmail.com";
-
 /**
  * @desc    Create withdrawal request
  * @route   POST /api/withdrawals
@@ -35,29 +33,38 @@ export const createWithdrawalRequest = asyncHandler(
     const userId = req.user._id;
     const { amount, bankAccountId, note } = req.body;
 
-    // Validation
+    // Validation: amount must be at least 100
     if (!amount || amount < 100) {
       return next(
         new AppError("Amount must be at least ₦100", StatusCodes.BAD_REQUEST)
       );
     }
 
+    // Validation: bank account ID must be provided
     if (!bankAccountId) {
       return next(
         new AppError("Please select a bank account", StatusCodes.BAD_REQUEST)
       );
     }
 
-    // Get wallet, bank account, and system user
-    const [wallet, bankAccount, systemUser] = await Promise.all([
-      Wallet.findOne({ user: userId }),
-      BankAccount.findOne({ _id: bankAccountId, user: userId }),
-      User.findOne({ email: SYSTEM_EMAIL }),
-    ]);
-
+    // Find the user's wallet
+    const wallet = await Wallet.findOne({ user: userId });
     if (!wallet) {
       return next(new AppError("Wallet not found", StatusCodes.NOT_FOUND));
     }
+
+    // Check if wallet has enough available balance
+    if (wallet.availableBalance < amount) {
+      return next(
+        new AppError("Insufficient balance", StatusCodes.BAD_REQUEST)
+      );
+    }
+
+    // Find and validate the bank account
+    const bankAccount = await BankAccount.findOne({
+      _id: bankAccountId,
+      user: userId,
+    });
 
     if (!bankAccount) {
       return next(
@@ -65,40 +72,10 @@ export const createWithdrawalRequest = asyncHandler(
       );
     }
 
-    if (!systemUser) {
-      return next(new AppError("System user not found", StatusCodes.NOT_FOUND));
-    }
-
-    if (wallet.balance < amount) {
-      return next(
-        new AppError("Insufficient balance", StatusCodes.BAD_REQUEST)
-      );
-    }
-
-    // Create system wallet if not existing
-    let systemWallet = await Wallet.findOne({ user: systemUser._id });
-
-    if (!systemWallet) {
-      systemWallet = await Wallet.create({
-        user: systemUser._id,
-        balance: 0,
-        pendingBalance: 0,
-      });
-    }
-
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
-      // Notify user about withdrawal approval
-    }
-
-    // Update system wallet
-    // systemWallet.balance += amount;
-    systemWallet.pendingBalance += amount;
-
-    // Create transaction
+    // Generate a unique withdrawal reference
     const reference = `withdraw_${uuidv4()}`;
+
+    // Create the withdrawal transaction
     const transaction = await Transaction.create({
       user: userId,
       type: TransactionType.WITHDRAWAL,
@@ -108,7 +85,7 @@ export const createWithdrawalRequest = asyncHandler(
       reference,
       description:
         note ||
-        `Withdrawal to ${bankAccount.bankName} - ${bankAccount.accountNumber}`,
+        `Withdrawal to bank account: ${bankAccount.bankName} - ${bankAccount.accountNumber}`,
       metadata: {
         bankAccount: {
           id: bankAccount._id,
@@ -119,202 +96,31 @@ export const createWithdrawalRequest = asyncHandler(
       },
     });
 
-    // Update user wallet
-    wallet.balance -= amount;
-    wallet.pendingBalance += amount;
-
-    // Save both wallets
-    await Promise.all([wallet.save(), systemWallet.save()]);
-
-    // Notify user
+    // Send user notification
     await notificationService.createNotification(
       userId.toString(),
       "Withdrawal Request Submitted",
-      `Your withdrawal request for ₦${amount.toLocaleString()} is pending approval.`,
+      `Your withdrawal request for ₦${amount.toLocaleString()} has been submitted and is pending approval.`,
       NotificationType.TRANSACTION,
       "/dashboard/my-transactions",
       { transactionId: transaction._id }
     );
 
-    res.status(StatusCodes.CREATED).json({
+    // Update wallet balances
+    wallet.availableBalance -= amount;
+    wallet.pendingBalance += amount;
+    await wallet.save();
+
+    // Respond to client
+    res.status(StatusCodes.OK).json({
       success: true,
-      message: "Withdrawal request submitted",
+      message: "Withdrawal request submitted successfully",
       transaction,
+      wallet,
     });
   }
 );
 
-/**
- * @desc    Approve withdrawal request (Admin only)
- * @route   PATCH /api/withdrawals/:id/approve
- * @access  Private/Admin
- */
-export const approveWithdrawal = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const { note } = req.body;
-    if (!req.user)
-      return next(new AppError("Unauthorized", StatusCodes.UNAUTHORIZED));
-
-    const withdrawal = await Transaction.findOne({
-      _id: id,
-      type: TransactionType.WITHDRAWAL,
-      status: TransactionStatus.PENDING,
-    }).populate("user", "firstName lastName email");
-
-    if (!withdrawal)
-      return next(new AppError("Withdrawal not found", StatusCodes.NOT_FOUND));
-
-    const [userWallet, systemUser] = await Promise.all([
-      Wallet.findOne({ user: withdrawal.user._id }),
-      User.findOne({ email: SYSTEM_EMAIL }),
-    ]);
-
-    if (!userWallet)
-      return next(new AppError("User wallet not found", StatusCodes.NOT_FOUND));
-    if (!systemUser)
-      return next(new AppError("System user not found", StatusCodes.NOT_FOUND));
-
-    const systemWallet = await Wallet.findOne({ user: systemUser._id });
-    if (!systemWallet)
-      return next(
-        new AppError("System wallet not found", StatusCodes.NOT_FOUND)
-      );
-    if (systemWallet.pendingBalance < withdrawal.amount)
-      return next(
-        new AppError("System pending balance too low", StatusCodes.BAD_REQUEST)
-      );
-
-    withdrawal.status = TransactionStatus.COMPLETED;
-    withdrawal.metadata = {
-      ...withdrawal.metadata,
-      approvedBy: req.user._id,
-      approvedAt: new Date(),
-      note,
-    };
-    if (note) withdrawal.description += ` - Admin note: ${note}`;
-
-    const user = await User.findById(withdrawal.user._id);
-
-    if (!user) {
-      return next(new AppError("User not found", StatusCodes.NOT_FOUND));
-      // Notify user about withdrawal approval
-    }
-
-    systemWallet.pendingBalance -= withdrawal.amount;
-    systemWallet.balance += withdrawal.amount;
-    userWallet.pendingBalance -= withdrawal.amount;
-
-    await Transaction.create({
-      user: systemUser._id,
-      type: TransactionType.WITHDRAWAL,
-      check: TransactionCheck.OUTGOING,
-      amount: withdrawal.amount,
-      status: TransactionStatus.COMPLETED,
-      reference: withdrawal.reference,
-      description: `Payout to ${user.firstName} ${user.lastName}`,
-      metadata: {
-        originalTransactionId: withdrawal._id,
-        payoutTo: withdrawal.user._id,
-      },
-    });
-
-    await Promise.all([
-      withdrawal.save(),
-      userWallet.save(),
-      systemWallet.save(),
-    ]);
-
-    res.status(StatusCodes.OK).json({
-      success: true,
-      message: "Withdrawal approved and system debited",
-      data: withdrawal,
-    });
-  }
-);
-
-/**
- * @desc    Reject withdrawal request (Admin only)
- * @route   PATCH /api/withdrawals/:id/reject
- * @access  Private/Admin
- */
-export const rejectWithdrawal = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const { note } = req.body;
-
-    if (!req.user)
-      return next(new AppError("Unauthorized", StatusCodes.UNAUTHORIZED));
-    if (!note)
-      return next(
-        new AppError("Rejection note is required", StatusCodes.BAD_REQUEST)
-      );
-
-    const withdrawal = await Transaction.findOne({
-      _id: id,
-      type: TransactionType.WITHDRAWAL,
-      status: TransactionStatus.PENDING,
-    }).populate("user", "firstName lastName email");
-
-    if (!withdrawal)
-      return next(new AppError("Withdrawal not found", StatusCodes.NOT_FOUND));
-
-    const [userWallet, systemUser] = await Promise.all([
-      Wallet.findOne({ user: withdrawal.user._id }),
-      User.findOne({ email: SYSTEM_EMAIL }),
-    ]);
-
-    if (!userWallet)
-      return next(new AppError("User wallet not found", StatusCodes.NOT_FOUND));
-    if (!systemUser)
-      return next(new AppError("System user not found", StatusCodes.NOT_FOUND));
-
-    const systemWallet = await Wallet.findOne({ user: systemUser._id });
-    if (!systemWallet)
-      return next(
-        new AppError("System wallet not found", StatusCodes.NOT_FOUND)
-      );
-
-    userWallet.balance += withdrawal.amount;
-    userWallet.pendingBalance -= withdrawal.amount;
-    systemWallet.pendingBalance -= withdrawal.amount;
-
-    withdrawal.status = TransactionStatus.FAILED;
-    withdrawal.description += ` - Rejected: ${note}`;
-    withdrawal.metadata = {
-      ...withdrawal.metadata,
-      rejectedBy: req.user._id,
-      rejectedAt: new Date(),
-      note,
-    };
-
-    await Transaction.create({
-      user: withdrawal.user._id,
-      type: TransactionType.WITHDRAWAL,
-      check: TransactionCheck.INCOMING,
-      amount: withdrawal.amount,
-      status: TransactionStatus.COMPLETED,
-      reference: `reversal_${withdrawal.reference}`,
-      description: `Reversal of rejected withdrawal`,
-      metadata: {
-        originalTransactionId: withdrawal._id,
-        rejectionNote: note,
-      },
-    });
-
-    await Promise.all([
-      withdrawal.save(),
-      userWallet.save(),
-      systemWallet.save(),
-    ]);
-
-    res.status(StatusCodes.OK).json({
-      success: true,
-      message: "Withdrawal rejected and refunded to user",
-      data: withdrawal,
-    });
-  }
-);
 
 /**
  * @desc    Get user's withdrawal requests
@@ -502,6 +308,161 @@ export const getWithdrawalById = asyncHandler(
     res.status(StatusCodes.OK).json({
       status: "success",
       data: transformedWithdrawal,
+    });
+  }
+);
+
+/**
+ * @desc    Approve withdrawal request (Admin only)
+ * @route   PATCH /api/withdrawals/:id/approve
+ * @access  Private/Admin
+ */
+export const approveWithdrawal = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
+    }
+
+    const userId = req.user._id;
+    const { id } = req.params;
+    const { notes } = req.body;
+
+    // Find the withdrawal request
+    const withdrawal = await Transaction.findOne({
+      _id: id,
+      type: TransactionType.WITHDRAWAL,
+      status: TransactionStatus.PENDING,
+    }).populate("user", "firstName lastName email");
+
+    if (!withdrawal) {
+      return next(
+        new AppError(
+          "Pending withdrawal request not found",
+          StatusCodes.NOT_FOUND
+        )
+      );
+    }
+
+    // Find the user's wallet
+    const wallet = await Wallet.findOne({ user: withdrawal.user._id });
+    if (!wallet) {
+      return next(new AppError("User wallet not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Update withdrawal status
+    withdrawal.status = TransactionStatus.COMPLETED;
+    if (notes) {
+      withdrawal.description += ` - Admin notes: ${notes}`;
+    }
+
+    // Add audit trail
+    withdrawal.metadata = {
+      ...withdrawal.metadata,
+      approvedBy: userId,
+      approvedAt: new Date(),
+      adminNotes: notes,
+    };
+
+    // Update wallet balances - remove from pending balance
+    wallet.pendingBalance = Math.max(
+      0,
+      wallet.pendingBalance - withdrawal.amount
+    );
+
+    // Save both withdrawal and wallet
+    await Promise.all([withdrawal.save(), wallet.save()]);
+
+    // Log the admin action
+    console.log(
+      `Withdrawal ${id} approved by admin ${userId} at ${new Date().toISOString()}`
+    );
+
+    res.status(StatusCodes.OK).json({
+      status: "success",
+      message: "Withdrawal approved successfully",
+      data: withdrawal,
+    });
+  }
+);
+
+/**
+ * @desc    Reject withdrawal request (Admin only)
+ * @route   PATCH /api/withdrawals/:id/reject
+ * @access  Private/Admin
+ */
+export const rejectWithdrawal = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next(
+        new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
+      );
+    }
+
+    const userId = req.user._id;
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    if (!reason) {
+      return next(
+        new AppError("Rejection reason is required", StatusCodes.BAD_REQUEST)
+      );
+    }
+
+    // Find the withdrawal request
+    const withdrawal = await Transaction.findOne({
+      _id: id,
+      type: TransactionType.WITHDRAWAL,
+      status: TransactionStatus.PENDING,
+    }).populate("user", "firstName lastName email");
+
+    if (!withdrawal) {
+      return next(
+        new AppError(
+          "Pending withdrawal request not found",
+          StatusCodes.NOT_FOUND
+        )
+      );
+    }
+
+    // Find the user's wallet
+    const wallet = await Wallet.findOne({ user: withdrawal.user._id });
+    if (!wallet) {
+      return next(new AppError("User wallet not found", StatusCodes.NOT_FOUND));
+    }
+
+    // Update withdrawal status
+    withdrawal.status = TransactionStatus.FAILED;
+    withdrawal.description += ` - Rejected: ${reason}`;
+
+    // Add audit trail
+    withdrawal.metadata = {
+      ...withdrawal.metadata,
+      rejectedBy: userId,
+      rejectedAt: new Date(),
+      rejectionReason: reason,
+    };
+
+    // Restore user's balance
+    wallet.availableBalance += withdrawal.amount;
+    wallet.pendingBalance = Math.max(
+      0,
+      wallet.pendingBalance - withdrawal.amount
+    );
+
+    // Save both withdrawal and wallet
+    await Promise.all([withdrawal.save(), wallet.save()]);
+
+    // Log the admin action
+    console.log(
+      `Withdrawal ${id} rejected by admin ${userId} at ${new Date().toISOString()}: ${reason}`
+    );
+
+    res.status(StatusCodes.OK).json({
+      status: "success",
+      message: "Withdrawal rejected successfully",
+      data: withdrawal,
     });
   }
 );

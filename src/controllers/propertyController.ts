@@ -19,6 +19,7 @@ import User from "../models/userModel";
 import {
   PaymentMethod,
   Transaction,
+  TransactionCheck,
   TransactionStatus,
   TransactionType,
   Wallet,
@@ -1114,6 +1115,7 @@ export const initiatePropertyPurchase = asyncHandler(
                   type: TransactionType.PROPERTY_PURCHASE,
                   amount: totalPrice,
                   status: TransactionStatus.COMPLETED,
+                  check: TransactionCheck.OUTGOING,
                   reference: reference,
                   description: `Property purchase: ${property.title} - ${plotIds.length} plot(s)`,
                   paymentMethod: PaymentMethod.WALLET,
@@ -1140,6 +1142,7 @@ export const initiatePropertyPurchase = asyncHandler(
                   type: TransactionType.PROPERTY_PURCHASE,
                   amount: totalPrice,
                   status: TransactionStatus.COMPLETED,
+                  check: TransactionCheck.INCOMING,
                   reference: reference,
                   description: `Property sale received from ${buyer.firstName} ${buyer.lastName} for ${property.title}`,
                   paymentMethod: PaymentMethod.WALLET,

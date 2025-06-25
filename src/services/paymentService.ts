@@ -5,6 +5,7 @@ import {
   TransactionType,
   PaymentMethod,
   Wallet,
+  TransactionCheck,
 } from "../models/walletModel";
 import User from "../models/userModel";
 import notificationService from "./notificationService";
@@ -453,6 +454,7 @@ class PaymentService {
         reference: data.reference,
         description: `Wallet funding via Paystack`,
         paymentMethod: PaymentMethod.CARD,
+        check: TransactionCheck.INCOMING,
         date: new Date(),
         metadata: {
           paystackData: data,
@@ -467,11 +469,12 @@ class PaymentService {
         type: TransactionType.DEPOSIT,
         amount,
         status: TransactionStatus.COMPLETED,
-        reference: `SYS-${data.reference}`, // Prefix to distinguish system transaction
+        reference: `${data.reference}`, // Prefix to distinguish system transaction
         description: `System credit from ${
           user.firstName || user.userName || "User"
         } wallet funding`,
         paymentMethod: PaymentMethod.CARD,
+        check: TransactionCheck.INCOMING,
         date: new Date(),
         sender: userId, // Track who funded the wallet
         metadata: {
@@ -646,6 +649,7 @@ class PaymentService {
       type: TransactionType.DEPOSIT,
       amount,
       status: TransactionStatus.FAILED,
+      check: TransactionCheck.INCOMING,
       reference: data.reference,
       description: `Failed wallet funding via Paystack`,
       paymentMethod: PaymentMethod.CARD,

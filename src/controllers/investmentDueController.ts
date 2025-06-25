@@ -1,72 +1,101 @@
 import type { Request, Response } from "express";
 import UserInvestment from "../models/userInvestmentModel";
+import Investment from "../models/investmentModel";
 import mongoose from "mongoose";
-import { Transaction, Wallet } from "../models/walletModel";
+import { Transaction, TransactionCheck, Wallet } from "../models/walletModel";
 
-// Helper function to generate payouts for an investment
-const generatePayoutsForInvestment = (userInvestment: any, investment: any) => {
+// Helper function to calculate payout schedule
+const calculatePayoutSchedule = (
+  startDate: Date,
+  duration: number,
+  payoutFrequency: string,
+  expectedReturn: number
+) => {
   const payouts = [];
-  const duration = investment.duration || 12; // Default 12 months
-  const payoutFrequency = investment.payoutFrequency || "monthly";
-  const totalReturn = userInvestment.expectedReturn;
+  let payoutCount = duration; // Default monthly
 
-  let payoutCount = duration;
-  if (payoutFrequency === "quarterly") payoutCount = Math.ceil(duration / 3);
-  else if (payoutFrequency === "semi-annually")
-    payoutCount = Math.ceil(duration / 6);
-  else if (payoutFrequency === "annually")
-    payoutCount = Math.ceil(duration / 12);
+  switch (payoutFrequency) {
+    case "quarterly":
+      payoutCount = Math.ceil(duration / 3);
+      break;
+    case "semi_annually":
+      payoutCount = Math.ceil(duration / 6);
+      break;
+    case "annually":
+      payoutCount = Math.ceil(duration / 12);
+      break;
+    case "end_of_term":
+      payoutCount = 1;
+      break;
+  }
 
-  const payoutAmount = Math.round(totalReturn / payoutCount);
+  const basePayoutAmount = Math.floor(expectedReturn / payoutCount);
+  const remainder = expectedReturn - basePayoutAmount * payoutCount;
 
   for (let i = 1; i <= payoutCount; i++) {
-    const payoutDate = new Date(userInvestment.startDate);
+    const payoutDate = new Date(startDate);
 
-    if (payoutFrequency === "monthly") {
-      payoutDate.setMonth(payoutDate.getMonth() + i);
-    } else if (payoutFrequency === "quarterly") {
-      payoutDate.setMonth(payoutDate.getMonth() + i * 3);
-    } else if (payoutFrequency === "semi-annually") {
-      payoutDate.setMonth(payoutDate.getMonth() + i * 6);
-    } else if (payoutFrequency === "annually") {
-      payoutDate.setFullYear(payoutDate.getFullYear() + i);
+    switch (payoutFrequency) {
+      case "monthly":
+        payoutDate.setMonth(payoutDate.getMonth() + i);
+        break;
+      case "quarterly":
+        payoutDate.setMonth(payoutDate.getMonth() + i * 3);
+        break;
+      case "semi_annually":
+        payoutDate.setMonth(payoutDate.getMonth() + i * 6);
+        break;
+      case "annually":
+        payoutDate.setFullYear(payoutDate.getFullYear() + i);
+        break;
+      case "end_of_term":
+        payoutDate.setMonth(payoutDate.getMonth() + duration);
+        break;
     }
 
+    // Add remainder to last payout
+    const amount =
+      i === payoutCount ? basePayoutAmount + remainder : basePayoutAmount;
+
     payouts.push({
-      _id: new mongoose.Types.ObjectId(),
-      date: payoutDate,
-      amount:
-        i === payoutCount
-          ? totalReturn - payoutAmount * (payoutCount - 1)
-          : payoutAmount, // Last payout gets remainder
-      status: "pending",
       payoutNumber: i,
+      date: payoutDate,
+      amount,
+      isDue: payoutDate <= new Date(),
+      isOverdue: payoutDate < new Date(),
     });
   }
 
   return payouts;
 };
 
-// Get investment dues with pagination and sorting
+// Get investment dues with enhanced filtering and pagination
 export const getInvestmentDues = async (req: Request, res: Response) => {
   try {
-    const page = Number.parseInt(req.query.page as string) || 1;
-    const limit = Number.parseInt(req.query.limit as string) || 10;
+    const page = Math.max(1, Number.parseInt(req.query.page as string) || 1);
+    const limit = Math.min(
+      100,
+      Math.max(1, Number.parseInt(req.query.limit as string) || 10)
+    );
     const status = req.query.status as string;
-    const sortBy = (req.query.sortBy as string) || "startDate";
+    const sortBy = (req.query.sortBy as string) || "nextPayoutDate";
+    const sortOrder = req.query.sortOrder === "desc" ? -1 : 1;
     const search = req.query.search as string;
+    const investmentType = req.query.investmentType as string;
 
     const skip = (page - 1) * limit;
 
-    // Build aggregation pipeline to show ALL investments
+    // Build match conditions
+    const matchConditions: any = {
+      status: "active", // Only active investments can have dues
+      expectedReturn: { $gt: 0 },
+      startDate: { $exists: true, $lte: new Date() },
+    };
+
+    // Build aggregation pipeline
     const pipeline: any[] = [
-      // Match all investments (not just active ones)
-      {
-        $match: {
-          expectedReturn: { $gt: 0 },
-          startDate: { $exists: true },
-        },
-      },
+      { $match: matchConditions },
+
       // Lookup user details
       {
         $lookup: {
@@ -82,11 +111,13 @@ export const getInvestmentDues = async (req: Request, res: Response) => {
                 email: 1,
                 avatar: 1,
                 userName: 1,
+                phone: 1,
               },
             },
           ],
         },
       },
+
       // Lookup investment details
       {
         $lookup: {
@@ -100,79 +131,155 @@ export const getInvestmentDues = async (req: Request, res: Response) => {
                 title: 1,
                 propertyId: 1,
                 returnRate: 1,
-                duration: 1,
+                investmentPeriod: 1,
                 payoutFrequency: 1,
                 type: 1,
+                status: 1,
               },
             },
           ],
         },
       },
-      // Ensure we have user and investment data
+
+      // Filter out records without user or investment data
       {
         $match: {
           user: { $ne: [] },
           investment: { $ne: [] },
         },
       },
-      {
-        $unwind: "$user",
-      },
-      {
-        $unwind: "$investment",
-      },
-      // Add calculated fields
+
+      { $unwind: "$user" },
+      { $unwind: "$investment" },
+
+      // Calculate payout details
       {
         $addFields: {
-          duration: { $ifNull: ["$investment.duration", 12] },
+          duration: { $ifNull: ["$investment.investmentPeriod", 12] },
           payoutFrequency: {
             $ifNull: ["$investment.payoutFrequency", "monthly"],
           },
+
+          // Calculate months elapsed since start
           monthsElapsed: {
             $divide: [
               { $subtract: [new Date(), "$startDate"] },
-              1000 * 60 * 60 * 24 * 30, // Convert to months
+              1000 * 60 * 60 * 24 * 30.44, // More accurate month calculation
             ],
           },
         },
       },
-      // Calculate next payout date and determine if due
+
+      // Calculate payout schedule and current status
       {
         $addFields: {
+          // Calculate total number of payouts
+          totalPayouts: {
+            $switch: {
+              branches: [
+                {
+                  case: { $eq: ["$payoutFrequency", "quarterly"] },
+                  then: { $ceil: { $divide: ["$duration", 3] } },
+                },
+                {
+                  case: { $eq: ["$payoutFrequency", "semi_annually"] },
+                  then: { $ceil: { $divide: ["$duration", 6] } },
+                },
+                {
+                  case: { $eq: ["$payoutFrequency", "annually"] },
+                  then: { $ceil: { $divide: ["$duration", 12] } },
+                },
+                { case: { $eq: ["$payoutFrequency", "end_of_term"] }, then: 1 },
+              ],
+              default: "$duration",
+            },
+          },
+
+          // Calculate payout interval in months
+          payoutIntervalMonths: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$payoutFrequency", "quarterly"] }, then: 3 },
+                {
+                  case: { $eq: ["$payoutFrequency", "semi_annually"] },
+                  then: 6,
+                },
+                { case: { $eq: ["$payoutFrequency", "annually"] }, then: 12 },
+                {
+                  case: { $eq: ["$payoutFrequency", "end_of_term"] },
+                  then: "$duration",
+                },
+              ],
+              default: 1,
+            },
+          },
+        },
+      },
+
+      {
+        $addFields: {
+          // Calculate which payout period we're in
+          currentPayoutPeriod: {
+            $ceil: { $divide: ["$monthsElapsed", "$payoutIntervalMonths"] },
+          },
+
+          // Calculate payout amount
+          payoutAmount: {
+            $divide: ["$expectedReturn", "$totalPayouts"],
+          },
+
+          // Calculate next payout date
           nextPayoutDate: {
             $dateAdd: {
               startDate: "$startDate",
               unit: "month",
-              amount: { $ceil: "$monthsElapsed" },
-            },
-          },
-          payoutAmount: {
-            $divide: ["$expectedReturn", "$duration"],
-          },
-          isOverdue: {
-            $and: [
-              { $lt: ["$monthsElapsed", "$duration"] }, // Not completed
-              {
-                $lt: [
+              amount: {
+                $multiply: [
                   {
-                    $dateAdd: {
-                      startDate: "$startDate",
-                      unit: "month",
-                      amount: { $ceil: "$monthsElapsed" },
+                    $ceil: {
+                      $divide: ["$monthsElapsed", "$payoutIntervalMonths"],
                     },
                   },
-                  new Date(),
+                  "$payoutIntervalMonths",
+                ],
+              },
+            },
+          },
+        },
+      },
+
+      {
+        $addFields: {
+          // Determine if payout is due
+          isDue: {
+            $and: [
+              { $gte: ["$monthsElapsed", "$payoutIntervalMonths"] }, // At least one interval has passed
+              { $lte: ["$currentPayoutPeriod", "$totalPayouts"] }, // Haven't exceeded total payouts
+              { $lte: ["$nextPayoutDate", new Date()] }, // Payout date has arrived
+            ],
+          },
+
+          // Determine if payout is overdue (more than 7 days past due date)
+          isOverdue: {
+            $and: [
+              { $gte: ["$monthsElapsed", "$payoutIntervalMonths"] },
+              { $lte: ["$currentPayoutPeriod", "$totalPayouts"] },
+              {
+                $lte: [
+                  "$nextPayoutDate",
+                  {
+                    $dateSubtract: {
+                      startDate: new Date(),
+                      unit: "day",
+                      amount: 7,
+                    },
+                  },
                 ],
               },
             ],
           },
-          isDue: {
-            $and: [
-              { $gte: ["$monthsElapsed", 1] }, // At least one month has passed
-              { $lt: ["$monthsElapsed", "$duration"] }, // Not completed
-              { $eq: ["$status", "active"] }, // Only active investments can have due payouts
-            ],
-          },
+
+          // Calculate progress percentage
           progressPercentage: {
             $multiply: [
               {
@@ -181,20 +288,30 @@ export const getInvestmentDues = async (req: Request, res: Response) => {
               100,
             ],
           },
-          investmentStatus: "$status", // Keep original investment status
+
+          // Calculate completed payouts
+          completedPayouts: {
+            $floor: {
+              $divide: [
+                { $ifNull: ["$actualReturn", 0] },
+                { $divide: ["$expectedReturn", "$totalPayouts"] },
+              ],
+            },
+          },
         },
       },
-      // Determine payout status based on investment status and due date
+
+      // Determine final payout status
       {
         $addFields: {
           payoutStatus: {
             $cond: {
-              if: { $eq: ["$status", "completed"] },
-              then: "paid",
+              if: { $gte: ["$actualReturn", "$expectedReturn"] },
+              then: "completed",
               else: {
                 $cond: {
-                  if: { $eq: ["$status", "cancelled"] },
-                  then: "failed",
+                  if: "$isOverdue",
+                  then: "overdue",
                   else: {
                     $cond: {
                       if: "$isDue",
@@ -210,7 +327,7 @@ export const getInvestmentDues = async (req: Request, res: Response) => {
       },
     ];
 
-    // Add search functionality
+    // Add search filter
     if (search && search.trim()) {
       pipeline.push({
         $match: {
@@ -218,80 +335,115 @@ export const getInvestmentDues = async (req: Request, res: Response) => {
             { "user.firstName": { $regex: search, $options: "i" } },
             { "user.lastName": { $regex: search, $options: "i" } },
             { "user.email": { $regex: search, $options: "i" } },
+            { "user.userName": { $regex: search, $options: "i" } },
             { "investment.title": { $regex: search, $options: "i" } },
           ],
         },
       });
     }
 
-    // Filter by status
+    // Add status filter
     if (status && status !== "all") {
-      if (status === "pending") {
-        pipeline.push({
-          $match: { payoutStatus: "pending" },
-        });
-      } else if (status === "paid") {
-        pipeline.push({
-          $match: { payoutStatus: "paid" },
-        });
-      } else if (status === "failed") {
-        pipeline.push({
-          $match: { payoutStatus: "failed" },
-        });
-      } else if (status === "overdue") {
-        pipeline.push({
-          $match: { isOverdue: true },
-        });
-      }
+      pipeline.push({
+        $match: { payoutStatus: status },
+      });
     }
 
-    // Add final formatting
+    // Add investment type filter
+    if (investmentType && investmentType !== "all") {
+      pipeline.push({
+        $match: { "investment.type": investmentType },
+      });
+    }
+
+    // Add final projection
     pipeline.push({
-      $addFields: {
-        payoutId: { $toString: "$_id" }, // Use investment ID as payout ID
-        amount: "$payoutAmount",
-        status: "$payoutStatus", // Use calculated payout status
-        canApproveReject: "$isDue", // Only allow approve/reject for due investments
+      $project: {
+        _id: 1,
+        userId: 1,
+        investmentId: 1,
+        amount: 1,
+        status: 1,
+        startDate: 1,
+        endDate: 1,
+        expectedReturn: 1,
+        actualReturn: 1,
+        user: 1,
+        investment: 1,
+        payoutAmount: { $round: ["$payoutAmount", 2] },
+        nextPayoutDate: 1,
+        payoutStatus: 1,
+        isDue: 1,
+        isOverdue: 1,
+        progressPercentage: { $round: ["$progressPercentage", 2] },
+        currentPayoutPeriod: 1,
+        totalPayouts: 1,
+        completedPayouts: 1,
+        remainingPayouts: { $subtract: ["$totalPayouts", "$completedPayouts"] },
+        canApprove: "$isDue",
+        daysOverdue: {
+          $cond: {
+            if: "$isOverdue",
+            then: {
+              $divide: [
+                { $subtract: [new Date(), "$nextPayoutDate"] },
+                1000 * 60 * 60 * 24,
+              ],
+            },
+            else: 0,
+          },
+        },
       },
     });
 
     // Add sorting
     const sortStage: any = {};
-    if (sortBy === "nextPayoutDate") {
-      sortStage["nextPayoutDate"] = 1;
-    } else if (sortBy === "amount") {
-      sortStage["payoutAmount"] = -1;
-    } else if (sortBy === "user") {
-      sortStage["user.firstName"] = 1;
-    } else if (sortBy === "investment") {
-      sortStage["investment.title"] = 1;
-    } else {
-      sortStage["startDate"] = -1;
+    switch (sortBy) {
+      case "nextPayoutDate":
+        sortStage.nextPayoutDate = sortOrder;
+        break;
+      case "amount":
+        sortStage.payoutAmount = sortOrder;
+        break;
+      case "user":
+        sortStage["user.firstName"] = sortOrder;
+        break;
+      case "investment":
+        sortStage["investment.title"] = sortOrder;
+        break;
+      case "status":
+        sortStage.payoutStatus = sortOrder;
+        break;
+      default:
+        sortStage.nextPayoutDate = 1;
     }
 
     pipeline.push({ $sort: sortStage });
 
-    // Get total count before pagination
+    // Get total count
     const countPipeline = [...pipeline, { $count: "total" }];
-    const totalCountResult = await UserInvestment.aggregate(countPipeline);
-    const total = totalCountResult[0]?.total || 0;
+    const totalResult = await UserInvestment.aggregate(countPipeline);
+    const total = totalResult[0]?.total || 0;
 
     // Add pagination
     pipeline.push({ $skip: skip }, { $limit: limit });
 
-    // Execute the main query
+    // Execute query
     const dues = await UserInvestment.aggregate(pipeline);
 
     const totalPages = Math.ceil(total / limit);
 
-    console.log("Investment dues found:", dues.length);
-
     res.status(200).json({
       success: true,
       data: dues,
-      total,
-      totalPages,
-      currentPage: page,
+      pagination: {
+        total,
+        totalPages,
+        currentPage: page,
+        limit,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
       message: "Investment dues retrieved successfully",
     });
   } catch (error: any) {
@@ -299,20 +451,23 @@ export const getInvestmentDues = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch investment dues",
-      error: error.message,
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
 
-// Get investment dues statistics
+// Get comprehensive investment dues statistics
 export const getInvestmentDuesStats = async (req: Request, res: Response) => {
   try {
-    // Get comprehensive stats from all investments
     const stats = await UserInvestment.aggregate([
       {
         $match: {
+          status: "active",
           expectedReturn: { $gt: 0 },
-          startDate: { $exists: true },
+          startDate: { $exists: true, $lte: new Date() },
         },
       },
       {
@@ -323,102 +478,177 @@ export const getInvestmentDuesStats = async (req: Request, res: Response) => {
           as: "investment",
         },
       },
-      {
-        $unwind: "$investment",
-      },
+      { $unwind: "$investment" },
       {
         $addFields: {
+          duration: { $ifNull: ["$investment.investmentPeriod", 12] },
+          payoutFrequency: {
+            $ifNull: ["$investment.payoutFrequency", "monthly"],
+          },
           monthsElapsed: {
             $divide: [
               { $subtract: [new Date(), "$startDate"] },
-              1000 * 60 * 60 * 24 * 30,
+              1000 * 60 * 60 * 24 * 30.44,
             ],
           },
-          duration: { $ifNull: ["$investment.duration", 12] },
+        },
+      },
+      {
+        $addFields: {
+          payoutIntervalMonths: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$payoutFrequency", "quarterly"] }, then: 3 },
+                {
+                  case: { $eq: ["$payoutFrequency", "semi_annually"] },
+                  then: 6,
+                },
+                { case: { $eq: ["$payoutFrequency", "annually"] }, then: 12 },
+                {
+                  case: { $eq: ["$payoutFrequency", "end_of_term"] },
+                  then: "$duration",
+                },
+              ],
+              default: 1,
+            },
+          },
+          totalPayouts: {
+            $switch: {
+              branches: [
+                {
+                  case: { $eq: ["$payoutFrequency", "quarterly"] },
+                  then: { $ceil: { $divide: ["$duration", 3] } },
+                },
+                {
+                  case: { $eq: ["$payoutFrequency", "semi_annually"] },
+                  then: { $ceil: { $divide: ["$duration", 6] } },
+                },
+                {
+                  case: { $eq: ["$payoutFrequency", "annually"] },
+                  then: { $ceil: { $divide: ["$duration", 12] } },
+                },
+                { case: { $eq: ["$payoutFrequency", "end_of_term"] }, then: 1 },
+              ],
+              default: "$duration",
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          nextPayoutDate: {
+            $dateAdd: {
+              startDate: "$startDate",
+              unit: "month",
+              amount: {
+                $multiply: [
+                  {
+                    $ceil: {
+                      $divide: ["$monthsElapsed", "$payoutIntervalMonths"],
+                    },
+                  },
+                  "$payoutIntervalMonths",
+                ],
+              },
+            },
+          },
+          payoutAmount: { $divide: ["$expectedReturn", "$totalPayouts"] },
         },
       },
       {
         $addFields: {
           isDue: {
             $and: [
-              { $gte: ["$monthsElapsed", 1] },
-              { $lt: ["$monthsElapsed", "$duration"] },
-              { $eq: ["$status", "active"] },
+              { $gte: ["$monthsElapsed", "$payoutIntervalMonths"] },
+              { $lte: ["$nextPayoutDate", new Date()] },
             ],
           },
           isOverdue: {
             $and: [
-              { $lt: ["$monthsElapsed", "$duration"] },
-              { $eq: ["$status", "active"] },
+              { $gte: ["$monthsElapsed", "$payoutIntervalMonths"] },
               {
-                $lt: [
+                $lte: [
+                  "$nextPayoutDate",
                   {
-                    $dateAdd: {
-                      startDate: "$startDate",
-                      unit: "month",
-                      amount: { $ceil: "$monthsElapsed" },
+                    $dateSubtract: {
+                      startDate: new Date(),
+                      unit: "day",
+                      amount: 7,
                     },
                   },
-                  new Date(),
                 ],
               },
             ],
-          },
-          payoutAmount: {
-            $divide: ["$expectedReturn", "$duration"],
           },
         },
       },
       {
         $group: {
           _id: null,
-          total: { $sum: 1 },
-          pending: {
-            $sum: { $cond: ["$isDue", 1, 0] },
-          },
-          paid: {
-            $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] },
-          },
-          failed: {
-            $sum: { $cond: [{ $eq: ["$status", "cancelled"] }, 1, 0] },
-          },
-          overdue: {
-            $sum: { $cond: ["$isOverdue", 1, 0] },
-          },
-          totalAmount: { $sum: "$expectedReturn" },
-          pendingAmount: {
-            $sum: { $cond: ["$isDue", "$payoutAmount", 0] },
-          },
-          paidAmount: {
+          totalInvestments: { $sum: 1 },
+          pendingPayouts: { $sum: { $cond: ["$isDue", 1, 0] } },
+          overduePayouts: { $sum: { $cond: ["$isOverdue", 1, 0] } },
+          completedInvestments: {
             $sum: {
-              $cond: [{ $eq: ["$status", "completed"] }, "$actualReturn", 0],
+              $cond: [{ $gte: ["$actualReturn", "$expectedReturn"] }, 1, 0],
             },
           },
-          overdueAmount: {
+          totalExpectedReturns: { $sum: "$expectedReturn" },
+          totalActualReturns: { $sum: { $ifNull: ["$actualReturn", 0] } },
+          pendingPayoutAmount: {
+            $sum: { $cond: ["$isDue", "$payoutAmount", 0] },
+          },
+          overduePayoutAmount: {
             $sum: { $cond: ["$isOverdue", "$payoutAmount", 0] },
           },
           activeInvestors: { $addToSet: "$userId" },
+          investmentTypes: { $addToSet: "$investment.type" },
         },
       },
       {
         $addFields: {
-          activeInvestors: { $size: "$activeInvestors" },
+          activeInvestorsCount: { $size: "$activeInvestors" },
+          investmentTypesCount: { $size: "$investmentTypes" },
+          completionRate: {
+            $multiply: [
+              { $divide: ["$totalActualReturns", "$totalExpectedReturns"] },
+              100,
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          activeInvestors: 0,
+          investmentTypes: 0,
         },
       },
     ]);
 
     const result = stats[0] || {
-      total: 0,
-      pending: 0,
-      paid: 0,
-      failed: 0,
-      overdue: 0,
-      totalAmount: 0,
-      pendingAmount: 0,
-      paidAmount: 0,
-      overdueAmount: 0,
-      activeInvestors: 0,
+      totalInvestments: 0,
+      pendingPayouts: 0,
+      overduePayouts: 0,
+      completedInvestments: 0,
+      totalExpectedReturns: 0,
+      totalActualReturns: 0,
+      pendingPayoutAmount: 0,
+      overduePayoutAmount: 0,
+      activeInvestorsCount: 0,
+      investmentTypesCount: 0,
+      completionRate: 0,
     };
+
+    // Round monetary values
+    result.totalExpectedReturns =
+      Math.round(result.totalExpectedReturns * 100) / 100;
+    result.totalActualReturns =
+      Math.round(result.totalActualReturns * 100) / 100;
+    result.pendingPayoutAmount =
+      Math.round(result.pendingPayoutAmount * 100) / 100;
+    result.overduePayoutAmount =
+      Math.round(result.overduePayoutAmount * 100) / 100;
+    result.completionRate = Math.round(result.completionRate * 100) / 100;
 
     res.status(200).json({
       success: true,
@@ -430,22 +660,38 @@ export const getInvestmentDuesStats = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch investment dues statistics",
-      error: error.message,
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
 
-// Approve investment due
+// Approve investment payout with enhanced validation
 export const approveInvestmentDue = async (req: Request, res: Response) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     const { id } = req.params;
-    const { notes, payoutId } = req.body;
+    const { notes, payoutAmount: customPayoutAmount } = req.body;
 
-    // Find the user investment
-    const userInvestment = await UserInvestment.findById(id).session(session);
+    // Validate input
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      await session.abortTransaction();
+      res.status(400).json({
+        success: false,
+        message: "Invalid investment ID",
+      });
+      return;
+    }
+
+    // Find user investment with session
+    const userInvestment = await UserInvestment.findById(id)
+      .populate("investmentId")
+      .session(session);
+
     if (!userInvestment) {
       await session.abortTransaction();
       res.status(404).json({
@@ -455,87 +701,137 @@ export const approveInvestmentDue = async (req: Request, res: Response) => {
       return;
     }
 
-    // Check if investment is active and due for payout
+    // Validate investment status
     if (userInvestment.status !== "active") {
       await session.abortTransaction();
       res.status(400).json({
         success: false,
-        message: "Investment is not active",
+        message: `Cannot approve payout for ${userInvestment.status} investment`,
       });
       return;
     }
 
-    // Get investment details
-    const investment = await mongoose
-      .model("Investment")
-      .findById(userInvestment.investmentId)
-      .session(session);
-    if (!investment) {
-      await session.abortTransaction();
-      res.status(404).json({
-        success: false,
-        message: "Investment details not found",
-      });
-      return;
-    }
-
-    // Check if payout is actually due
-    const monthsElapsed = Math.floor(
-      (new Date().getTime() - userInvestment.startDate.getTime()) /
-        (1000 * 60 * 60 * 24 * 30)
-    );
-    const duration = investment.duration || 12;
-
-    if (monthsElapsed < 1 || monthsElapsed >= duration) {
+    // Check if investment is complete
+    if (userInvestment.actualReturn >= userInvestment.expectedReturn) {
       await session.abortTransaction();
       res.status(400).json({
         success: false,
-        message: "Investment payout is not due at this time",
+        message: "Investment has already been fully paid out",
+      });
+      return;
+    }
+
+    const investment = userInvestment.investmentId as any;
+    const duration = investment.investmentPeriod || 12;
+    const payoutFrequency = investment.payoutFrequency || "monthly";
+
+    // Calculate if payout is actually due
+    const monthsElapsed =
+      (new Date().getTime() - userInvestment.startDate.getTime()) /
+      (1000 * 60 * 60 * 24 * 30.44);
+
+    let payoutIntervalMonths = 1;
+    switch (payoutFrequency) {
+      case "quarterly":
+        payoutIntervalMonths = 3;
+        break;
+      case "semi_annually":
+        payoutIntervalMonths = 6;
+        break;
+      case "annually":
+        payoutIntervalMonths = 12;
+        break;
+      case "end_of_term":
+        payoutIntervalMonths = duration;
+        break;
+    }
+
+    if (monthsElapsed < payoutIntervalMonths) {
+      await session.abortTransaction();
+      res.status(400).json({
+        success: false,
+        message: "Payout is not yet due based on the payout frequency",
       });
       return;
     }
 
     // Calculate payout amount
-    const payoutAmount = Math.round(userInvestment.expectedReturn / duration);
+    const totalPayouts = Math.ceil(duration / payoutIntervalMonths);
+    const standardPayoutAmount =
+      Math.round((userInvestment.expectedReturn / totalPayouts) * 100) / 100;
+    const payoutAmount = customPayoutAmount || standardPayoutAmount;
+
+    // Validate payout amount
+    const remainingAmount =
+      userInvestment.expectedReturn - (userInvestment.actualReturn || 0);
+    if (payoutAmount > remainingAmount) {
+      await session.abortTransaction();
+      res.status(400).json({
+        success: false,
+        message: `Payout amount (${payoutAmount}) exceeds remaining amount (${remainingAmount})`,
+      });
+      return;
+    }
+
+    // Find or create user wallet
+    let wallet = await Wallet.findOne({ user: userInvestment.userId }).session(
+      session
+    );
+    if (!wallet) {
+      wallet = new Wallet({
+        user: userInvestment.userId,
+        balance: 0,
+        availableBalance: 0,
+      });
+    }
 
     // Create transaction record
+    const transactionRef = `INV_PAYOUT_${Date.now()}_${Math.floor(
+      Math.random() * 10000
+    )}`;
     const transaction = new Transaction({
       user: userInvestment.userId,
-      type: "investment",
+      type: "investment_payout",
       amount: payoutAmount,
       status: "completed",
-      reference: `INV_PAYOUT_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
-      description: `Investment payout for ${investment.title}`,
+      reference: transactionRef,
+      check: TransactionCheck.INCOMING,
+      description: `Investment payout for "${investment.title}"`,
       date: new Date(),
       paymentMethod: "wallet",
       metadata: {
         investmentId: userInvestment.investmentId,
-        payoutId: id,
-        approvedBy: req.user?.["_id"] ?? null,
-        notes,
+        userInvestmentId: userInvestment._id,
+        approvedBy: req.user?.["_id"],
+        notes: notes || "Payout approved by admin",
+        payoutNumber: Math.ceil(monthsElapsed / payoutIntervalMonths),
       },
     });
 
     await transaction.save({ session });
 
-    // Update user's wallet
-    const wallet = await Wallet.findOne({
-      user: userInvestment.userId,
-    }).session(session);
-    if (wallet) {
-      wallet.balance += payoutAmount;
-      wallet.availableBalance += payoutAmount;
-      await wallet.save({ session });
-    }
+    // Update wallet balance
+    wallet.balance += payoutAmount;
+    wallet.availableBalance += payoutAmount;
+    await wallet.save({ session });
 
-    // Update actual return
+    // Update user investment
     userInvestment.actualReturn =
       (userInvestment.actualReturn || 0) + payoutAmount;
 
-    // Check if investment is complete
+    // Check if investment is now complete
     if (userInvestment.actualReturn >= userInvestment.expectedReturn) {
       userInvestment.status = "completed";
     }
+
+    // Update next payout date
+    const nextPayoutDate = new Date(userInvestment.startDate);
+    nextPayoutDate.setMonth(
+      nextPayoutDate.getMonth() +
+        (Math.ceil(monthsElapsed / payoutIntervalMonths) + 1) *
+          payoutIntervalMonths
+    );
+    userInvestment.nextPayoutDate = nextPayoutDate;
 
     await userInvestment.save({ session });
 
@@ -543,99 +839,106 @@ export const approveInvestmentDue = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: "Investment payout approved successfully",
+      message: "Investment payout approved and processed successfully",
       data: {
-        transaction: transaction._id,
+        transactionId: transaction._id,
+        transactionRef,
         amount: payoutAmount,
+        newWalletBalance: wallet.balance,
+        investmentStatus: userInvestment.status,
+        completionPercentage: Math.round(
+          (userInvestment.actualReturn / userInvestment.expectedReturn) * 100
+        ),
       },
     });
   } catch (error: any) {
     await session.abortTransaction();
-    console.error("Error approving investment due:", error);
+    console.error("Error approving investment payout:", error);
     res.status(500).json({
       success: false,
       message: "Failed to approve investment payout",
-      error: error.message,
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   } finally {
     session.endSession();
   }
 };
 
-// Reject investment due
+// Reject investment payout with detailed logging
 export const rejectInvestmentDue = async (req: Request, res: Response) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     const { id } = req.params;
-    const { reason, payoutId } = req.body;
+    const { reason } = req.body;
+
+    // Validate input
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      await session.abortTransaction();
+       res.status(400).json({
+        success: false,
+        message: "Invalid investment ID",
+       });
+       return;
+    }
 
     if (!reason || !reason.trim()) {
       await session.abortTransaction();
-      res.status(400).json({
+       res.status(400).json({
         success: false,
         message: "Rejection reason is required",
-      });
+       });
       return;
     }
 
-    // Find the user investment
-    const userInvestment = await UserInvestment.findById(id).session(session);
+    // Find user investment
+    const userInvestment = await UserInvestment.findById(id)
+      .populate("investmentId")
+      .session(session);
+
     if (!userInvestment) {
       await session.abortTransaction();
-      res.status(404).json({
+       res.status(404).json({
         success: false,
         message: "Investment not found",
-      });
+       });
       return;
     }
 
-    // Check if investment is active
     if (userInvestment.status !== "active") {
       await session.abortTransaction();
-      res.status(400).json({
+       res.status(400).json({
         success: false,
-        message: "Investment is not active",
-      });
-      return;
+        message: `Cannot reject payout for ${userInvestment.status} investment`,
+       });
+       return;
     }
 
-    // Get investment details
-    const investment = await mongoose
-      .model("Investment")
-      .findById(userInvestment.investmentId)
-      .session(session);
-    if (!investment) {
-      await session.abortTransaction();
-      res.status(404).json({
-        success: false,
-        message: "Investment details not found",
-      });
-      return;
-    }
+    const investment = userInvestment.investmentId as any;
 
-    // Calculate payout amount for rejection record
-    const duration = investment.duration || 12;
-    const payoutAmount = Math.round(userInvestment.expectedReturn / duration);
-
-    // Create transaction record for the rejection
+    // Create rejection transaction record
+    const transactionRef = `INV_PAYOUT_REJECTED_${Date.now()}_${Math.floor(
+      Math.random() * 10000
+    )}`;
     const transaction = new Transaction({
       user: userInvestment.userId,
-      type: "investment",
-      amount: payoutAmount,
+      type: "investment_payout",
+      amount: 0, // No amount for rejection
+      check: TransactionCheck.INCOMING,
       status: "failed",
-      reference: `INV_PAYOUT_REJECTED_${Date.now()}_${Math.floor(
-        Math.random() * 1000
-      )}`,
-      description: `Investment payout rejected for ${investment.title}`,
+      reference: transactionRef,
+      description: `Investment payout rejected for "${investment.title}"`,
       date: new Date(),
       paymentMethod: "wallet",
       metadata: {
         investmentId: userInvestment.investmentId,
-        payoutId: id,
-        rejectedBy: req.user?.["_id"] ?? null,
-        reason,
+        userInvestmentId: userInvestment._id,
+        rejectedBy: req.user?.["_id"],
+        rejectionReason: reason.trim(),
       },
     });
 
@@ -647,17 +950,21 @@ export const rejectInvestmentDue = async (req: Request, res: Response) => {
       success: true,
       message: "Investment payout rejected successfully",
       data: {
-        transaction: transaction._id,
-        reason,
+        transactionId: transaction._id,
+        transactionRef,
+        rejectionReason: reason.trim(),
       },
     });
   } catch (error: any) {
     await session.abortTransaction();
-    console.error("Error rejecting investment due:", error);
+    console.error("Error rejecting investment payout:", error);
     res.status(500).json({
       success: false,
       message: "Failed to reject investment payout",
-      error: error.message,
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   } finally {
     session.endSession();

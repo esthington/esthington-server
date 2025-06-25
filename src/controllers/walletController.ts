@@ -8,6 +8,7 @@ import {
   TransactionType,
   TransactionStatus,
   PaymentMethod,
+  TransactionCheck,
 } from "../models/walletModel";
 import crypto from "crypto";
 import User from "../models/userModel";
@@ -17,6 +18,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import notificationService from "../services/notificationService";
 import { NotificationType } from "../models/notificationModel";
 import paymentService from "../services/paymentService";
+import logger from "../utils/logger";
 
 // Extend Express Request to include user
 interface AuthRequest extends Request {
@@ -35,7 +37,6 @@ export const getWallet = asyncHandler(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
       );
     }
-
 
     const userId = req.user._id;
 
@@ -137,7 +138,6 @@ export const getTransactions = asyncHandler(
         new AppError("User not authenticated", StatusCodes.UNAUTHORIZED)
       );
     }
-    
 
     const userId = req.user._id;
 
@@ -467,6 +467,29 @@ export const transferMoney = asyncHandler(
       );
     }
 
+    // Find system/admin user (parent wallet)
+    const systemUser = await User.findOne({ email: "esthington@gmail.com" });
+    if (!systemUser) {
+      logger.error("System user not found");
+      return {
+        success: false,
+        message: "System user not found",
+      };
+    }
+
+    // Find or create system wallet
+    let systemWallet = await Wallet.findOne({ user: systemUser._id });
+    if (!systemWallet) {
+      logger.info(`Creating new system wallet for admin: ${systemUser._id}`);
+      systemWallet = await Wallet.create({
+        user: systemUser._id,
+        balance: 0,
+        availableBalance: 0,
+        pendingBalance: 0,
+        transactions: [],
+      });
+    }
+
     // Find or create recipient wallet
     let recipientWallet = await Wallet.findOne({ user: recipientId });
     if (!recipientWallet) {
@@ -494,6 +517,7 @@ export const transferMoney = asyncHandler(
             type: TransactionType.TRANSFER,
             amount,
             status: TransactionStatus.COMPLETED,
+            check: TransactionCheck.OUTGOING,
             reference,
             description:
               note ||
@@ -512,6 +536,7 @@ export const transferMoney = asyncHandler(
             type: TransactionType.TRANSFER,
             amount,
             status: TransactionStatus.COMPLETED,
+            check: TransactionCheck.INCOMING,
             reference,
             description:
               note ||
@@ -639,6 +664,7 @@ export const withdrawFromWallet = asyncHandler(
       amount,
       status: TransactionStatus.PENDING,
       reference,
+      check: TransactionCheck.OUTGOING,
       description:
         note ||
         `Withdrawal to bank account: ${bankAccount.bankName} - ${bankAccount.accountNumber}`,

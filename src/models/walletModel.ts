@@ -12,6 +12,11 @@ export enum TransactionType {
   MARKETPLACE_PURCHASE = "marketplace_purchase",
 }
 
+export enum TransactionCheck {
+  INCOMING = "incoming",
+  OUTGOING = "outgoing",
+}
+
 export enum TransactionStatus {
   PENDING = "pending",
   COMPLETED = "completed",
@@ -35,6 +40,7 @@ export interface ITransaction extends Omit<Document, "_id"> {
   amount: number;
   status: TransactionStatus;
   reference: string;
+  check: string;
   description: string;
   date: Date;
   paymentMethod?: PaymentMethod;
@@ -55,6 +61,11 @@ const transactionSchema = new Schema<ITransaction>(
     type: {
       type: String,
       enum: Object.values(TransactionType),
+      required: true,
+    },
+    check: {
+      type: String,
+      enum: Object.values(TransactionCheck),
       required: true,
     },
     amount: {
