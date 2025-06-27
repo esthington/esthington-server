@@ -1,51 +1,59 @@
-import { Router, Request, Response } from "express";
-import {  protect } from "../middleware/authMiddleware";
-import { DashboardController } from "../controllers/dashboardController";
+import { Router, type Request, type Response } from "express"
+import { protect, restrictTo } from "../middleware/authMiddleware"
+import { DashboardController } from "../controllers/dashboardController"
+import { UserRole } from "../models/userModel"
 
-const router = Router();
+const router = Router()
 
 // Apply authentication middleware to all dashboard routes
-router.use(protect);
+router.use(protect)
 
-// Dashboard statistics (admin only)
-router.get("/stats", DashboardController.getDashboardStats);
+// Dashboard statistics - role-based access
+router.get("/stats", DashboardController.getDashboardStats)
 
-// Recent activity (admin only)
-router.get("/activity", DashboardController.getRecentActivity);
+// Recent activity - accessible to all authenticated users
+router.get("/activity", DashboardController.getRecentActivity)
 
-// Dashboard analytics (admin only)
+// Dashboard analytics - accessible to all authenticated users
+router.get("/analytics", DashboardController.getDashboardAnalytics)
+
+// Admin-only routes
 router.get(
-  "/analytics",
-  DashboardController.getDashboardAnalytics
-);
+  "/admin/users", 
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), 
+  DashboardController.getAdminUsers
+)
 
-// Export dashboard data (admin only)
-// router.get("/export/:format", async (req: Request, res: Response) => {
-//   try {
-//     const { format } = req.params;
+router.get(
+  "/admin/transactions", 
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), 
+  DashboardController.getAdminTransactions
+)
 
-//     if (!["csv", "pdf", "excel"].includes(format)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid export format. Supported formats: csv, pdf, excel",
-//       });
-//     }
+// Agent-specific routes
+router.get(
+  "/agent/properties", 
+  restrictTo(UserRole.AGENT), 
+  DashboardController.getAgentProperties
+)
 
-//     // Implementation would depend on your export library
-//     // For now, return a success message
-//     res.status(200).json({
-//       success: true,
-//       message: `Export in ${format} format initiated`,
-//       data: { format, timestamp: new Date().toISOString() },
-//     });
-//   } catch (error) {
-//     console.error("Error exporting dashboard data:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Failed to export dashboard data",
-//       error: error instanceof Error ? error.message : "Unknown error",
-//     });
-//   }
-// });
+router.get(
+  "/agent/referrals", 
+  restrictTo(UserRole.AGENT), 
+  DashboardController.getAgentReferrals
+)
 
-export default router;
+// Buyer-specific routes
+router.get(
+  "/buyer/investments", 
+  restrictTo(UserRole.BUYER), 
+  DashboardController.getBuyerInvestments
+)
+
+router.get(
+  "/buyer/properties", 
+  restrictTo(UserRole.BUYER), 
+  DashboardController.getBuyerProperties
+)
+
+export default router

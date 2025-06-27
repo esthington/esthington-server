@@ -49,6 +49,7 @@ export interface ITransaction extends Omit<Document, "_id"> {
   sender?: mongoose.Types.ObjectId;
   property?: mongoose.Types.ObjectId;
   investment?: mongoose.Types.ObjectId;
+  createdAt?: Date;
 }
 
 const transactionSchema = new Schema<ITransaction>(
