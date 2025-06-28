@@ -46,9 +46,10 @@ connectDB(app);
 const allowedOrigins = [
   "http://localhost:3000",
   "https://esthington-client-bfcyp4cog-esthingtons-projects.vercel.app",
+  "https://esthington-client-rgknd8rur-esthingtons-projects.vercel.app",
   "https://esthington-client.vercel.app",
-  "https://www.esthingtonlinks.com/",
-  "https://esthingtonlinks.com/",
+  "https://www.esthingtonlinks.com",
+  "https://esthingtonlinks.com",
 ];
 
 // ✅ CORS Middleware
