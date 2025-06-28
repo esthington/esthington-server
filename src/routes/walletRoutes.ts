@@ -28,7 +28,7 @@ router.get("/", protect, getWallet);
 router.get("/transactions", protect, getTransactions);
 router.get("/transactions/:id", protect, getTransactionById);
 
-// Protected routes (require authentication)
+// Protected routes (require authentication) new
 router.get("/users/search", protect, searchWalletUsers);
 
 // Wallet funding routes
