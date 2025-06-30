@@ -24,7 +24,7 @@ class PaymentService {
   }
 
   /**
-   * Initialize wallet funding via Paystack
+   * Initialize wallet funding via Paystack new
    */
   async initializeWalletFunding(userId: string, amount: number, email: string) {
     try {
