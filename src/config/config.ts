@@ -25,7 +25,7 @@ const config = {
   // frontendUrl: process.env.NODE_ENV === "production"
   //   ? process.env.CLIENT_LIVE_URL
   //   : process.env.CLIENT_LOCAL_URL,
-  frontendUrl: "https://www.esthingtonlinks.com/",
+  frontendUrl: "https://www.esthingtonlinks.com",
   emailFrom: process.env.EMAIL_FROM || "noreply@example.com",
   smtpConfig: {
     host: process.env.SMTP_HOST || "",
