@@ -1,8 +1,8 @@
-import dotenv from "dotenv"
-import path from "path"
+import dotenv from "dotenv";
+import path from "path";
 
 // Load environment variables
-dotenv.config({ path: path.join(__dirname, "../../.env") })
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const config = {
   env: process.env.NODE_ENV || "development",
@@ -25,7 +25,7 @@ const config = {
   // frontendUrl: process.env.NODE_ENV === "production"
   //   ? process.env.CLIENT_LIVE_URL
   //   : process.env.CLIENT_LOCAL_URL,
-  frontendUrl: "https://esthington-client.vercel.app",
+  frontendUrl: "https://www.esthingtonlinks.com/",
   emailFrom: process.env.EMAIL_FROM || "noreply@example.com",
   smtpConfig: {
     host: process.env.SMTP_HOST || "",
@@ -42,4 +42,4 @@ const config = {
   },
 };
 
-export default config
+export default config;

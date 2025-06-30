@@ -98,7 +98,7 @@ class EmailService {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
                         <tr>
                             <td style="vertical-align: middle; text-align: center;">
-                                <img src="https://esthington-client.vercel.app/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
+                                <img src="https://www.esthingtonlinks.com/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
                             </td>
                         </tr>
                     </table>
@@ -247,7 +247,7 @@ class EmailService {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
                         <tr>
                             <td style="vertical-align: middle; text-align: center;">
-                                <img src="https://esthington-client.vercel.app/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
+                                <img src="https://www.esthingtonlinks.com/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
                             </td>
                         </tr>
                     </table>
@@ -409,7 +409,7 @@ class EmailService {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
                         <tr>
                             <td style="vertical-align: middle; text-align: center;">
-                                <img src="https://esthington-client.vercel.app/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
+                                <img src="https://www.esthingtonlinks.com/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
                             </td>
                         </tr>
                     </table>
@@ -533,7 +533,7 @@ class EmailService {
                                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                             <tr>
                                                 <td style="vertical-align: top; padding-bottom: 5px;">
-                                                    <img src="https://esthington-client.vercel.app/icons/property.png" alt="Property Icon" width="24" height="24" style="display: inline-block;">
+                                                    <img src="https://www.esthingtonlinks.com/icons/property.png" alt="Property Icon" width="24" height="24" style="display: inline-block;">
                                                 </td>  height="24" style="display: inline-block;">
                                                 </td>
                                                 <td style="vertical-align: top; padding-left: 10px;">
@@ -547,7 +547,7 @@ class EmailService {
                                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                             <tr>
                                                 <td style="vertical-align: top; padding-bottom: 5px;">
-                                                    <img src="https://esthington-client.vercel.app/icons/wallet.png" alt="Wallet Icon" width="24" height="24" style="display: inline-block;">
+                                                    <img src="https://www.esthingtonlinks.com/icons/wallet.png" alt="Wallet Icon" width="24" height="24" style="display: inline-block;">
                                                 </td>
                                                 <td style="vertical-align: top; padding-left: 10px;">
                                                     <p style="margin: 0; font-size: 14px; font-weight: 500; color: #1e293b;">Manage Your Wallet</p>
@@ -562,7 +562,7 @@ class EmailService {
                                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                             <tr>
                                                 <td style="vertical-align: top; padding-bottom: 5px;">
-                                                    <img src="https://esthington-client.vercel.app/icons/community.png" alt="Community Icon" width="24" height="24" style="display: inline-block;">
+                                                    <img src="https://www.esthingtonlinks.com/icons/community.png" alt="Community Icon" width="24" height="24" style="display: inline-block;">
                                                 </td>
                                                 <td style="vertical-align: top; padding-left: 10px;">
                                                     <p style="margin: 0; font-size: 14px; font-weight: 500; color: #1e293b;">Join Community</p>
@@ -575,7 +575,7 @@ class EmailService {
                                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                             <tr>
                                                 <td style="vertical-align: top; padding-bottom: 5px;">
-                                                    <img src="https://esthington-client.vercel.app/icons/support.png" alt="Support Icon" width="24" height="24" style="display: inline-block;">
+                                                    <img src="https://www.esthingtonlinks.com/icons/support.png" alt="Support Icon" width="24" height="24" style="display: inline-block;">
                                                 </td>
                                                 <td style="vertical-align: top; padding-left: 10px;">
                                                     <p style="margin: 0; font-size: 14px; font-weight: 500; color: #1e293b;">24/7 Support</p>
@@ -603,22 +603,22 @@ class EmailService {
                                 <tr>
                                     <td style="padding: 0 10px;">
                                         <a href="https://facebook.com/esthington" style="text-decoration: none;">
-                                            <img src="https://esthington-client.vercel.app/icons/facebook.png" alt="Facebook" width="32" height="32" style="display: inline-block;">
+                                            <img src="https://www.esthingtonlinks.com/icons/facebook.png" alt="Facebook" width="32" height="32" style="display: inline-block;">
                                         </a>
                                     </td>
                                     <td style="padding: 0 10px;">
                                         <a href="https://twitter.com/esthington" style="text-decoration: none;">
-                                            <img src="https://esthington-client.vercel.app/icons/twitter.png" alt="Twitter" width="32" height="32" style="display: inline-block;">
+                                            <img src="https://www.esthingtonlinks.com/icons/twitter.png" alt="Twitter" width="32" height="32" style="display: inline-block;">
                                         </a>
                                     </td>
                                     <td style="padding: 0 10px;">
                                         <a href="https://instagram.com/esthington" style="text-decoration: none;">
-                                            <img src="https://esthington-client.vercel.app/icons/instagram.png" alt="Instagram" width="32" height="32" style="display: inline-block;">
+                                            <img src="https://www.esthingtonlinks.com/icons/instagram.png" alt="Instagram" width="32" height="32" style="display: inline-block;">
                                         </a>
                                     </td>
                                     <td style="padding: 0 10px;">
                                         <a href="https://linkedin.com/company/esthington" style="text-decoration: none;">
-                                            <img src="https://esthington-client.vercel.app/icons/linkedin.png" alt="LinkedIn" width="32" height="32" style="display: inline-block;">
+                                            <img src="https://www.esthingtonlinks.com/icons/linkedin.png" alt="LinkedIn" width="32" height="32" style="display: inline-block;">
                                         </a>
                                     </td>
                                 </tr>
@@ -693,7 +693,7 @@ class EmailService {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
                         <tr>
                             <td style="vertical-align: middle; text-align: center;">
-                                <img src="https://esthington-client.vercel.app/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
+                                <img src="https://www.esthingtonlinks.com/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
                             </td>
                         </tr>
                     </table>
@@ -1005,7 +1005,7 @@ class EmailService {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
                         <tr>
                             <td style="vertical-align: middle; text-align: center;">
-                                <img src="https://esthington-client.vercel.app/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
+                                <img src="https://www.esthingtonlinks.com/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
                             </td>
                         </tr>
                     </table>
@@ -1300,7 +1300,7 @@ class EmailService {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
                         <tr>
                             <td style="vertical-align: middle; text-align: center;">
-                                <img src="https://esthington-client.vercel.app/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
+                                <img src="https://www.esthingtonlinks.com/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
                             </td>
                         </tr>
                     </table>
@@ -1541,7 +1541,7 @@ class EmailService {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
                         <tr>
                             <td style="vertical-align: middle; text-align: center;">
-                                <img src="https://esthington-client.vercel.app/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
+                                <img src="https://www.esthingtonlinks.com/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
                             </td>
                         </tr>
                     </table>
@@ -1762,7 +1762,7 @@ class EmailService {
                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
                         <tr>
                             <td style="vertical-align: middle; text-align: center;">
-                                <img src="https://esthington-client.vercel.app/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
+                                <img src="https://www.esthingtonlinks.com/logo.png" alt="Esthington Logo" width="40" height="40" style="display: inline-block;">
                             </td>
                         </tr>
                     </table>
