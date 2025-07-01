@@ -27,9 +27,7 @@ const baseUserSchema = {
     "string.empty": "Password is required",
     "any.required": "Password is required",
   }),
-  phone: Joi.string().pattern(phonePattern).messages({
-    "string.pattern.base": "Please provide a valid phone number",
-  }),
+  phone: Joi.string(),
   address: Joi.string().trim().max(200),
   role: Joi.string().valid(...Object.values(UserRole)),
   isEmailVerified: Joi.boolean(),

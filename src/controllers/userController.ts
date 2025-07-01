@@ -10,7 +10,7 @@ interface RequestWithFile extends Request {
   file?: any // Use 'any' instead of Express.Multer.File
 }
 
-// Update user profile
+
 // Update user profile
 export const updateProfile = asyncHandler(async (req: RequestWithFile, res: Response, next: NextFunction) => {
   const { 
@@ -27,6 +27,9 @@ export const updateProfile = asyncHandler(async (req: RequestWithFile, res: Resp
     nextOfKinAddress,
     nextOfKinPhone
   } = req.body
+
+  console.log("Request body:", req.body);
+  console.log("Files:", req.files);
 
 
 

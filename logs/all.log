@@ -3874,3 +3874,93 @@
 2025-06-30 17:57:13:5713 [32minfo[39m: [32mServer running on port 8000[39m
 2025-06-30 20:41:51:4151 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-02.evqiglv.mongodb.net[39m
 2025-06-30 20:41:51:4151 [32minfo[39m: [32mServer running on port 8000[39m
+2025-06-30 23:34:39:3439 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-06-30 23:34:39:3439 [32minfo[39m: [32mServer running on port 8000[39m
+2025-06-30 23:40:30:4030 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-30 23:40:31:4031 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-30 23:40:31:4031 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-30 23:40:31:4031 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-30 23:40:31:4031 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-06-30 23:40:31:4031 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:17:49:1749 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-07-01 14:17:49:1749 [32minfo[39m: [32mServer running on port 8000[39m
+2025-07-01 14:46:23:4623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:46:23:4623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:46:23:4623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:46:23:4623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:46:23:4623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:46:23:4623 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:34:4734 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:34:4734 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:34:4734 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:35:4735 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:35:4735 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:35:4735 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:46:4746 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:46:4746 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:46:4746 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:46:4746 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:46:4746 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:47:46:4746 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:49:43:4943 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-07-01 14:49:43:4943 [32minfo[39m: [32mServer running on port 8000[39m
+2025-07-01 14:50:54:5054 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:54:5054 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:54:5054 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:54:5054 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:55:5055 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:55:5055 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:55:5055 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:55:5055 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:55:5055 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:55:5055 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:55:5055 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:50:55:5055 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 14:56:15:5615 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-07-01 14:56:15:5615 [32minfo[39m: [32mServer running on port 8000[39m
+2025-07-01 14:57:21:5721 [32minfo[39m: [32mEmail sent to kliptolite@gmail.com[39m
+2025-07-01 14:57:21:5721 [32minfo[39m: [32mVerification email sent to kliptolite@gmail.com[39m
+2025-07-01 15:05:29:529 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-07-01 15:05:29:529 [32minfo[39m: [32mServer running on port 8000[39m
+2025-07-01 15:07:57:757 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-07-01 15:07:57:757 [32minfo[39m: [32mServer running on port 8000[39m
+2025-07-01 15:23:40:2340 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:40:2340 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:40:2340 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:40:2340 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:41:2341 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:41:2341 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:41:2341 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:41:2341 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:41:2341 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:41:2341 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:41:2341 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:42:2342 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:42:2342 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:42:2342 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:42:2342 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:42:2342 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:42:2342 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:23:42:2342 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:24:27:2427 [32minfo[39m: [32mEmail sent to kliptolite@gmail.com[39m
+2025-07-01 15:24:27:2427 [32minfo[39m: [32mVerification email sent to kliptolite@gmail.com[39m
+2025-07-01 15:26:46:2646 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-07-01 15:26:46:2646 [32minfo[39m: [32mServer running on port 8000[39m
+2025-07-01 15:29:49:2949 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:29:49:2949 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:29:49:2949 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:29:49:2949 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:29:49:2949 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:29:49:2949 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:34:52:3452 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:34:52:3452 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:34:52:3452 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:34:52:3452 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:34:53:3453 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:34:53:3453 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:36:03:363 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:36:03:363 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:36:03:363 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:36:03:363 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:36:03:363 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-07-01 15:36:03:363 [31merror[39m: [31mJWT verification error: jwt malformed[39m
