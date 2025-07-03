@@ -61,6 +61,7 @@ export interface IUser extends Document {
   gender?: Gender;
   country?: string;
   stateOfOrigin?: string;
+  lga?: string;
   validID?: string;
   nextOfKinName?: string;
   nextOfKinAddress?: string;
@@ -194,6 +195,10 @@ const userSchema = new Schema<IUser>(
       trim: true,
     },
     stateOfOrigin: {
+      type: String,
+      trim: true,
+    },
+    lga: {
       type: String,
       trim: true,
     },
