@@ -218,22 +218,22 @@ export const getAgentRankInfo = asyncHandler(
     }
 
     // Get current rank
-    const currentRank = user.agentRank || AgentRank.BRONZE;
+    const currentRank = user.agentRank || AgentRank.BASIC;
 
     // Get total referrals
     const totalReferrals = await Referral.countDocuments({ referrer: id });
 
     // Define rank thresholds
     const rankThresholds: Record<AgentRank, { min: number; max: number; next: AgentRank }> = {
-      [AgentRank.BRONZE]: { min: 0, max: 9, next: AgentRank.SILVER },
-      [AgentRank.SILVER]: { min: 10, max: 24, next: AgentRank.GOLD },
-      [AgentRank.GOLD]: { min: 25, max: 49, next: AgentRank.PLATINUM },
-      [AgentRank.PLATINUM]: { min: 50, max: 99, next: AgentRank.DIAMOND },
-      [AgentRank.DIAMOND]: { min: 100, max: 199, next: AgentRank.MASTER },
-      [AgentRank.MASTER]: {
+      [AgentRank.BASIC]: { min: 0, max: 9, next: AgentRank.STAR },
+      [AgentRank.STAR]: { min: 10, max: 24, next: AgentRank.LEADER },
+      [AgentRank.LEADER]: { min: 25, max: 49, next: AgentRank.MANAGER },
+      [AgentRank.MANAGER]: { min: 50, max: 99, next: AgentRank.CHIEF },
+      [AgentRank.CHIEF]: { min: 100, max: 199, next: AgentRank.AMBASSADOR },
+      [AgentRank.AMBASSADOR]: {
         min: 200,
         max: Number.POSITIVE_INFINITY,
-        next: AgentRank.MASTER,
+        next: AgentRank.AMBASSADOR,
       },
     };
 
@@ -242,7 +242,7 @@ export const getAgentRankInfo = asyncHandler(
     const nextRank = currentThreshold.next;
     const requiredReferrals = currentThreshold.max + 1;
     const progress =
-      currentRank === AgentRank.PLATINUM
+      currentRank === AgentRank.MANAGER
         ? 100
         : Math.min(
             Math.round(
@@ -292,7 +292,7 @@ export const processReferral = asyncHandler(
       throw new AppError("Referrer not found", StatusCodes.NOT_FOUND);
     }
 
-    const agentRank = referrer.agentRank || AgentRank.BRONZE;
+    const agentRank = referrer.agentRank || AgentRank.BASIC;
 
     // Get commission rates from the database
     const commissionRate = await ReferralCommission.findOne({

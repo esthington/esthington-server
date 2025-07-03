@@ -10,12 +10,12 @@ export enum UserRole {
 }
 
 export enum AgentRank {
-  BRONZE = "Bronze",
-  SILVER = "Silver",
-  GOLD = "Gold",
-  PLATINUM = "Platinum",
-  DIAMOND = "Diamond",
-  MASTER = "Master",
+  BASIC = "Basic",
+  STAR = "Star",
+  LEADER = "Leader",
+  MANAGER = "Manager",
+  CHIEF = "Chief",
+  AMBASSADOR = "Ambassador",
 }
 
 export enum UserStatus {
@@ -178,7 +178,7 @@ const userSchema = new Schema<IUser>(
     agentRank: {
       type: String,
       enum: Object.values(AgentRank),
-      default: AgentRank.BRONZE,
+      default: AgentRank.BASIC,
     },
     businessName: {
       type: String,

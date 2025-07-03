@@ -23,12 +23,12 @@ const COMMISSION_RATES = {
 
 // Rank thresholds based on cumulative indirect earnings
 const RANK_THRESHOLDS = {
-  [AgentRank.BRONZE]: 0,
-  [AgentRank.SILVER]: 5000000, // ₦5,000,000 - ESTHINGTON STAR
-  [AgentRank.GOLD]: 10000000, // ₦10,000,000 - ESTHINGTON LEADER
-  [AgentRank.PLATINUM]: 20000000, // ₦20,000,000 - ESTHINGTON MANAGER
-  [AgentRank.DIAMOND]: 50000000, // ₦50,000,000 - ESTHINGTON CHIEF
-  [AgentRank.MASTER]: 100000000, // ₦100,000,000 - ESTHINGTON AMBASSADOR
+  [AgentRank.BASIC]: 0,
+  [AgentRank.STAR]: 5000000, // ₦5,000,000 - ESTHINGTON STAR
+  [AgentRank.LEADER]: 10000000, // ₦10,000,000 - ESTHINGTON LEADER
+  [AgentRank.MANAGER]: 20000000, // ₦20,000,000 - ESTHINGTON MANAGER
+  [AgentRank.CHIEF]: 50000000, // ₦50,000,000 - ESTHINGTON CHIEF
+  [AgentRank.AMBASSADOR]: 100000000, // ₦100,000,000 - ESTHINGTON AMBASSADOR
 };
 
 /**
@@ -414,7 +414,7 @@ export const getUserRankInfo = async (userId: string) => {
     throw new Error("User not found");
   }
 
-  const currentRank = user.agentRank || AgentRank.BRONZE;
+  const currentRank = user.agentRank || AgentRank.BASIC;
 
   // Calculate indirect earnings for rank progression
   const indirectEarnings = await Transaction.aggregate([
@@ -462,12 +462,12 @@ export const getUserRankInfo = async (userId: string) => {
     nextRankThreshold,
     progress: Math.max(0, progress),
     rankNames: {
-      [AgentRank.BRONZE]: "Bronze",
-      [AgentRank.SILVER]: "Esthington Star",
-      [AgentRank.GOLD]: "Esthington Leader",
-      [AgentRank.PLATINUM]: "Esthington Manager",
-      [AgentRank.DIAMOND]: "Esthington Chief",
-      [AgentRank.MASTER]: "Esthington Ambassador",
+      [AgentRank.BASIC]: "BASIC",
+      [AgentRank.STAR]: "Esthington Star",
+      [AgentRank.LEADER]: "Esthington Leader",
+      [AgentRank.MANAGER]: "Esthington Manager",
+      [AgentRank.CHIEF]: "Esthington Chief",
+      [AgentRank.AMBASSADOR]: "Esthington Ambassador",
     },
   };
 };
@@ -661,7 +661,7 @@ async function updateReferrerRanks(
       indirectEarningsAgg.length > 0 ? indirectEarningsAgg[0].total : 0;
 
     // Determine new rank
-    let newRank = AgentRank.BRONZE;
+    let newRank = AgentRank.BASIC;
     for (const rank of Object.keys(RANK_THRESHOLDS) as AgentRank[]) {
       if (indirectEarnings >= RANK_THRESHOLDS[rank]) {
         newRank = rank;
