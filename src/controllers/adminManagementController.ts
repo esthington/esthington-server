@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import asyncHandler from "../utils/asyncHandler";
 import AppError from "../utils/appError";
-import User, { UserRole } from "../models/userModel";
+import User, { UserRole, UserStatus } from "../models/userModel";
 import emailService from "../services/emailService";
 import type { AdminData } from "../types/user-management";
 
@@ -26,9 +26,13 @@ export const getAllAdmins = asyncHandler(
       query.role = req.query.role;
     }
 
-    // Status filter
+    // Status filter - handle both status and isActive
     if (req.query.status !== undefined) {
-      query.isActive = req.query.status === "active";
+      if (req.query.status === "active") {
+        query.$or = [{ status: UserStatus.ACTIVE }, { isActive: true }];
+      } else if (req.query.status === "inactive") {
+        query.$or = [{ status: UserStatus.INACTIVE }, { isActive: false }];
+      }
     }
 
     // Search filter
@@ -129,6 +133,8 @@ export const createAdmin = asyncHandler(
       role: role || UserRole.ADMIN,
       permissions: permissions || [],
       isEmailVerified: true, // Admins are verified by default
+      status: UserStatus.ACTIVE,
+      isActive: true,
     });
 
     // Convert to plain object and remove password
@@ -162,7 +168,7 @@ export const createAdmin = asyncHandler(
 // Update admin
 export const updateAdmin = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { firstName, lastName, email, phone, permissions, isActive } =
+    const { firstName, lastName, email, phone, permissions, isActive, status } =
       req.body;
 
     // Find admin
@@ -190,6 +196,7 @@ export const updateAdmin = asyncHandler(
     if (phone !== undefined) admin.phone = phone;
     if (permissions !== undefined) admin.permissions = permissions;
     if (isActive !== undefined) admin.isActive = isActive;
+    if (status !== undefined) admin.status = status;
 
     await admin.save();
 
@@ -232,6 +239,78 @@ export const deleteAdmin = asyncHandler(
     res.status(204).json({
       status: "success",
       data: null,
+    });
+  }
+);
+
+// Suspend admin
+export const suspendAdmin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const admin = await User.findOne({
+      _id: req.params.id,
+      role: { $in: [UserRole.ADMIN, UserRole.SUPER_ADMIN] },
+    });
+
+    if (!admin) {
+      return next(new AppError("Admin not found", 404));
+    }
+
+    // Prevent suspending super admin by regular admin
+    if (
+      admin.role === UserRole.SUPER_ADMIN &&
+      req.user?.role !== UserRole.SUPER_ADMIN
+    ) {
+      return next(new AppError("Cannot suspend super admin", 403));
+    }
+
+    admin.status = UserStatus.INACTIVE;
+    admin.isActive = false;
+    await admin.save();
+
+    // Remove sensitive fields from output
+    const adminObj = admin.toObject();
+    delete (adminObj as any).password;
+    delete (adminObj as any).resetPasswordToken;
+    delete (adminObj as any).verificationToken;
+    delete (adminObj as any).refreshToken;
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        admin: adminObj,
+      },
+    });
+  }
+);
+
+// Activate admin
+export const activateAdmin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const admin = await User.findOne({
+      _id: req.params.id,
+      role: { $in: [UserRole.ADMIN, UserRole.SUPER_ADMIN] },
+    });
+
+    if (!admin) {
+      return next(new AppError("Admin not found", 404));
+    }
+
+    admin.status = UserStatus.ACTIVE;
+    admin.isActive = true;
+    await admin.save();
+
+    // Remove sensitive fields from output
+    const adminObj = admin.toObject();
+    delete (adminObj as any).password;
+    delete (adminObj as any).resetPasswordToken;
+    delete (adminObj as any).verificationToken;
+    delete (adminObj as any).refreshToken;
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        admin: adminObj,
+      },
     });
   }
 );

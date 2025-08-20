@@ -6,6 +6,8 @@ import {
   createAdmin,
   updateAdmin,
   deleteAdmin,
+  suspendAdmin,
+  activateAdmin,
   updateAdminPermissions,
   resetAdminPassword,
 } from "../controllers/adminManagementController";
@@ -25,5 +27,9 @@ router.route("/:id").get(getAdminById).patch(updateAdmin).delete(deleteAdmin);
 // Special admin operations
 router.patch("/:id/permissions", updateAdminPermissions);
 router.patch("/:id/reset-password", resetAdminPassword);
+
+// Suspend and activate routes
+router.patch("/:id/suspend", suspendAdmin);
+router.patch("/:id/activate", activateAdmin);
 
 export default router;

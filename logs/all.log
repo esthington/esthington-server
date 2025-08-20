@@ -4081,3 +4081,58 @@
 2025-07-03 16:12:05:125 [32minfo[39m: [32mServer running on port 8000[39m
 2025-07-03 16:23:04:234 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
 2025-07-03 16:23:04:234 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-03 10:21:39:2139 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-03 10:21:39:2139 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-03 10:22:03:223 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-03 10:22:03:223 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-03 10:22:03:223 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-03 10:22:03:223 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-03 10:22:03:223 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-03 10:22:03:223 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-03 10:29:52:2952 [32minfo[39m: [32mEmail sent to esthington@gmail.com[39m
+2025-08-03 10:29:53:2953 [32minfo[39m: [32mOTP verification email sent to esthington@gmail.com[39m
+2025-08-19 15:21:22:2122 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-19 15:21:23:2123 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-19 15:32:37:3237 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 15:32:38:3238 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 15:32:38:3238 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 15:32:38:3238 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 15:32:38:3238 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 15:32:38:3238 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 16:29:32:2932 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-19 16:29:32:2932 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-19 17:07:42:742 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:07:43:743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:07:43:743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:07:43:743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:07:43:743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:07:43:743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:18:04:184 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-19 17:18:04:184 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-19 17:59:24:5924 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-19 17:59:24:5924 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-19 17:59:36:5936 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:59:36:5936 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:59:36:5936 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:59:36:5936 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:59:36:5936 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 17:59:36:5936 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-19 18:03:09:39 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-19 18:03:09:39 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-19 18:12:27:1227 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-19 18:12:27:1227 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-19 18:24:33:2433 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-19 18:24:33:2433 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-19 18:34:14:3414 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-19 18:35:21:3521 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-19 18:35:21:3521 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-19 18:35:21:3521 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-20 07:08:37:837 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-20 07:08:37:837 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-20 07:11:09:119 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-20 07:11:09:119 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-20 07:11:09:119 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-20 07:11:09:119 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-20 07:11:09:119 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-20 07:11:09:119 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-20 07:20:02:202 [32minfo[39m: [32mEmail sent to ochedavidadokwu@gmail.com[39m

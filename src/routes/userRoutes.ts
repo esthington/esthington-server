@@ -30,38 +30,22 @@ router.put(
   "/profile",
   protect,
   upload.fields([
-    { name: 'profileImage', maxCount: 1 },
-    { name: 'validID', maxCount: 1 }
+    { name: "profileImage", maxCount: 1 },
+    { name: "validID", maxCount: 1 },
   ]),
   updateProfile
 );
 
-router.put(
-  "/change-password",
-  protect,
-  changePassword
-);
+router.put("/change-password", protect, changePassword);
 
 router.delete("/", protect, deleteAccount);
 
 // Admin routes (accessible only by admins and super admins)
-router.get(
-  "/",
-  protect,
-  getUsers
-);
+router.get("/", protect, getUsers);
 
-router.get(
-  "/stats",
-  protect,
-  getUserStats
-);
+router.get("/stats", protect, getUserStats);
 
-router.get(
-  "/:id",
-  protect,
-  getUserById
-);
+router.get("/:id", protect, getUserById);
 
 router.put(
   "/:id",
@@ -72,11 +56,7 @@ router.put(
 
 router.delete("/:id", protect, restrictTo(UserRole.SUPER_ADMIN), deleteUser);
 
-router.put(
-  "/:id/blacklist",
-  protect,
-  blacklistUser
-);
+router.put("/:id/blacklist", protect, blacklistUser);
 
 // router.put(
 //   "/:id/activate",
@@ -84,10 +64,6 @@ router.put(
 //   activateUser
 // );
 
-router.post(
-  "/:id/reset-password",
-  protect,
-  resetUserPassword
-);
+router.post("/:id/reset-password", protect, resetUserPassword);
 
 export default router;
