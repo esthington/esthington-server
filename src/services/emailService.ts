@@ -2,9 +2,12 @@ import nodemailer from "nodemailer";
 import config from "../config/config";
 import logger from "../utils/logger";
 import { TransactionStatus } from "../models/walletModel";
+import { Resend } from "resend";
 
 class EmailService {
   private transporter: nodemailer.Transporter;
+
+  public resend = new Resend(process.env.RESEND_API_KEY);
 
   constructor() {
     // Use a test account if SMTP config is not provided
@@ -45,17 +48,27 @@ class EmailService {
     to: string,
     subject: string,
     html: string,
-    from = config.emailFrom
   ): Promise<void> {
     try {
-      const mailOptions = {
-        from: `Esthington <${from}>`,
-        to,
-        subject,
-        html,
-      };
+      
+      if (!process.env.SMTP_MAIL) {
+        throw new Error("SMTP_MAIL environment variable is not set");
+      }
 
-      await this.transporter.sendMail(mailOptions);
+
+      const { data, error } = await this.resend.emails.send({
+        from: process.env.SMTP_EMAIL as string, // now 'info@proliferate.ai'
+        to: [to],
+        subject: subject,
+        html: html,
+      });
+
+      if (error) {
+        console.error(error);
+        throw new Error("Email could not be sent");
+      }
+
+      console.log(data);
       logger.info(`Email sent to ${to}`);
     } catch (error) {
       logger.error(
