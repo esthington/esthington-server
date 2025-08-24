@@ -4136,3 +4136,50 @@
 2025-08-20 07:11:09:119 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-08-20 07:11:09:119 [31merror[39m: [31mJWT verification error: jwt malformed[39m
 2025-08-20 07:20:02:202 [32minfo[39m: [32mEmail sent to ochedavidadokwu@gmail.com[39m
+2025-08-24 16:02:10:210 [31merror[39m: [31mError connecting to MongoDB: querySrv ECONNREFUSED _mongodb._tcp.cluster0.evqiglv.mongodb.net[39m
+2025-08-24 22:29:10:2910 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:29:10:2910 [32minfo[39m: [32mServer running on port 8000[39m
+2025-08-24 22:37:43:3743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-24 22:37:43:3743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-24 22:37:43:3743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-24 22:37:43:3743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-24 22:37:43:3743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-24 22:37:43:3743 [31merror[39m: [31mJWT verification error: jwt malformed[39m
+2025-08-24 22:46:24:4624 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:46:24:4624 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:46:24:4624 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:46:52:4652 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:46:52:4652 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:46:53:4653 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:46:53:4653 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:46:53:4653 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:47:23:4723 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:47:23:4723 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:47:23:4723 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:47:23:4723 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:47:53:4753 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:47:53:4753 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:48:13:4813 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:48:23:4823 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:48:53:4853 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:48:53:4853 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 22:49:40:4940 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 23:04:39:439 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "connection 35 to 65.62.2.187:27017 timed out"[39m
+2025-08-24 23:06:09:69 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-08-24 23:06:09:69 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-08-24 23:06:09:69 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-08-24 23:06:09:69 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-08-24 23:06:09:69 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-08-24 23:06:09:69 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-08-24 23:06:09:69 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-08-24 23:06:09:69 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-08-24 23:06:09:69 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-08-24 23:06:09:69 [31merror[39m: [31mAuth middleware error: Connection pool for ac-aozmc2l-shard-00-02.evqiglv.mongodb.net:27017 was cleared because another operation failed with: "getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-02.evqiglv.mongodb.net"[39m
+2025-08-24 23:06:39:639 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 23:06:39:639 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 23:06:39:639 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 23:06:39:639 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 23:07:09:79 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 23:07:29:729 [31merror[39m: [31mAuth middleware error: getaddrinfo ENOTFOUND ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 23:08:09:89 [32minfo[39m: [32mMongoDB Connected: ac-aozmc2l-shard-00-00.evqiglv.mongodb.net[39m
+2025-08-24 23:08:09:89 [32minfo[39m: [32mServer running on port 8000[39m

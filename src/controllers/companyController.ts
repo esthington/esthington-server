@@ -42,9 +42,11 @@ export const getCompanies = asyncHandler(
       .skip(skip)
       .limit(limit);
 
+    const allCompanies = await Company.find()
+
     res.status(StatusCodes.OK).json({
       success: true,
-      data: companies,
+      data: allCompanies,
       total,
       currentPage: page,
       totalPages: Math.ceil(total / limit),
