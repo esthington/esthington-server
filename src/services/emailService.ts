@@ -57,7 +57,7 @@ class EmailService {
 
 
       const { data, error } = await this.resend.emails.send({
-        from: process.env.SMTP_EMAIL as string, // now 'info@proliferate.ai'
+         from: `Esthington <${process.env.SMTP_EMAIL}>`,
         to: [to],
         subject: subject,
         html: html,
